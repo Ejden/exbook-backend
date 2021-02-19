@@ -1,8 +1,10 @@
 package pl.exbook.exbook.repositories
 
 import org.springframework.data.mongodb.repository.MongoRepository
-import pl.exbook.exbook.datamodel.User
+import pl.exbook.exbook.services.UserDatabaseModel
 
-interface UserRepository : MongoRepository<User, String> {
-    fun findByLogin(login: String) : User?
+interface UserRepository : MongoRepository<UserDatabaseModel, String> {
+    fun findByLogin(login: String) : UserDatabaseModel?
+
+    fun findByLoginOrEmail(login: String, email: String) : UserDatabaseModel?
 }

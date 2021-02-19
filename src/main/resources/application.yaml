@@ -6,6 +6,8 @@ spring:
       database: kurs
       username: admin
       password: password
+  jpa:
+    show-sql: true
 
 server:
   port: 8082
@@ -13,3 +15,9 @@ server:
 jwt:
   expirationTime: 3600000
   secret: adlihwu23yfh82gf7243gf234f23
+
+logging:
+  level:
+    pl:
+      exbook:
+        DEBUG

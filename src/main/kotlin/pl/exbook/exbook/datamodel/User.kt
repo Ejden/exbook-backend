@@ -12,7 +12,7 @@ class User (
     var login: String,
     var password: String,
     var email: String,
-    var phoneNumber: String,
+    var phoneNumber: String?,
     var enabled : Boolean,
     var active: Boolean,
     var locked: Boolean,
@@ -20,4 +20,17 @@ class User (
 ) {
     var authorities: MutableSet<GrantedAuthority> = mutableSetOf()
     var creationDate: Instant = Instant.now()
+}
+
+enum class AUTHORITY(val value: String) {
+    SEARCH_BOOKS("SEARCH_BOOKS"),
+    EXCHANGE_BOOKS("EXCHANGE_BOOKS"),
+    READ_ABOUT_ME("READ_ABOUT_ME")
+
+}
+
+enum class ROLE(val value: String) {
+    USER("ROLE_USER"),
+    MODERATOR("ROLE_MODERATOR"),
+    ADMIN("ROLE_ADMIN")
 }
