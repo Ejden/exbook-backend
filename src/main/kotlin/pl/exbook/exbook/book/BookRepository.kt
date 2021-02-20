@@ -1,7 +1,6 @@
-package pl.exbook.exbook.repositories
+package pl.exbook.exbook.book
 
 import org.springframework.data.mongodb.repository.MongoRepository
-import pl.exbook.exbook.datamodel.Book
 
 interface BookRepository : MongoRepository<Book, String> {
 

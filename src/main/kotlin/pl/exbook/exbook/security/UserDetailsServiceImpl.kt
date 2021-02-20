@@ -3,10 +3,8 @@ package pl.exbook.exbook.security
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
-import org.springframework.stereotype.Component
 import org.springframework.stereotype.Service
-import pl.exbook.exbook.repositories.UserRepository
-import pl.exbook.exbook.services.UserService
+import pl.exbook.exbook.user.UserService
 
 @Service
 class UserDetailsServiceImpl(private val userService: UserService) : UserDetailsService {

@@ -1,4 +1,4 @@
-package pl.exbook.exbook.datamodel
+package pl.exbook.exbook.user
 
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
@@ -20,6 +20,22 @@ class User (
 ) {
     var authorities: MutableSet<GrantedAuthority> = mutableSetOf()
     var creationDate: Instant = Instant.now()
+
+    constructor(id: String?,
+                login: String,
+                password: String,
+                email: String,
+                phoneNumber: String?,
+                enabled: Boolean,
+                active: Boolean,
+                locked: Boolean,
+                credentialExpired: Boolean,
+                authorities: MutableSet<GrantedAuthority>,
+                creationDate: Instant) : this(id, login, password, email, phoneNumber, enabled, active, locked, credentialExpired) {
+
+        this.authorities = authorities
+        this.creationDate = creationDate
+    }
 }
 
 enum class AUTHORITY(val value: String) {

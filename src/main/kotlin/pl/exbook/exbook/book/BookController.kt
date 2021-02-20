@@ -1,10 +1,7 @@
-package pl.exbook.exbook.controllers
+package pl.exbook.exbook.book
 
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
-import pl.exbook.exbook.datamodel.AUTHORITY
-import pl.exbook.exbook.datamodel.Book
-import pl.exbook.exbook.services.BookService
 
 @RestController
 @RequestMapping("api/v1/books")

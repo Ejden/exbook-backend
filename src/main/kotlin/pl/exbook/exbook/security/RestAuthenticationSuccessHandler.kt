@@ -7,8 +7,10 @@ import org.springframework.security.core.Authentication
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler
 import org.springframework.stereotype.Component
 import java.util.*
+import java.util.stream.Collectors
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
+import kotlin.collections.ArrayList
 
 @Component
 class RestAuthenticationSuccessHandler(
@@ -23,8 +25,16 @@ class RestAuthenticationSuccessHandler(
         authentication: Authentication?
     ) {
         val principal = authentication?.principal as UserDetailsImpl
+        val authList = ArrayList<String>()
+        authList.addAll(
+            principal.authorities.stream()
+            .map { authority -> authority.authority }
+            .collect(Collectors.toList())
+        )
+
         val token = JWT.create()
             .withSubject(principal.username)
+            .withClaim("authorities", authList.toString())
             .withExpiresAt(Date(System.currentTimeMillis() + expirationTime))
             .sign(Algorithm.HMAC256(secret))
 

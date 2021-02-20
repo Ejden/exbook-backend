@@ -3,7 +3,6 @@ package pl.exbook.exbook.swagger
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import springfox.documentation.builders.PathSelectors
-import springfox.documentation.builders.RequestHandlerSelectors
 import springfox.documentation.service.ApiKey
 import springfox.documentation.service.AuthorizationScope
 import springfox.documentation.service.SecurityReference
@@ -22,7 +21,6 @@ class SwaggerConfig {
     fun api(): Docket {
         return Docket(DocumentationType.OAS_30)
             .select()
-//            .apis(RequestHandlerSelectors.any())
             .paths(PathSelectors.regex("^(?!/(error).*$).*$"))
             .build()
             .securitySchemes(singletonList(createSchema()))

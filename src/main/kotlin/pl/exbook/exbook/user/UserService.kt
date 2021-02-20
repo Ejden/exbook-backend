@@ -1,4 +1,4 @@
-package pl.exbook.exbook.services
+package pl.exbook.exbook.user
 
 import com.mongodb.MongoWriteException
 import mu.KotlinLogging
@@ -7,13 +7,9 @@ import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.stereotype.Service
-import pl.exbook.exbook.controllers.UserDto
-import pl.exbook.exbook.datamodel.AUTHORITY
-import pl.exbook.exbook.datamodel.ROLE
-import pl.exbook.exbook.datamodel.User
-import pl.exbook.exbook.payload.request.CreateUserRequest
-import pl.exbook.exbook.payload.request.UserAlreadyExistsException
-import pl.exbook.exbook.repositories.UserRepository
+import pl.exbook.exbook.security.UserDto
+import pl.exbook.exbook.exceptions.UserAlreadyExistsException
+import pl.exbook.exbook.security.CreateUserRequest
 import java.time.Instant
 
 private val logger = KotlinLogging.logger {}
@@ -82,7 +78,7 @@ data class UserDatabaseModel(
     var creationDate: Instant = Instant.now()
 
     fun toUser() : User {
-        return User(id, login, password, email, phoneNumber, enabled, active, locked, credentialExpired)
+        return User(id, login, password, email, phoneNumber, enabled, active, locked, credentialExpired, authorities, creationDate)
     }
 
     fun toUserDto() : UserDto {

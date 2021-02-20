@@ -1,4 +1,4 @@
-package pl.exbook.exbook.controllers
+package pl.exbook.exbook.security
 
 import org.springframework.data.annotation.Id
 import org.springframework.security.access.prepost.PreAuthorize
@@ -7,12 +7,8 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import pl.exbook.exbook.datamodel.User
 import pl.exbook.exbook.exceptions.BadRequest
-import pl.exbook.exbook.payload.request.CreateUserRequest
-import pl.exbook.exbook.payload.request.LoginCredentials
-import pl.exbook.exbook.repositories.UserRepository
-import pl.exbook.exbook.services.UserService
+import pl.exbook.exbook.user.UserService
 import java.time.Instant
 
 @RestController
@@ -34,6 +30,17 @@ class AuthController(private val userService: UserService) {
     fun signIn(@RequestBody loginCredentials: LoginCredentials) {
 
     }
+}
+
+class CreateUserRequest (
+    var login: String,
+    var password: String,
+    var email: String
+) {
+}
+
+data class LoginCredentials(val login: String, val password: String) {
+
 }
 
 data class UserDto(

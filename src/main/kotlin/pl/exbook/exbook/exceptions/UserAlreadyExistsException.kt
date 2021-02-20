@@ -1,4 +1,4 @@
-package pl.exbook.exbook.payload.request
+package pl.exbook.exbook.exceptions
 
 class UserAlreadyExistsException : Exception() {
 }

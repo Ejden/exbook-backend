@@ -1,8 +1,6 @@
-package pl.exbook.exbook.services
+package pl.exbook.exbook.book
 
 import org.springframework.stereotype.Service
-import pl.exbook.exbook.datamodel.Book
-import pl.exbook.exbook.repositories.BookRepository
 
 @Service
 class BookService (private val bookRepository: BookRepository){

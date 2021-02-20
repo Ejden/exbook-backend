@@ -2,7 +2,7 @@ package pl.exbook.exbook.security
 
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
-import pl.exbook.exbook.datamodel.User
+import pl.exbook.exbook.user.User
 
 class UserDetailsImpl(private var user : User) : UserDetails {
 
