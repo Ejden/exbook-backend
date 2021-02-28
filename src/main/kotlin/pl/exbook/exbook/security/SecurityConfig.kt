@@ -2,7 +2,9 @@ package pl.exbook.exbook.security
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
@@ -10,8 +12,15 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.core.userdetails.UserDetailsService
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.NoOpPasswordEncoder
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.authentication.HttpStatusEntryPoint
+import org.springframework.web.cors.CorsConfiguration
+import org.springframework.web.cors.CorsConfigurationSource
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource
+import org.springframework.web.servlet.config.annotation.CorsRegistry
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 
 @Configuration
 @EnableGlobalMethodSecurity(
@@ -27,11 +36,12 @@ class SecurityConfig (
     @Value("\${jwt.secret}") private val secret: String): WebSecurityConfigurerAdapter() {
 
     override fun configure(auth: AuthenticationManagerBuilder?) {
-        auth?.userDetailsService(userDetailsServiceImpl)?.passwordEncoder(NoOpPasswordEncoder.getInstance())
+        auth?.userDetailsService(userDetailsServiceImpl)
+//            ?.passwordEncoder(passwordEncoder())
     }
 
     override fun configure(http: HttpSecurity?) {
-        http?.csrf()?.disable()
+        http?.cors()?.and()?.csrf()?.disable()
         http?.authorizeRequests()
             ?.antMatchers("/swagger-ui.html")?.permitAll()
             ?.antMatchers("/v2/api-docs")?.permitAll()
@@ -62,5 +72,30 @@ class SecurityConfig (
         authenticationFilter.setAuthenticationManager(super.authenticationManager())
         authenticationFilter.setFilterProcessesUrl("/api/v1/auth/login")
         return authenticationFilter
+    }
+
+//    @Bean
+//    fun corsConfigurer(): CorsConfigurationSource  {
+//        val source = UrlBasedCorsConfigurationSource()
+//        source.registerCorsConfiguration("http://localhost:8080/**", CorsConfiguration().applyPermitDefaultValues())
+//        return source
+//    }
+
+    @Bean
+    fun corsConfigurer(): WebMvcConfigurer {
+        return object:WebMvcConfigurer{
+            override fun addCorsMappings(registry: CorsRegistry) {
+                registry.addMapping("/**")
+                    .allowedMethods(HttpMethod.POST.name, HttpMethod.GET.name, HttpMethod.PUT.name, HttpMethod.DELETE.name, HttpMethod.OPTIONS.name)
+                    .allowedHeaders("*")
+                    .allowedOrigins("http://localhost:8080")
+                    .allowCredentials(true)
+            }
+        }
+    }
+
+    @Bean
+    fun passwordEncoder() : PasswordEncoder {
+        return BCryptPasswordEncoder()
     }
 }

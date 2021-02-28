@@ -6,6 +6,8 @@ import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import pl.exbook.exbook.security.UserDto
 import pl.exbook.exbook.exceptions.UserAlreadyExistsException
@@ -15,7 +17,9 @@ import java.time.Instant
 private val logger = KotlinLogging.logger {}
 
 @Service
-class UserService(private val userRepository: UserRepository) {
+class UserService(
+    private val userRepository: UserRepository,
+) {
 
     fun createUser(request: CreateUserRequest) : UserDatabaseModel {
         try {
@@ -25,7 +29,7 @@ class UserService(private val userRepository: UserRepository) {
                 val newUser =  UserDatabaseModel(
                     id = null,
                     login = request.login,
-                    password = request.password,
+                    password = BCryptPasswordEncoder().encode(request.password),
                     email = request.email,
                     phoneNumber = null,
                     enabled = true,
@@ -57,7 +61,6 @@ class UserService(private val userRepository: UserRepository) {
     fun findUserByUsername(username: String) : User? {
         return userRepository.findByLogin(username)?.toUser()
     }
-
 
 }
 

@@ -10,11 +10,11 @@ class UserDetailsImpl(private var user : User) : UserDetails {
         return user.authorities
     }
 
-    override fun getPassword(): String {
+    override fun getPassword(): String? {
         return user.password
     }
 
-    override fun getUsername(): String {
+    override fun getUsername(): String? {
         return user.login
     }
 

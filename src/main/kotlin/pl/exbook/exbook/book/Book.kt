@@ -1,16 +1,28 @@
 package pl.exbook.exbook.book
 
-import org.springframework.data.annotation.Id
+import pl.exbook.exbook.user.User
 
 class Book (
-    @Id
     var id: String?,
     var author: String,
     var title: String,
-    var ISBN: String,
-    var description: String,
+    var ISBN: String?,
+    var description: String?,
     var condition: Condition,
+    var seller: User?
 ) {
+
+    fun toBookDto() : BookDto {
+        return BookDto(
+            id = this.id!!,
+            author = this.author,
+            title = this.title,
+            description = this.description,
+            ISBN = this.ISBN,
+            condition = this.condition,
+            seller = BookDto.Seller(seller?.id!!)
+        )
+    }
 
 }
 

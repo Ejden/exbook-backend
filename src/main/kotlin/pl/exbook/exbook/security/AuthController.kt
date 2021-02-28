@@ -3,10 +3,7 @@ package pl.exbook.exbook.security
 import org.springframework.data.annotation.Id
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.GrantedAuthority
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import pl.exbook.exbook.exceptions.BadRequest
 import pl.exbook.exbook.user.UserService
 import java.time.Instant

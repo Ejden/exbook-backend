@@ -8,6 +8,7 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.stereotype.Component
 import java.util.*
 import java.util.stream.Collectors
+import javax.servlet.http.Cookie
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 import kotlin.collections.ArrayList
@@ -38,6 +39,13 @@ class RestAuthenticationSuccessHandler(
             .withExpiresAt(Date(System.currentTimeMillis() + expirationTime))
             .sign(Algorithm.HMAC256(secret))
 
-        response?.addHeader("Authorization", "Bearer $token")
+//        response?.addHeader("Set-Cookie", "Authorization=$token")
+        val cookie = Cookie("Authorization", token)
+        cookie.maxAge = expirationTime.toInt()
+        cookie.secure = false
+        cookie.isHttpOnly = false
+        cookie.path = "/"
+
+        response?.addCookie(cookie)
     }
 }

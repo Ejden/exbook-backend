@@ -32,8 +32,8 @@ class JwtAuthorizationFilter(
     }
 
     private fun getAuthentication(request: HttpServletRequest) : UsernamePasswordAuthenticationToken? {
-        val token = request.getHeader(TOKEN_HEADER)
-        if (token != null && token.startsWith(TOKEN_PREFIX)) {
+        val token = request.cookies.firstOrNull { it.name == TOKEN_HEADER }?.value
+        if (token != null) {
             val userName: String? = JWT.require(Algorithm.HMAC256(secret))
                 .build()
                 .verify(token.replace(TOKEN_PREFIX, ""))
