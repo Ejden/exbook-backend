@@ -3,13 +3,14 @@ package pl.exbook.exbook.user
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.security.core.GrantedAuthority
-import pl.exbook.exbook.security.UserDto
 import java.time.Instant
 
 @Document(collection = "users")
 class User () {
     @Id
     var id: String? = null
+    var firstName: String? = null
+    var lastName: String? = null
     var login: String? = null
     var password: String? = null
     var email: String? = null
@@ -26,6 +27,8 @@ class User () {
     }
 
     constructor(id: String?,
+                firstName: String?,
+                lastName: String?,
                 login: String,
                 password: String,
                 email: String,
@@ -35,6 +38,8 @@ class User () {
                 locked: Boolean,
                 credentialExpired: Boolean) : this() {
         this.id = id
+        this.firstName = firstName
+        this.lastName = lastName
         this.login = login
         this.password = password
         this.email = email
@@ -46,6 +51,8 @@ class User () {
     }
 
     constructor(id: String?,
+                firstName: String?,
+                lastName: String?,
                 login: String,
                 password: String,
                 email: String,
@@ -55,13 +62,13 @@ class User () {
                 locked: Boolean,
                 credentialExpired: Boolean,
                 authorities: MutableSet<GrantedAuthority>,
-                creationDate: Instant) : this(id, login, password, email, phoneNumber, enabled, active, locked, credentialExpired) {
+                creationDate: Instant) : this(id, firstName, lastName, login, password, email, phoneNumber, enabled, active, locked, credentialExpired) {
         this.authorities = authorities
         this.creationDate = creationDate
     }
 
-    fun toUserDto() : UserDto {
-        return UserDto(id, login!!, email!!, phoneNumber, enabled, active, locked, credentialExpired)
+    fun toUserDto() : DetailedUserDto {
+        return DetailedUserDto(id, login!!, email!!, phoneNumber, enabled, active, locked, credentialExpired)
     }
 }
 

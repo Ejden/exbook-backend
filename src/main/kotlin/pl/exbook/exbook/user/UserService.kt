@@ -7,9 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
-import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
-import pl.exbook.exbook.security.UserDto
 import pl.exbook.exbook.exceptions.UserAlreadyExistsException
 import pl.exbook.exbook.security.CreateUserRequest
 import java.time.Instant
@@ -28,6 +26,8 @@ class UserService(
             if (foundUser == null) {
                 val newUser =  UserDatabaseModel(
                     id = null,
+                    firstName = request.firstName,
+                    lastName = request.lastName,
                     login = request.login,
                     password = BCryptPasswordEncoder().encode(request.password),
                     email = request.email,
@@ -68,6 +68,8 @@ class UserService(
 data class UserDatabaseModel(
     @Id
     var id: String?,
+    var firstName: String,
+    var lastName: String,
     var login: String,
     var password: String,
     var email: String,
@@ -81,10 +83,10 @@ data class UserDatabaseModel(
     var creationDate: Instant = Instant.now()
 
     fun toUser() : User {
-        return User(id, login, password, email, phoneNumber, enabled, active, locked, credentialExpired, authorities, creationDate)
+        return User(id, firstName, lastName, login, password, email, phoneNumber, enabled, active, locked, credentialExpired, authorities, creationDate)
     }
 
-    fun toUserDto() : UserDto {
-        return UserDto(id, login, email, phoneNumber, enabled, active, locked, credentialExpired)
+    fun toDetailedUserDto() : DetailedUserDto {
+        return DetailedUserDto(id, login, email, phoneNumber, enabled, active, locked, credentialExpired)
     }
 }
