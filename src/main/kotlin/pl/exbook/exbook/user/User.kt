@@ -68,7 +68,7 @@ class User () {
     }
 
     fun toUserDto() : DetailedUserDto {
-        return DetailedUserDto(id, login!!, email!!, phoneNumber, enabled, active, locked, credentialExpired)
+        return DetailedUserDto(id, firstName!!, lastName!!, login!!, email!!, phoneNumber, enabled, active, locked, credentialExpired)
     }
 }
 

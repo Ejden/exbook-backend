@@ -74,13 +74,6 @@ class SecurityConfig (
         return authenticationFilter
     }
 
-//    @Bean
-//    fun corsConfigurer(): CorsConfigurationSource  {
-//        val source = UrlBasedCorsConfigurationSource()
-//        source.registerCorsConfiguration("http://localhost:8080/**", CorsConfiguration().applyPermitDefaultValues())
-//        return source
-//    }
-
     @Bean
     fun corsConfigurer(): WebMvcConfigurer {
         return object:WebMvcConfigurer{

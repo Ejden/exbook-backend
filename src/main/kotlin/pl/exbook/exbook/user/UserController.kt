@@ -32,6 +32,8 @@ class UserController(
 data class DetailedUserDto (
     @Id
     var id: String?,
+    var firstName: String,
+    var lastName: String,
     var login: String,
     var email: String,
     var phoneNumber: String?,
