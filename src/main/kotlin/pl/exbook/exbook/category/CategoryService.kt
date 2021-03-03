@@ -49,4 +49,8 @@ class CategoryService(val categoryRepository: CategoryRepository) {
         return null
 //        return categoryRepository.insert()
     }
+
+    fun getCategoryThumbnail(id: String): String? {
+        return categoryRepository.getThumbnail(id)?.svgImg
+    }
 }
