@@ -1,4 +1,4 @@
-package pl.exbook.exbook.book
+package pl.exbook.exbook.offer
 
 import mu.KotlinLogging
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -10,37 +10,35 @@ import java.util.stream.Collectors
 private val logger = KotlinLogging.logger {}
 
 @Service
-class BookService (
-    private val bookRepository: BookRepository,
+class OfferService (
+    private val offerRepository: OfferRepository,
     private val userService: UserService
 ){
 
-    fun getAllBooks() : MutableList<Book> {
-        return bookRepository.findAll()
+    fun getAllOffers() : MutableList<Offer> {
+        return offerRepository.findAll()
             .stream()
-            .map(BookDatabaseModel::toBook)
+            .map(OfferDatabaseModel::toOffer)
             .collect(Collectors.toList())
     }
 
-    fun addBook(request: NewBookRequest, token: UsernamePasswordAuthenticationToken) : Book {
+    fun addOffer(request: NewBookRequest, token: UsernamePasswordAuthenticationToken) : Offer {
         // Getting user from database that sent
         val user : User? = userService.findUserByUsername(token.name)
 
-        val book =  bookRepository.save(
-            BookDatabaseModel(
+        val offer =  offerRepository.save(
+            OfferDatabaseModel(
                 id = null,
-                author = request.author,
-                title = request.title,
-                ISBN = request.ISBN,
+                book = Book(request.author, request.title, request.ISBN, request.condition),
+                images = Images(),
                 description = request.description,
-                condition = request.condition,
                 sellerId = user?.id!!
             )
-        ).toBook()
+        ).toOffer()
 
-        logger.debug("User with id = ${user.id} added new book with id = ${book.id}")
+        logger.debug("User with id = ${user.id} added new offer with id = ${offer.id}")
 
-        return book
+        return offer
     }
 }
 

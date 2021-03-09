@@ -1,4 +1,4 @@
-package pl.exbook.exbook.book
+package pl.exbook.exbook.offer
 
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -8,22 +8,22 @@ import java.util.stream.Collectors
 @RestController
 @RequestMapping("api/v1/books")
 @PreAuthorize("isAuthenticated()")
-class BookController (private val bookService: BookService) {
+class OfferController (private val offerService: OfferService) {
 
     @GetMapping
     @PreAuthorize("hasAuthority('SEARCH_BOOKS')")
-    fun getAllBooks() : MutableCollection<BookDto> {
-        return bookService.getAllBooks()
+    fun getAllBooks() : MutableCollection<OfferDto> {
+        return offerService.getAllOffers()
             .stream()
-            .map(Book::toBookDto)
+            .map(Offer::toOfferDto)
             .collect(Collectors.toList())
     }
 
     @PostMapping
     @PreAuthorize("hasAuthority('EXCHANGE_BOOKS')")
-    fun addBook(@RequestBody book : NewBookRequest, user : UsernamePasswordAuthenticationToken?) : BookDto? {
+    fun addBook(@RequestBody book : NewBookRequest, user : UsernamePasswordAuthenticationToken?) : OfferDto? {
         return if (user != null) {
-            bookService.addBook(book, user).toBookDto()
+            offerService.addOffer(book, user).toOfferDto()
         } else
             null
     }
@@ -32,20 +32,18 @@ class BookController (private val bookService: BookService) {
 data class NewBookRequest(
     val author: String,
     val title: String,
-    val ISBN: String?,
+    val ISBN: Long?,
     val description: String?,
     val condition: Condition
 ) {
 
 }
 
-data class BookDto(
+data class OfferDto(
     val id: String,
-    val author: String,
-    val title: String,
-    val ISBN: String?,
+    val book: Book,
     val description: String?,
-    val condition: Condition,
+    val images: Images,
     val seller: Seller
 ) {
 

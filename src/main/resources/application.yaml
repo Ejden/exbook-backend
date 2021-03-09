@@ -13,7 +13,7 @@ server:
   port: 8082
 
 jwt:
-  expirationTime: 3600000
+  expirationTime: 36000000
   secret: adlihwu23yfh82gf7243gf234f23
 
 logging:
