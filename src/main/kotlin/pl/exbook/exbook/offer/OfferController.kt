@@ -3,16 +3,17 @@ package pl.exbook.exbook.offer
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.web.bind.annotation.*
+import pl.exbook.exbook.shipping.ShippingMethod
 import java.util.stream.Collectors
 
 @RestController
 @RequestMapping("api/v1/offers")
 @PreAuthorize("isAuthenticated()")
-class OfferController (private val offerService: OfferService) {
+class OfferController(private val offerService: OfferService) {
 
     @GetMapping
     @PreAuthorize("hasAuthority('SEARCH_BOOKS')")
-    fun getAllBooks() : MutableCollection<OfferDto> {
+    fun getAllBooks(): MutableCollection<OfferDto> {
         return offerService.getAllOffers()
             .stream()
             .map(Offer::toOfferDto)
@@ -21,35 +22,39 @@ class OfferController (private val offerService: OfferService) {
 
     @PostMapping
     @PreAuthorize("hasAuthority('EXCHANGE_BOOKS')")
-    fun addBook(@RequestBody book : NewBookRequest, user : UsernamePasswordAuthenticationToken?) : OfferDto? {
+    fun addBook(@RequestBody offer: NewOfferRequest, user: UsernamePasswordAuthenticationToken?): OfferDto? {
         return if (user != null) {
-            offerService.addOffer(book, user).toOfferDto()
+            offerService.addOffer(offer, user)?.toOfferDto()
         } else
             null
     }
 }
 
-data class NewBookRequest(
-    val author: String,
-    val title: String,
-    val ISBN: Long?,
+data class NewOfferRequest(
+    val book: Book,
     val description: String?,
-    val condition: Condition
-) {
-
-}
+    val images: Images,
+    val categories: Collection<String>,
+    val type: Offer.Type,
+    val price: Int?,
+    val location: String,
+    val shippingMethods: Collection<ShippingMethod>
+)
 
 data class OfferDto(
     val id: String,
     val book: Book,
     val description: String?,
     val images: Images,
-    val seller: Seller
+    val seller: Seller,
+    val type: Offer.Type,
+    val price: Int?,
+    val location: String,
+    val shippingMethods: Collection<ShippingMethod>,
+    val categories: Collection<String>
 ) {
 
     data class Seller(
         val id: String
-    ) {
-
-    }
+    )
 }

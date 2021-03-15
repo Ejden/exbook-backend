@@ -22,17 +22,27 @@ class OfferService (
             .collect(Collectors.toList())
     }
 
-    fun addOffer(request: NewBookRequest, token: UsernamePasswordAuthenticationToken) : Offer {
+    fun addOffer(request: NewOfferRequest, token: UsernamePasswordAuthenticationToken) : Offer? {
         // Getting user from database that sent
         val user : User? = userService.findUserByUsername(token.name)
+        if (request.price != null) {
+            if (request.price < 0) {
+                return null
+            }
+        }
 
         val offer =  offerRepository.save(
             OfferDatabaseModel(
                 id = null,
-                book = Book(request.author, request.title, request.ISBN, request.condition),
-                images = Images(),
+                book = request.book,
+                images = request.images,
                 description = request.description,
-                sellerId = user?.id!!
+                sellerId = user?.id!!,
+                type = request.type,
+                price = request.price,
+                location = request.location,
+                categories = request.categories,
+                shippingMethods = request.shippingMethods
             )
         ).toOffer()
 
