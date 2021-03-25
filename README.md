@@ -77,7 +77,7 @@ If you want to see frontend code go [here](https://github.com/Ejden/exbook-front
 ## Getting Started
 To quickly run local Exbook server follow instructions bellow
 
-###Docker MongoDB setup
+### Docker MongoDB setup
 
 
 To run this app locally, You want to create mongoDB database first.
@@ -134,7 +134,7 @@ To shutdown database type
 docker-compose -f stack.yml down
 ```
 
-###App secrets in .env file
+### App secrets in .env file
 
 
 Application to work needs various secrets like database url or jwt token secret key.
