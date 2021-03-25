@@ -154,7 +154,7 @@ MONGODB_DATABASE_PASSWORD=password
 
 To download the latest .jar stable version of server go to [releases](https://github.com/Ejden/exbook-backend/releases) page.
 Otherwise, if you want, you can download code from any branch (be carefully, there is no guaranty that this code will run or compile without problems).
-Just simply clone repo to your IDE and run it with flag:
+Just simply clone repo to your IDE and run it with JVM system parameter:
 ````
 -Dspring.profiles.active=local
 ````
