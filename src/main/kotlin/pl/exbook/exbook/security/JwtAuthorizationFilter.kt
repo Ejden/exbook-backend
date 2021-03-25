@@ -2,6 +2,8 @@ package pl.exbook.exbook.security
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
+import com.auth0.jwt.exceptions.TokenExpiredException
+import mu.KotlinLogging
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
@@ -10,6 +12,8 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import javax.servlet.FilterChain
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
+
+private val logger = KotlinLogging.logger {}
 
 class JwtAuthorizationFilter(
     authenticationManager: AuthenticationManager?,
@@ -20,15 +24,19 @@ class JwtAuthorizationFilter(
     private val TOKEN_PREFIX = "Bearer "
 
     override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, chain: FilterChain) {
-        val authentication = getAuthentication(request)
+        try {
+            val authentication = getAuthentication(request)
 
-        if (authentication == null) {
+            if (authentication == null) {
+                chain.doFilter(request, response)
+                return
+            }
+
+            SecurityContextHolder.getContext().authentication = authentication
             chain.doFilter(request, response)
-            return
+        } catch (e: TokenExpiredException) {
+            logger.info("User token expired")
         }
-
-        SecurityContextHolder.getContext().authentication = authentication
-        chain.doFilter(request, response)
     }
 
     private fun getAuthentication(request: HttpServletRequest) : UsernamePasswordAuthenticationToken? {

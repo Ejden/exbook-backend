@@ -1,11 +1,9 @@
 package pl.exbook.exbook.offer
 
-import org.springframework.data.mongodb.core.mapping.Document
 import pl.exbook.exbook.category.Category
 import pl.exbook.exbook.shipping.ShippingMethod
 import pl.exbook.exbook.user.User
 
-@Document(collation = "offers")
 class Offer (
     var id: String?,
     var book: Book?,

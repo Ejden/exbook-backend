@@ -4,6 +4,7 @@ import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.web.bind.annotation.*
 import pl.exbook.exbook.shipping.ShippingMethod
+import java.util.*
 import java.util.stream.Collectors
 
 @RestController
@@ -22,11 +23,16 @@ class OfferController(private val offerService: OfferService) {
 
     @PostMapping
     @PreAuthorize("hasAuthority('EXCHANGE_BOOKS')")
-    fun addBook(@RequestBody offer: NewOfferRequest, user: UsernamePasswordAuthenticationToken?): OfferDto? {
+    fun addOffer(@RequestBody offer: NewOfferRequest, user: UsernamePasswordAuthenticationToken?): OfferDto? {
         return if (user != null) {
             offerService.addOffer(offer, user)?.toOfferDto()
         } else
             null
+    }
+
+    @GetMapping("{offerId}")
+    fun getOffer(@PathVariable offerId: String): OfferDto? {
+        return offerService.getOffer(offerId)?.toOfferDto()
     }
 }
 

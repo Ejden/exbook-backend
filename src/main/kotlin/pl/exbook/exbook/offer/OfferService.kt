@@ -22,6 +22,12 @@ class OfferService (
             .collect(Collectors.toList())
     }
 
+    fun getOffer(offerId: String): Offer? {
+        return offerRepository.findById(offerId)
+            .orElseThrow { OfferNotFoundException() }
+            .toOffer()
+    }
+
     fun addOffer(request: NewOfferRequest, token: UsernamePasswordAuthenticationToken) : Offer? {
         // Getting user from database that sent
         val user : User? = userService.findUserByUsername(token.name)

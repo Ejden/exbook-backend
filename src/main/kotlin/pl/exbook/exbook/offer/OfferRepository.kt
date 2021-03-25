@@ -42,3 +42,5 @@ data class OfferDatabaseModel(
     }
 
 }
+
+class OfferNotFoundException: RuntimeException()
