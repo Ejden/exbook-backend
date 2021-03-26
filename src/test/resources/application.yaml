@@ -1,11 +1,11 @@
 spring:
   data:
     mongodb:
-      host: ${MONGODB_HOST}
-      port: ${MONGODB_PORT}
-      database: ${MONGODB_DATABASE_NAME}
-      username: ${MONGODB_DATABASE_USERNAME}
-      password: ${MONGODB_DATABASE_PASSWORD}
+      host: localhost
+      port: 27017
+      database: exbookDB_test
+      username: travis
+      password: test
   jpa:
     show-sql: true
 
@@ -13,8 +13,8 @@ server:
   port: 8082
 
 jwt:
-  expirationTime: ${JWT_EXP_TIME}
-  secret: ${JWT_SECRET}
+  expirationTime: 360000
+  secret: adlihwu23yfh82gf7243gf234f23
 
 logging:
   level:
