@@ -1,4 +1,6 @@
 language: java
 jdk: openjdk11
 services: mongodb
-before_script: sleep 15 & mongo exbookDB_test --eval 'db.createUser({user: "travis", pwd: "test", roles: ["readWrite"]});'
+before_script:
+  - sleep 15
+  - mongo exbookDB_test --eval 'db.createUser({user: "travis", pwd: "test", roles: ["readWrite"]});'
