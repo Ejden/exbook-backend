@@ -2,15 +2,11 @@ package pl.exbook.exbook.user
 
 import com.mongodb.MongoWriteException
 import mu.KotlinLogging
-import org.springframework.data.annotation.Id
-import org.springframework.data.mongodb.core.mapping.Document
-import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
 import pl.exbook.exbook.exceptions.UserAlreadyExistsException
 import pl.exbook.exbook.security.CreateUserRequest
-import java.time.Instant
 
 private val logger = KotlinLogging.logger {}
 
@@ -35,7 +31,8 @@ class UserService(
                     enabled = true,
                     active = false,
                     locked = false,
-                    credentialExpired = false
+                    credentialExpired = false,
+                    grade = 0.0
                 )
 
                 newUser.authorities.add(SimpleGrantedAuthority(ROLE.USER.value))
@@ -62,31 +59,11 @@ class UserService(
         return userRepository.findByLogin(username)?.toUser()
     }
 
-}
-
-@Document(collection = "users")
-data class UserDatabaseModel(
-    @Id
-    var id: String?,
-    var firstName: String,
-    var lastName: String,
-    var login: String,
-    var password: String,
-    var email: String,
-    var phoneNumber: String?,
-    var enabled : Boolean,
-    var active: Boolean,
-    var locked: Boolean,
-    var credentialExpired: Boolean) {
-
-    var authorities: MutableSet<GrantedAuthority> = mutableSetOf()
-    var creationDate: Instant = Instant.now()
-
-    fun toUser() : User {
-        return User(id, firstName, lastName, login, password, email, phoneNumber, enabled, active, locked, credentialExpired, authorities, creationDate)
-    }
-
-    fun toDetailedUserDto() : DetailedUserDto {
-        return DetailedUserDto(id, firstName, lastName, login, email, phoneNumber, enabled, active, locked, credentialExpired)
+    fun findById(userId: String): User {
+        return userRepository.findById(userId)
+            .orElseThrow{ UserNotFoundException() }
+            .toUser()
     }
 }
+
+class UserNotFoundException: RuntimeException()

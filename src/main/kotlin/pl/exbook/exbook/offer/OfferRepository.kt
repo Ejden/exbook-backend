@@ -34,7 +34,22 @@ data class OfferDatabaseModel(
             description = description,
             type = type,
             seller = User(sellerId),
-            price = price,
+            price = price!!,
+            location = location,
+            categories = categories.map{ id -> Category(id = id, name = null, svgImg = null) },
+            shippingMethods = shippingMethods
+        )
+    }
+
+    fun toOffer(seller: User): Offer {
+        return Offer(
+            id = id,
+            book = book,
+            images = images,
+            description = description,
+            type = type,
+            seller = seller,
+            price = price!!,
             location = location,
             categories = categories.map{ id -> Category(id = id, name = null, svgImg = null) },
             shippingMethods = shippingMethods

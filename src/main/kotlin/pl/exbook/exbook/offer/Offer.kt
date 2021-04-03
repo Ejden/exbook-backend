@@ -11,7 +11,7 @@ class Offer (
     var description: String?,
     var type: Type,
     var seller: User?,
-    var price: Int?,
+    var price: Int = 0,
     var location: String,
     var categories: Collection<Category>?,
     var shippingMethods: Collection<ShippingMethod>
@@ -23,7 +23,7 @@ class Offer (
             book = this.book!!,
             images = this.images,
             description = this.description,
-            seller = OfferDto.Seller(seller?.id!!),
+            seller = OfferDto.Seller(seller?.id!!, seller?.login!!, seller?.grade!!),
             type = type,
             price = price,
             location = location,

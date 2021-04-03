@@ -21,6 +21,7 @@ class User () {
     var credentialExpired: Boolean = false
     var authorities: MutableSet<GrantedAuthority> = mutableSetOf()
     var creationDate: Instant = Instant.now()
+    var grade: Double = 0.0
 
     constructor(id: String?) : this() {
         this.id = id
@@ -36,7 +37,8 @@ class User () {
                 enabled : Boolean,
                 active: Boolean,
                 locked: Boolean,
-                credentialExpired: Boolean) : this() {
+                credentialExpired: Boolean,
+                grade: Double) : this() {
         this.id = id
         this.firstName = firstName
         this.lastName = lastName
@@ -48,6 +50,7 @@ class User () {
         this.active = active
         this.locked = locked
         this.credentialExpired = credentialExpired
+        this.grade = grade
     }
 
     constructor(id: String?,
@@ -62,14 +65,20 @@ class User () {
                 locked: Boolean,
                 credentialExpired: Boolean,
                 authorities: MutableSet<GrantedAuthority>,
-                creationDate: Instant) : this(id, firstName, lastName, login, password, email, phoneNumber, enabled, active, locked, credentialExpired) {
+                creationDate: Instant,
+                grade: Double) : this(id, firstName, lastName, login, password, email, phoneNumber, enabled, active, locked, credentialExpired, grade) {
         this.authorities = authorities
         this.creationDate = creationDate
     }
 
-    fun toUserDto() : DetailedUserDto {
-        return DetailedUserDto(id, firstName!!, lastName!!, login!!, email!!, phoneNumber, enabled, active, locked, credentialExpired)
+    fun toDetailedUserDto() : DetailedUserDto {
+        return DetailedUserDto(id, firstName!!, lastName!!, login!!, email!!, phoneNumber, enabled, active, locked, credentialExpired, grade)
     }
+
+    fun toUserDto(): UserDto {
+        return UserDto(id!!, firstName!!, lastName!!, login!!, grade)
+    }
+
 }
 
 enum class AUTHORITY(val value: String) {
