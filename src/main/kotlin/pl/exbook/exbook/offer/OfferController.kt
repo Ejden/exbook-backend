@@ -1,11 +1,10 @@
 package pl.exbook.exbook.offer
 
+import org.springframework.data.domain.Page
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.web.bind.annotation.*
 import pl.exbook.exbook.shipping.ShippingMethod
-import java.util.*
-import java.util.stream.Collectors
 
 @RestController
 @RequestMapping("api/v1/offers")
@@ -14,11 +13,9 @@ class OfferController(private val offerService: OfferService) {
 
     @GetMapping
     @PreAuthorize("hasAuthority('SEARCH_BOOKS')")
-    fun getAllBooks(): MutableCollection<OfferDto> {
-        return offerService.getAllOffers()
-            .stream()
-            .map(Offer::toOfferDto)
-            .collect(Collectors.toList())
+    fun getOfferListing(@RequestParam offersPerPage: Int?, @RequestParam page: Int?, @RequestParam sorting: String?): Page<OfferDto> {
+        return offerService.getOfferListing(offersPerPage, page, sorting)
+            .map { offer -> offer.toOfferDto() }
     }
 
     @PostMapping
@@ -61,6 +58,12 @@ data class OfferDto(
 ) {
 
     data class Seller(
-        val id: String
+        val id: String,
+        val username: String,
+        val grade: Double
     )
 }
+
+data class OfferListingDto(
+    val id: String
+)

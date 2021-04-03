@@ -8,6 +8,11 @@ spring:
       password: ${MONGODB_DATABASE_PASSWORD}
   jpa:
     show-sql: true
+  servlet:
+    multipart:
+      max-file-size: 16MB
+      max-request-size: 16MB
+      enabled: true
 
 server:
   port: 8082
