@@ -6,7 +6,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
 import pl.exbook.exbook.exceptions.UserAlreadyExistsException
-import pl.exbook.exbook.security.CreateUserRequest
+import pl.exbook.exbook.security.adapter.rest.CreateUserRequest
 
 private val logger = KotlinLogging.logger {}
 
