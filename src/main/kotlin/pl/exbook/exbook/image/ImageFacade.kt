@@ -2,15 +2,13 @@ package pl.exbook.exbook.image
 
 import org.bson.BsonBinarySubType
 import org.bson.types.Binary
-import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import pl.exbook.exbook.image.adapter.mongodb.ImageRepository
 import pl.exbook.exbook.image.domain.Image
 import java.util.*
 
-@Service
 class ImageFacade(
-    val imageRepository: ImageRepository
+    private val imageRepository: ImageRepository
 ) {
     fun addImage(file: MultipartFile): Image {
         val image = Image(null, Binary(BsonBinarySubType.BINARY, file.bytes))

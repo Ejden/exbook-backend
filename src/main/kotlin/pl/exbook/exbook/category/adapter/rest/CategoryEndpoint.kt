@@ -9,14 +9,14 @@ const val CONTENT_TYPE = "application/vnd.exbook.v1+json"
 
 @RestController
 @RequestMapping("api/categories")
-class CategoryController(val categoryFacade: CategoryFacade) {
+class CategoryEndpoint(private val categoryFacade: CategoryFacade) {
 
-    @GetMapping(consumes = [CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE])
+    @GetMapping(produces = [CONTENT_TYPE])
     fun getAllCategories() : Collection<Category> {
         return categoryFacade.getAllCategories()
     }
 
-    @PostMapping(consumes = [CONTENT_TYPE])
+    @PostMapping(produces = [CONTENT_TYPE])
     fun addCategory(@RequestBody requestBody: NewCategoryRequest): Category? {
         return categoryFacade.addCategory(requestBody)
     }

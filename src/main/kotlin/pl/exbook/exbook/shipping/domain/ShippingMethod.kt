@@ -14,7 +14,8 @@ class ShippingMethodId(val raw: String) {
 
 data class Cost(
     val value: Int,
-    val currency: Currency
+    val currency: Currency,
+    val canBeOverridden: Boolean = true
 )
 
 enum class Currency {

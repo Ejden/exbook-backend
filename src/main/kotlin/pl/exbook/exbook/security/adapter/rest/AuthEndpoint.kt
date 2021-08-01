@@ -1,20 +1,23 @@
 package pl.exbook.exbook.security.adapter.rest
 
 import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.security.core.GrantedAuthority
 import org.springframework.web.bind.annotation.*
 import pl.exbook.exbook.exceptions.BadRequest
 import pl.exbook.exbook.user.DetailedUserDto
-import pl.exbook.exbook.user.UserService
+import pl.exbook.exbook.user.UserFacade
+import pl.exbook.exbook.user.domain.User
+import java.time.Instant
 
 @RestController
 @RequestMapping("api/v1/auth")
-class AuthEndpoint(private val userService: UserService) {
+class AuthEndpoint(private val userFacade: UserFacade) {
 
     @PreAuthorize("permitAll()")
     @PostMapping("signup")
-    fun signUp(@RequestBody request : CreateUserRequest?) : DetailedUserDto {
+    fun signUp(@RequestBody request : CreateUserRequest?): DetailedUserDto {
         if (request != null) {
-            return userService.createUser(request).toDetailedUserDto()
+            return userFacade.createUser(request).toDetailedUserDto()
         } else {
             throw BadRequest("Something is no yes")
         }
@@ -36,3 +39,35 @@ class CreateUserRequest (
 )
 
 data class LoginCredentials(val login: String, val password: String)
+
+data class DetailedUserDto (
+    val id: String,
+    val firstName: String,
+    val lastName: String,
+    val username: String,
+    val email: String,
+    val phoneNumber: String?,
+    val enabled : Boolean,
+    val active: Boolean,
+    val locked: Boolean,
+    val credentialExpired: Boolean,
+    val grade: Double,
+    val authorities: MutableSet<GrantedAuthority>,
+    val creationDate: Instant
+)
+
+private fun User.toDetailedUserDto() = DetailedUserDto(
+    id = this.id.raw,
+    firstName = this.firstName,
+    lastName = this.lastName,
+    username = this.login,
+    email = this.email,
+    phoneNumber = this.phoneNumber,
+    enabled = this.enabled,
+    active = this.active,
+    locked = this.locked,
+    credentialExpired = this.credentialExpired,
+    grade = this.grade,
+    creationDate = this.creationDate,
+    authorities = this.authorities
+)

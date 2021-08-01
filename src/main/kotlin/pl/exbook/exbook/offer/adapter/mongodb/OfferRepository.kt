@@ -3,62 +3,94 @@ package pl.exbook.exbook.offer.adapter.mongodb
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.data.mongodb.repository.MongoRepository
-import pl.exbook.exbook.category.domain.Category
-import pl.exbook.exbook.offer.domain.Book
-import pl.exbook.exbook.offer.domain.Images
+import pl.exbook.exbook.common.Cost
+import pl.exbook.exbook.common.Currency
 import pl.exbook.exbook.offer.domain.Offer
-import pl.exbook.exbook.shipping.domain.ShippingMethod
-import pl.exbook.exbook.user.User
 
-interface OfferRepository : MongoRepository<OfferDatabaseModel, String> {
-
-}
+interface OfferRepository : MongoRepository<OfferDocument, String>
 
 @Document(collection = "offers")
-data class OfferDatabaseModel(
+data class OfferDocument(
     @Id
-    var id: String?,
-    var book: Book?,
-    var images: Images,
-    var description: String?,
-    var sellerId: String,
-    var type: Offer.Type,
-    var price: Int?,
-    var location: String,
-    var categories: Collection<String>,
-    var shippingMethods: Collection<ShippingMethod>
-) {
+    val id: String? = null,
+    val book: BookDocument,
+    val images: ImagesDocument,
+    val description: String?,
+    val seller: SellerDocument,
+    val type: Offer.Type,
+    val cost: CostDocument?,
+    val location: String,
+    val categories: Collection<CategoryDocument>,
+    val shippingMethods: Collection<ShippingMethodDocument>
+)
 
-    fun toOffer() : Offer {
-        return Offer(
-            id = id,
-            book = book,
-            images = images,
-            description = description,
-            type = type,
-            seller = User(sellerId),
-            price = price!!,
-            location = location,
-            categories = categories.map{ id -> Category(id = id, name = null, image = null) },
-            shippingMethods = shippingMethods
-        )
-    }
+data class BookDocument(
+    val author: String,
+    val title: String,
+    val isbn: Long?,
+    val condition: Offer.Condition
+)
 
-    fun toOffer(seller: User): Offer {
-        return Offer(
-            id = id,
-            book = book,
-            images = images,
-            description = description,
-            type = type,
-            seller = seller,
-            price = price!!,
-            location = location,
-            categories = categories.map{ id -> Category(id = id, name = null, image = null) },
-            shippingMethods = shippingMethods
-        )
-    }
+data class SellerDocument(val id: String)
 
-}
+data class CategoryDocument(val id: String)
+
+data class CostDocument(
+    val value: Int,
+    val currency: Currency
+)
+
+data class ShippingMethodDocument(
+    val id: String,
+    val cost: CostDocument
+)
+
+data class ImagesDocument(
+    val thumbnail: ImageDocument?,
+    val otherImages: Collection<ImageDocument>
+)
+
+data class ImageDocument(val url: String)
 
 class OfferNotFoundException: RuntimeException()
+
+fun OfferDocument.toDomain() = Offer(
+    id = Offer.OfferId(this.id!!),
+    book = this.book.toDomain(),
+    images = this.images.toDomain(),
+    description = description,
+    type = type,
+    seller = this.seller.toDomain(),
+    cost = this.cost?.toDomain(),
+    location = location,
+    categories = categories.map{ it.toDomain() },
+    shippingMethods = shippingMethods.map { it.toDomain() }
+)
+
+private fun BookDocument.toDomain() = Offer.Book(
+    author = this.author,
+    title = this.title,
+    isbn = this.isbn,
+    condition = this.condition
+)
+
+private fun ImagesDocument.toDomain() = Offer.Images(
+    thumbnail = this.thumbnail?.toDomain(),
+    otherImages = this.otherImages.map { it.toDomain() }
+)
+
+private fun ImageDocument.toDomain() = Offer.Image(this.url)
+
+private fun SellerDocument.toDomain() = Offer.Seller(Offer.SellerId(this.id))
+
+private fun CostDocument.toDomain() = Cost(
+    value = this.value,
+    currency = this.currency
+)
+
+private fun CategoryDocument.toDomain() = Offer.Category(Offer.CategoryId(this.id))
+
+private fun ShippingMethodDocument.toDomain() = Offer.ShippingMethod(
+    id = Offer.ShippingMethodId(this.id),
+    cost = this.cost.toDomain()
+)

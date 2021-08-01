@@ -1,12 +1,10 @@
 package pl.exbook.exbook.category
 
-import org.springframework.stereotype.Service
 import pl.exbook.exbook.category.adapter.mongodb.CategoryDatabaseModel
 import pl.exbook.exbook.category.adapter.mongodb.CategoryRepository
 import pl.exbook.exbook.category.adapter.rest.NewCategoryRequest
 import pl.exbook.exbook.category.domain.Category
 
-@Service
 class CategoryFacade(val categoryRepository: CategoryRepository) {
 
     fun getAllCategories() : Collection<Category> {

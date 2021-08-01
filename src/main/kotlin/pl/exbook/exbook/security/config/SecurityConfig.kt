@@ -37,7 +37,6 @@ class SecurityConfig (
 
     override fun configure(auth: AuthenticationManagerBuilder?) {
         auth?.userDetailsService(userDetailsServiceImpl)
-//            ?.passwordEncoder(passwordEncoder())
     }
 
     override fun configure(http: HttpSecurity?) {
@@ -80,7 +79,7 @@ class SecurityConfig (
             override fun addCorsMappings(registry: CorsRegistry) {
                 registry.addMapping("/**")
                     .allowedMethods(HttpMethod.POST.name, HttpMethod.GET.name, HttpMethod.PUT.name, HttpMethod.DELETE.name, HttpMethod.OPTIONS.name)
-                    .allowedHeaders("*")
+                    .allowedHeaders("*", "Content-Type")
                     .allowedOrigins("http://localhost:8080")
                     .allowCredentials(true)
             }

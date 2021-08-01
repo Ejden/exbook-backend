@@ -14,12 +14,12 @@ class ShippingEndpoint(
     val shippingFacade: ShippingFacade
 ) {
 
-    @GetMapping(consumes = [CONTENT_TYPE])
+    @GetMapping(produces = [CONTENT_TYPE])
     fun getShippingMethods(): List<ShippingMethodDto> {
         return shippingFacade.getShippingMethods().map { it.toDto() }
     }
 
-    @PostMapping(consumes = [CONTENT_TYPE])
+    @PostMapping(produces = [CONTENT_TYPE])
     fun addShippingMethod(@RequestBody requestBody: NewShippingMethod): ShippingMethodDto {
         return shippingFacade.addShippingMethod(requestBody).toDto()
     }
@@ -27,8 +27,13 @@ class ShippingEndpoint(
 
 data class NewShippingMethod(
     val name: String,
-    val defaultCost: String
-)
+    val cost: Cost
+) {
+    data class Cost(
+        val defaultCost: String,
+        val canBeOverridden: Boolean
+    )
+}
 
 data class ShippingMethodDto(
     val id: String,

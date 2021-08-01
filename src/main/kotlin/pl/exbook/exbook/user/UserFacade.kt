@@ -4,23 +4,27 @@ import com.mongodb.MongoWriteException
 import mu.KotlinLogging
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
-import org.springframework.stereotype.Service
 import pl.exbook.exbook.exceptions.UserAlreadyExistsException
 import pl.exbook.exbook.security.adapter.rest.CreateUserRequest
+import pl.exbook.exbook.user.adapter.mongodb.UserDocument
+import pl.exbook.exbook.user.adapter.mongodb.UserRepository
+import pl.exbook.exbook.user.adapter.mongodb.toDomain
+import pl.exbook.exbook.user.domain.AUTHORITY
+import pl.exbook.exbook.user.domain.ROLE
+import pl.exbook.exbook.user.domain.User
 
 private val logger = KotlinLogging.logger {}
 
-@Service
-class UserService(
+class UserFacade(
     private val userRepository: UserRepository,
 ) {
 
-    fun createUser(request: CreateUserRequest) : UserDatabaseModel {
+    fun createUser(request: CreateUserRequest): User {
         try {
             val foundUser = userRepository.findByLoginOrEmail(request.login, request.password)
 
             if (foundUser == null) {
-                val newUser =  UserDatabaseModel(
+                val newUser =  UserDocument(
                     id = null,
                     firstName = request.firstName,
                     lastName = request.lastName,
@@ -44,7 +48,7 @@ class UserService(
 
                 logger.info("Created new user with id = ${newUser.id}")
 
-                return user
+                return user.toDomain()
             } else {
                 logger.error("User with email ${request.email} or login ${request.login} already exists")
                 throw UserAlreadyExistsException();
@@ -55,15 +59,12 @@ class UserService(
         }
     }
 
-    fun findUserByUsername(username: String) : User? {
-        return userRepository.findByLogin(username)?.toUser()
-    }
+    fun getUserByUsername(username: String) = userRepository.findByLogin(username)
+        ?.toDomain() ?: throw UserNotFoundException("User with username $username not found")
 
-    fun findById(userId: String): User {
-        return userRepository.findById(userId)
-            .orElseThrow{ UserNotFoundException() }
-            .toUser()
-    }
+    fun getUserById(userId: String) = userRepository.findById(userId)
+            .orElseThrow{ UserNotFoundException("User with id $userId not found") }
+            .toDomain()
 }
 
-class UserNotFoundException: RuntimeException()
+class UserNotFoundException(msg: String): RuntimeException(msg)

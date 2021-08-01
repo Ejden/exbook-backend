@@ -10,28 +10,29 @@ import pl.exbook.exbook.shipping.domain.ShippingMethod
 import pl.exbook.exbook.shipping.domain.ShippingMethodId
 
 @Repository
-interface ShippingRepository: MongoRepository<ShippingDbModel, String>
+interface ShippingRepository: MongoRepository<ShippingDocument, String>
 
 @Document("shipping-methods")
-data class ShippingDbModel(
+data class ShippingDocument(
     @Id
     val id: String? = null,
     val methodName: String,
-    val defaultCost: ShippingCostDbModel
+    val defaultCost: ShippingCostDocument
 )
 
-data class ShippingCostDbModel(
+data class ShippingCostDocument(
     val value: Int,
-    val currency: String
+    val currency: String,
+    val canBeOverridden: Boolean
 )
 
-fun ShippingDbModel.toDomain() = ShippingMethod(
+fun ShippingDocument.toDomain() = ShippingMethod(
     id = ShippingMethodId.of(this.id!!),
     methodName = this.methodName,
     defaultCost = this.defaultCost.toDomain()
 )
 
-fun ShippingCostDbModel.toDomain() = Cost(
+fun ShippingCostDocument.toDomain() = Cost(
     value = this.value,
     currency = Currency.valueOf(this.currency)
 )

@@ -1,58 +1,55 @@
 package pl.exbook.exbook.offer.domain
 
-import pl.exbook.exbook.category.domain.Category
-import pl.exbook.exbook.image.domain.Image
-import pl.exbook.exbook.offer.adapter.rest.OfferDto
-import pl.exbook.exbook.shipping.domain.ShippingMethod
-import pl.exbook.exbook.user.User
+import pl.exbook.exbook.common.Cost
 
-class Offer (
-    var id: String?,
-    var book: Book?,
-    var images: Images,
-    var description: String?,
-    var type: Type,
-    var seller: User?,
-    var price: Int = 0,
-    var location: String,
-    var categories: Collection<Category>?,
-    var shippingMethods: Collection<ShippingMethod>
+class Offer(
+    val id: OfferId,
+    val book: Book,
+    val images: Images,
+    val description: String?,
+    val type: Type,
+    val seller: Seller,
+    val cost: Cost?,
+    val location: String,
+    val categories: Collection<Category>,
+    val shippingMethods: Collection<ShippingMethod>
 ) {
-
-    fun toOfferDto() : OfferDto {
-        return OfferDto(
-            id = this.id!!,
-            book = this.book!!,
-            images = this.images,
-            description = this.description,
-            seller = OfferDto.Seller(seller?.id!!, seller?.login!!, seller?.grade!!),
-            type = type,
-            price = price,
-            location = location,
-            shippingMethods = shippingMethods,
-            categories = categories?.map { category -> category.id!! }!!
-        )
-    }
-
     enum class Type {
         EXCHANGE_AND_BUY, EXCHANGE_ONLY, BUY_ONLY
     }
 
-}
+    data class ShippingMethod(
+        val id: ShippingMethodId,
+        val cost: Cost
+    )
 
-class Book(
-    var author: String,
-    var title: String,
-    var isbn: Long?,
-    var condition: Condition
-)
+    data class Book(
+        val author: String,
+        val title: String,
+        val isbn: Long?,
+        val condition: Condition
+    )
 
+    data class Images(
+        val thumbnail: Image?,
+        val otherImages: Collection<Image>
+    )
 
-class Images(
-    var thumbnail: Image?,
-    val otherImages: Collection<Image>
-)
+    data class Seller(val id: SellerId)
 
-enum class Condition {
-    NEW, PERFECT, LIGHTLY_USED, MODERATELY_USED, BAD
+    data class Category(val id: CategoryId)
+
+    enum class Condition {
+        NEW, PERFECT, LIGHTLY_USED, MODERATELY_USED, BAD
+    }
+
+    data class OfferId(val raw: String)
+
+    data class SellerId(val raw: String)
+
+    data class ShippingMethodId(val raw: String)
+
+    data class CategoryId(val raw: String)
+
+    data class Image(val url: String)
 }

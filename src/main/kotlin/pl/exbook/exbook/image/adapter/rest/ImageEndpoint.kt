@@ -42,9 +42,3 @@ class ImageEndpoint(
         return ResponseEntity.notFound().build()
     }
 }
-
-data class NewImageRequest(
-    val image: String
-)
-
-class ImageNotFoundException: RuntimeException()
