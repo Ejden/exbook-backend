@@ -1,6 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
+    id("groovy")
     id("org.springframework.boot") version "2.4.2"
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
     id("io.swagger.core.v3.swagger-gradle-plugin") version "2.1.6"
@@ -18,6 +19,18 @@ configurations {
     }
 }
 
+val integrationCompile: Configuration by configurations.creating {
+    extendsFrom(configurations.testCompile.get())
+}
+
+val integrationRuntime: Configuration by configurations.creating {
+    extendsFrom(configurations.testRuntime.get())
+}
+
+val integrationImplementation: Configuration by configurations.creating {
+    extendsFrom(configurations.testImplementation.get())
+}
+
 repositories {
     mavenCentral()
 }
@@ -29,14 +42,22 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.springframework.boot:spring-boot-starter-security")
-    implementation("org.springframework.security:spring-security-test")
     implementation("io.github.microutils:kotlin-logging:1.12.0")
     implementation("io.springfox:springfox-swagger2:3.0.0")
     implementation("io.springfox:springfox-boot-starter:3.0.0")
     implementation("io.springfox:springfox-swagger-ui:3.0.0")
     implementation("com.auth0:java-jwt:3.8.3")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+
+    testImplementation("org.springframework.security:spring-security-test")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.spockframework:spock-core:2.0-groovy-2.5")
+    testImplementation("org.codehaus.groovy:groovy-all:3.0.8")
+
+    integrationImplementation("org.springframework.security:spring-security-test")
+    integrationImplementation("org.springframework.boot:spring-boot-starter-test")
+    integrationImplementation("org.spockframework:spock-core:2.0-groovy-2.5")
+    integrationImplementation("org.codehaus.groovy:groovy-all:3.0.8")
 }
 
 tasks.withType<KotlinCompile> {
@@ -48,4 +69,14 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+sourceSets.create("integration") {
+    java.srcDir("src/integration/groovy")
+    resources.srcDir("src/integration/resources")
+}
+
+tasks.create<Test>("integration") {
+    testClassesDirs = sourceSets["integration"].output
+    classpath = sourceSets["integration"].runtimeClasspath
 }
