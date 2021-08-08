@@ -36,6 +36,7 @@ class CategoryFeatureSpec extends BaseFeatureE2ESpec {
 
         and:
             CategoriesDtoAssertions.assertThat(response.body)
+            print(response)
     }
 
     def "should return 401 when adding new category without permission"() {

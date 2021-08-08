@@ -79,7 +79,7 @@ tasks.withType<Test> {
 sourceSets.create("integration") {
     compileClasspath += project.sourceSets["main"].output + project.sourceSets["test"].output
     runtimeClasspath += project.sourceSets["main"].output + project.sourceSets["test"].output
-    java.srcDir("src/integration/kotlin")
+    java.srcDir("src/integration/groovy")
     resources.srcDir("src/integration/resources")
 }
 
