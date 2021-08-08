@@ -9,8 +9,8 @@ import pl.exbook.exbook.security.adapter.rest.CreateUserRequest
 import pl.exbook.exbook.user.adapter.mongodb.UserDocument
 import pl.exbook.exbook.user.adapter.mongodb.UserRepository
 import pl.exbook.exbook.user.adapter.mongodb.toDomain
-import pl.exbook.exbook.user.domain.AUTHORITY
-import pl.exbook.exbook.user.domain.ROLE
+import pl.exbook.exbook.user.domain.Authority
+import pl.exbook.exbook.user.domain.Role
 import pl.exbook.exbook.user.domain.User
 
 private val logger = KotlinLogging.logger {}
@@ -39,10 +39,10 @@ class UserFacade(
                     grade = 0.0
                 )
 
-                newUser.authorities.add(SimpleGrantedAuthority(ROLE.USER.value))
-                newUser.authorities.add(SimpleGrantedAuthority(AUTHORITY.SEARCH_BOOKS.value))
-                newUser.authorities.add(SimpleGrantedAuthority(AUTHORITY.EXCHANGE_BOOKS.value))
-                newUser.authorities.add(SimpleGrantedAuthority(AUTHORITY.READ_ABOUT_ME.value))
+                newUser.authorities.add(SimpleGrantedAuthority(Role.USER.value))
+                newUser.authorities.add(SimpleGrantedAuthority(Authority.SEARCH_BOOKS.value))
+                newUser.authorities.add(SimpleGrantedAuthority(Authority.EXCHANGE_BOOKS.value))
+                newUser.authorities.add(SimpleGrantedAuthority(Authority.READ_ABOUT_ME.value))
 
                 val user = userRepository.insert(newUser)
 

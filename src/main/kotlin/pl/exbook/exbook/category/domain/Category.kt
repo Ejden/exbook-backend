@@ -1,17 +1,12 @@
 package pl.exbook.exbook.category.domain
 
-import org.springframework.data.mongodb.core.mapping.Document
+class Category(
+    val id: CategoryId,
+    val name: String,
+    val image: Image? = null,
+    val parentId: CategoryId? = null
+)
 
-@Document(collection = "categories")
-class Category(val name: String?) {
-    var id: String? = null
-    var image: Image? = null
-    var subcategories: MutableList<Category> = mutableListOf()
+data class Image(val url: String)
 
-    constructor(id: String, name: String?, image: Image?) : this(name) {
-        this.id = id
-        this.image = image
-    }
-}
-
-class Image(val url: String?)
+data class CategoryId(val raw: String)

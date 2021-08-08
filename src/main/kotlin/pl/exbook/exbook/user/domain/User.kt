@@ -1,6 +1,8 @@
 package pl.exbook.exbook.user.domain
 
 import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import pl.exbook.exbook.user.adapter.mongodb.UserDocument
 import java.time.Instant
 
 class User(
@@ -18,16 +20,33 @@ class User(
     val authorities: MutableSet<GrantedAuthority> = mutableSetOf(),
     val creationDate: Instant = Instant.now(),
     val grade: Double = 0.0
-)
+) {
+    fun toDocument() = UserDocument(
+        id = this.id.raw,
+        firstName = this.firstName,
+        lastName = this.lastName,
+        login = this.login,
+        password = BCryptPasswordEncoder().encode(this.password),
+        email = this.email,
+        phoneNumber = this.phoneNumber,
+        enabled = this.enabled,
+        active = this.active,
+        locked = this.locked,
+        credentialExpired = this.credentialExpired,
+        authorities = this.authorities,
+        creationDate = this.creationDate,
+        grade = this.grade
+    )
+}
 
-enum class AUTHORITY(val value: String) {
+enum class Authority(val value: String) {
     SEARCH_BOOKS("SEARCH_BOOKS"),
     EXCHANGE_BOOKS("EXCHANGE_BOOKS"),
     READ_ABOUT_ME("READ_ABOUT_ME")
 
 }
 
-enum class ROLE(val value: String) {
+enum class Role(val value: String) {
     USER("ROLE_USER"),
     MODERATOR("ROLE_MODERATOR"),
     ADMIN("ROLE_ADMIN")

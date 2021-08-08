@@ -3,7 +3,9 @@ package pl.exbook.exbook
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import pl.exbook.exbook.category.CategoryFacade
-import pl.exbook.exbook.category.adapter.mongodb.CategoryRepository
+import pl.exbook.exbook.category.adapter.mongodb.DatabaseCategoryRepository
+import pl.exbook.exbook.category.adapter.mongodb.MongoCategoryRepository
+import pl.exbook.exbook.category.domain.CategoryRepository
 import pl.exbook.exbook.image.ImageFacade
 import pl.exbook.exbook.image.adapter.mongodb.ImageRepository
 import pl.exbook.exbook.listing.ListingFacade
@@ -16,6 +18,9 @@ import pl.exbook.exbook.user.adapter.mongodb.UserRepository
 
 @Configuration
 class ServicesConfiguration {
+
+    @Bean
+    fun categoryRepository(mongoCategoryRepository: MongoCategoryRepository) = DatabaseCategoryRepository(mongoCategoryRepository)
 
     @Bean
     fun categoryFacade(categoryRepository: CategoryRepository) = CategoryFacade(categoryRepository)

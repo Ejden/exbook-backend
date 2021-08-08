@@ -4,7 +4,6 @@ import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.web.bind.annotation.*
 import pl.exbook.exbook.exceptions.BadRequest
-import pl.exbook.exbook.user.DetailedUserDto
 import pl.exbook.exbook.user.UserFacade
 import pl.exbook.exbook.user.domain.User
 import java.time.Instant

@@ -57,7 +57,11 @@ dependencies {
     integrationImplementation("org.springframework.security:spring-security-test")
     integrationImplementation("org.springframework.boot:spring-boot-starter-test")
     integrationImplementation("org.spockframework:spock-core:2.0-groovy-2.5")
+    integrationImplementation("org.spockframework:spock-spring:2.0-groovy-2.5")
     integrationImplementation("org.codehaus.groovy:groovy-all:3.0.8")
+    integrationImplementation("org.testcontainers:mongodb:1.15.3")
+    integrationImplementation("org.springframework:spring-test:5.3.9")
+    integrationImplementation("org.testcontainers:spock:1.15.3")
 }
 
 tasks.withType<KotlinCompile> {
@@ -72,11 +76,17 @@ tasks.withType<Test> {
 }
 
 sourceSets.create("integration") {
+    java {
+
+    }
+
+    compileClasspath += project.sourceSets["main"].output + project.sourceSets["test"].output
+    runtimeClasspath += project.sourceSets["main"].output + project.sourceSets["test"].output
     java.srcDir("src/integration/groovy")
     resources.srcDir("src/integration/resources")
 }
 
 tasks.create<Test>("integration") {
-    testClassesDirs = sourceSets["integration"].output
+    testClassesDirs = sourceSets["integration"].output.classesDirs
     classpath = sourceSets["integration"].runtimeClasspath
 }
