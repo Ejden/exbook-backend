@@ -1,3 +1,8 @@
 spring:
   main:
     allow-bean-definition-overriding: true
+  data:
+    mongodb:
+      port: 0
+      username:
+      password:
