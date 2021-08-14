@@ -4,18 +4,14 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataMongo
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
+import org.springframework.data.mongodb.core.MongoOperations
 import org.springframework.http.ResponseEntity
-import pl.exbook.exbook.AppRunner
+import pl.exbook.exbook.assertions.CategoriesDtoAssertions
 import pl.exbook.exbook.builders.CategoryBuilder
 import pl.exbook.exbook.builders.UserBuilder
-import pl.exbook.exbook.category.CategoryFacade
+import pl.exbook.exbook.category.adapter.mongodb.CategoryDocument
+import pl.exbook.exbook.category.adapter.rest.NewCategory
 import pl.exbook.exbook.category.domain.CategoryRepository
-import pl.exbook.exbook.image.ImageFacade
-import pl.exbook.exbook.listing.ListingFacade
-import pl.exbook.exbook.offer.OfferFacade
-import pl.exbook.exbook.shipping.ShippingFacade
-import pl.exbook.exbook.user.UserFacade
-import pl.exbook.exbook.user.adapter.mongodb.UserDocument
 import pl.exbook.exbook.user.adapter.mongodb.UserRepository
 import spock.lang.Specification
 
@@ -34,25 +30,18 @@ class BaseIntegrationSpec extends Specification {
     private CategoryRepository categoryRepository
 
     @Autowired
-    protected UserFacade userFacade
-
-    @Autowired
-    protected CategoryFacade categoryFacade
-
-    @Autowired
-    protected ImageFacade ImageFacade
-
-    @Autowired
-    protected ListingFacade listingFacade
-
-    @Autowired
-    protected OfferFacade offerFacade
-
-    @Autowired
-    protected ShippingFacade shippingFacade
+    private MongoOperations mongoOps
 
     void setup() {
 
+    }
+
+    void cleanup() {
+        mongoOps.dropCollection(CategoryDocument)
+    }
+
+    protected CategoriesDtoAssertions assertThatCategories() {
+        return CategoriesDtoAssertions.assertThat(getAllCategories().body)
     }
 
     protected thereIsUser(UserBuilder userBuilder) {
@@ -73,5 +62,9 @@ class BaseIntegrationSpec extends Specification {
 
     protected ResponseEntity<Object> getAllCategories() {
         return testRestTemplate.getForEntity("/api/categories", Object.class)
+    }
+
+    protected ResponseEntity<Object> addNewCategory(NewCategory category) {
+        return testRestTemplate.postForEntity("/api/categories", category, Object.class)
     }
 }
