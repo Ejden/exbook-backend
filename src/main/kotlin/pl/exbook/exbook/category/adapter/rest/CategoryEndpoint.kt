@@ -8,19 +8,18 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import pl.exbook.exbook.category.CategoryFacade
 import pl.exbook.exbook.category.domain.Category
-
-const val CONTENT_TYPE = "application/vnd.exbook.v1+json"
+import pl.exbook.exbook.shared.MediaType
 
 @RestController
 @RequestMapping("api/categories")
 class CategoryEndpoint(private val categoryFacade: CategoryFacade) {
 
-    @GetMapping(produces = [CONTENT_TYPE])
+    @GetMapping(produces = [MediaType.V1])
     fun getAllCategories() : Collection<CategoryDto> {
         return categoryFacade.getAllCategories().map { it.toDto() }
     }
 
-    @PostMapping(produces = [CONTENT_TYPE])
+    @PostMapping(produces = [MediaType.V1])
     @Secured("ROLE_ADMIN")
     fun addCategory(@RequestBody requestBody: NewCategory): Category? {
         return categoryFacade.addCategory(requestBody)

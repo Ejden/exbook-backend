@@ -1,5 +1,7 @@
 package pl.exbook.exbook.category.domain
 
+import pl.exbook.exbook.shared.CategoryId
+
 class Category(
     val id: CategoryId,
     val name: String,
@@ -8,5 +10,3 @@ class Category(
 )
 
 data class Image(val url: String)
-
-data class CategoryId(val raw: String)

@@ -1,6 +1,7 @@
 package pl.exbook.exbook.category.domain
 
 import pl.exbook.exbook.category.adapter.rest.NewCategory
+import pl.exbook.exbook.shared.CategoryId
 
 interface CategoryRepository {
 

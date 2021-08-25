@@ -6,8 +6,10 @@ import pl.exbook.exbook.category.adapter.rest.CategoryDto
 import pl.exbook.exbook.category.adapter.rest.ImageDto
 import pl.exbook.exbook.category.adapter.rest.NewCategory
 import pl.exbook.exbook.category.domain.Image
+import pl.exbook.exbook.security.adapter.rest.LoginCredentials
 
 import static pl.exbook.exbook.builders.CategoryBuilder.aCategoryBuilder
+import static pl.exbook.exbook.builders.UserBuilder.aUserBuilder
 import static pl.exbook.exbook.shared.TestData.*
 
 class CategoryFeatureSpec extends BaseFeatureE2ESpec {
@@ -59,5 +61,26 @@ class CategoryFeatureSpec extends BaseFeatureE2ESpec {
         and:
             assertThatCategories()
                 .hasNoCategories()
+    }
+
+    def "should add new category with admin privileges"() {
+        given:
+            thereIsUser(aUserBuilder()
+                    .withLogin("ADMIN")
+                    .withPassword("ADMIN_PASSWORD")
+                    .withAdminPrivileges()
+                    .withActiveAccount()
+            )
+
+            LoginCredentials credentials = new LoginCredentials("ADMIN", "ADMIN_PASSWORD")
+
+            NewCategory newCategory = new NewCategory(CATEGORY_NAME_1, null)
+
+        when:
+            ResponseEntity response = addNewCategoryWithCredentials(newCategory, credentials)
+
+        then:
+            response.statusCode == HttpStatus.OK
+
     }
 }

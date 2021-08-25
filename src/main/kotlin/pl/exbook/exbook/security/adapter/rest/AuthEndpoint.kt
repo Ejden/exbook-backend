@@ -9,7 +9,7 @@ import pl.exbook.exbook.user.domain.User
 import java.time.Instant
 
 @RestController
-@RequestMapping("api/v1/auth")
+@RequestMapping("api/auth")
 class AuthEndpoint(private val userFacade: UserFacade) {
 
     @PreAuthorize("permitAll()")
@@ -56,7 +56,7 @@ data class DetailedUserDto (
 )
 
 private fun User.toDetailedUserDto() = DetailedUserDto(
-    id = this.id.raw,
+    id = this.id!!.raw,
     firstName = this.firstName,
     lastName = this.lastName,
     username = this.login,

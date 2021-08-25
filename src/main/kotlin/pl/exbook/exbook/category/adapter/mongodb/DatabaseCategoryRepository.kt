@@ -2,9 +2,10 @@ package pl.exbook.exbook.category.adapter.mongodb
 
 import pl.exbook.exbook.category.adapter.rest.NewCategory
 import pl.exbook.exbook.category.domain.Category
-import pl.exbook.exbook.category.domain.CategoryId
+import pl.exbook.exbook.shared.CategoryId
 import pl.exbook.exbook.category.domain.CategoryRepository
 import pl.exbook.exbook.category.domain.Image
+import pl.exbook.exbook.shared.ImageId
 
 class DatabaseCategoryRepository(private val mongoCategoryRepository: MongoCategoryRepository) : CategoryRepository {
 

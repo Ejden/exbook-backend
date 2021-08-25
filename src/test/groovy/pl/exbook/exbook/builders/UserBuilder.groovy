@@ -3,6 +3,7 @@ package pl.exbook.exbook.builders
 import groovy.transform.builder.Builder
 import groovy.transform.builder.SimpleStrategy
 import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import pl.exbook.exbook.user.domain.User
 import pl.exbook.exbook.user.domain.UserId
 
@@ -49,5 +50,18 @@ class UserBuilder {
                 creationDate,
                 grade
         )
+    }
+
+    UserBuilder withAdminPrivileges() {
+        authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"))
+        return this
+    }
+
+    UserBuilder withActiveAccount() {
+        this.enabled = true
+        this.active = true
+        this.locked = false
+        this.credentialExpired = false
+        return this
     }
 }

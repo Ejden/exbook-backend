@@ -1,6 +1,6 @@
 package pl.exbook.exbook.offer.domain
 
-import pl.exbook.exbook.common.Cost
+import pl.exbook.exbook.shared.*
 
 class Offer(
     val id: OfferId,
@@ -35,21 +35,13 @@ class Offer(
         val otherImages: Collection<Image>
     )
 
-    data class Seller(val id: SellerId)
+    data class Seller(val id: UserId)
 
     data class Category(val id: CategoryId)
 
     enum class Condition {
         NEW, PERFECT, LIGHTLY_USED, MODERATELY_USED, BAD
     }
-
-    data class OfferId(val raw: String)
-
-    data class SellerId(val raw: String)
-
-    data class ShippingMethodId(val raw: String)
-
-    data class CategoryId(val raw: String)
 
     data class Image(val url: String)
 }

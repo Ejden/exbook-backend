@@ -5,12 +5,11 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import pl.exbook.exbook.common.Cost
+import pl.exbook.exbook.shared.Cost
 import pl.exbook.exbook.listing.ListingFacade
 import pl.exbook.exbook.listing.domain.DetailedOffer
+import pl.exbook.exbook.shared.MediaType
 import pl.exbook.exbook.util.parseMoneyToString
-
-const val ACCEPT = "application/vnd.exbook.v1+json"
 
 @RestController
 @RequestMapping("/listing")
@@ -18,7 +17,7 @@ class ListingEndpoint(
     private val listingFacade: ListingFacade
 ) {
 
-    @GetMapping(produces = [ACCEPT])
+    @GetMapping(produces = [MediaType.V1])
     fun getOfferListing(@RequestParam offersPerPage: Int?, @RequestParam page: Int?, @RequestParam sorting: String?): Page<DetailedOfferDto> {
         return listingFacade.getOfferListing(offersPerPage, page, sorting).map { it.toDto() }
     }

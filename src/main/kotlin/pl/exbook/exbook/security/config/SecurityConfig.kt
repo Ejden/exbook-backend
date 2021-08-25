@@ -69,7 +69,7 @@ class SecurityConfig (
         authenticationFilter.setAuthenticationSuccessHandler(successHandler)
         authenticationFilter.setAuthenticationFailureHandler(failureHandler)
         authenticationFilter.setAuthenticationManager(super.authenticationManager())
-        authenticationFilter.setFilterProcessesUrl("/api/v1/auth/login")
+        authenticationFilter.setFilterProcessesUrl("/api/auth/login")
         return authenticationFilter
     }
 

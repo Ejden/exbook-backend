@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import pl.exbook.exbook.shared.UserId
 import pl.exbook.exbook.user.UserFacade
 import pl.exbook.exbook.user.domain.User
 import java.time.Instant
@@ -22,7 +23,7 @@ class UserController(private val userFacade: UserFacade) {
     }
 
     @GetMapping("users/{userId}")
-    fun getUser(@PathVariable userId: String): UserDto {
+    fun getUser(@PathVariable userId: UserId): UserDto {
         return userFacade.getUserById(userId).toUserDto()
     }
 }
@@ -53,7 +54,7 @@ data class UserDto (
 )
 
 private fun User.toDetailedUserDto() = DetailedUserDto(
-    id = this.id.raw,
+    id = this.id!!.raw,
     firstName = this.firstName,
     lastName = this.lastName,
     username = this.login,
@@ -69,7 +70,7 @@ private fun User.toDetailedUserDto() = DetailedUserDto(
 )
 
 private fun User.toUserDto() = UserDto(
-    id = this.id.raw,
+    id = this.id!!.raw,
     firstName = this.firstName,
     lastName = this.lastName,
     username = this.login,

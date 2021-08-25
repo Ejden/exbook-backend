@@ -1,12 +1,14 @@
 package pl.exbook.exbook.listing
 
 import org.springframework.data.domain.Page
-import pl.exbook.exbook.common.Cost
-import pl.exbook.exbook.common.Currency
+import pl.exbook.exbook.shared.Cost
 import pl.exbook.exbook.listing.domain.DetailedOffer
 import pl.exbook.exbook.offer.OfferFacade
 import pl.exbook.exbook.offer.domain.Offer
-import pl.exbook.exbook.shipping.ShippingFacade
+import pl.exbook.exbook.shared.CategoryId
+import pl.exbook.exbook.shared.ShippingMethodId
+import pl.exbook.exbook.shared.UserId
+import pl.exbook.exbook.shipping.ShippingMethodFacade
 import pl.exbook.exbook.shipping.domain.ShippingMethod
 import pl.exbook.exbook.user.UserFacade
 import pl.exbook.exbook.user.domain.User
@@ -14,14 +16,14 @@ import pl.exbook.exbook.user.domain.User
 class ListingFacade(
     private val offerFacade: OfferFacade,
     private val userFacade: UserFacade,
-    private val shippingFacade: ShippingFacade
+    private val shippingMethodFacade: ShippingMethodFacade
 ) {
 
     fun getOfferListing(offersPerPage: Int?, page: Int?, sorting: String?): Page<DetailedOffer> {
         return offerFacade.getOffers(offersPerPage, page, sorting).map {
-            val seller = userFacade.getUserById(it.seller.id.raw)
+            val seller = userFacade.getUserById(it.seller.id)
             val shippingMethods = it.shippingMethods
-                .map { s -> Pair(shippingFacade.getShippingMethodById(s.id.raw), s) }
+                .map { s -> Pair(shippingMethodFacade.getShippingMethodById(s.id), s) }
                 .map { s -> s.first.toDetailed(s.second.cost) }
             it.toDetailedOffer(seller, shippingMethods)
         }
@@ -49,13 +51,13 @@ private fun Offer.Book.toDetailed() = DetailedOffer.Book(
 )
 
 private fun User.toDetailed() = DetailedOffer.Seller(
-    id = DetailedOffer.SellerId(this.id.raw),
+    id = UserId(this.id!!.raw),
     username = this.login,
     grade = this.grade
 )
 
 private fun ShippingMethod.toDetailed(customisedCost: Cost) = DetailedOffer.ShippingMethod(
-    id = DetailedOffer.ShippingMethodId(this.id.raw),
+    id = ShippingMethodId(this.id.raw),
     name = this.methodName,
     cost = customisedCost
 )
@@ -67,4 +69,4 @@ private fun Offer.Images.toDetailed() = DetailedOffer.Images(
 
 private fun Offer.Image.toDetailed() = DetailedOffer.Image(this.url)
 
-private fun Offer.Category.toDetailed() = DetailedOffer.Category(DetailedOffer.CategoryId(this.id.raw))
+private fun Offer.Category.toDetailed() = DetailedOffer.Category(CategoryId(this.id.raw))

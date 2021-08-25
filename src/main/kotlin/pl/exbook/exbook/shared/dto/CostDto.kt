@@ -1,6 +1,6 @@
-package pl.exbook.exbook.common.dto
+package pl.exbook.exbook.shared.dto
 
-import pl.exbook.exbook.common.Cost
+import pl.exbook.exbook.shared.Cost
 import pl.exbook.exbook.util.parseMoneyToString
 
 data class CostDto(

@@ -10,11 +10,13 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import pl.exbook.exbook.common.Currency
-import pl.exbook.exbook.common.dto.CostDto
-import pl.exbook.exbook.common.dto.toDto
+import pl.exbook.exbook.shared.Currency
+import pl.exbook.exbook.shared.dto.CostDto
+import pl.exbook.exbook.shared.dto.toDto
 import pl.exbook.exbook.offer.OfferFacade
 import pl.exbook.exbook.offer.domain.Offer
+import pl.exbook.exbook.shared.MediaType
+import pl.exbook.exbook.shared.OfferId
 import pl.exbook.exbook.user.UserNotFoundException
 
 @RestController
@@ -23,7 +25,7 @@ class OfferEndpoint(private val offerFacade: OfferFacade) {
 
     companion object : KLogging()
 
-    @PostMapping
+    @PostMapping(produces = [MediaType.V1])
     @PreAuthorize("hasAuthority('EXCHANGE_BOOKS')")
     fun addOffer(@RequestBody offer: NewOfferRequest, user: UsernamePasswordAuthenticationToken?): ResponseEntity<OfferDto> {
         return if (user != null) {
@@ -34,8 +36,8 @@ class OfferEndpoint(private val offerFacade: OfferFacade) {
         }
     }
 
-    @GetMapping("{offerId}")
-    fun getOffer(@PathVariable offerId: Offer.OfferId): OfferDto? {
+    @GetMapping("{offerId}", produces = [MediaType.V1])
+    fun getOffer(@PathVariable offerId: OfferId): OfferDto {
         return offerFacade.getOffer(offerId).toDto()
     }
 }

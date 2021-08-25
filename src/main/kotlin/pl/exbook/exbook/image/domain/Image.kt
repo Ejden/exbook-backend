@@ -1,12 +1,9 @@
 package pl.exbook.exbook.image.domain
 
 import org.bson.types.Binary
-import org.springframework.data.annotation.Id
-import org.springframework.data.mongodb.core.mapping.Document
+import pl.exbook.exbook.shared.ImageId
 
-@Document(collection = "images")
 class Image (
-    @Id
-    var id: String?,
+    var id: ImageId?,
     val file: Binary
 )

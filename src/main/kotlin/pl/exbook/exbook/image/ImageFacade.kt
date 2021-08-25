@@ -3,9 +3,9 @@ package pl.exbook.exbook.image
 import org.bson.BsonBinarySubType
 import org.bson.types.Binary
 import org.springframework.web.multipart.MultipartFile
-import pl.exbook.exbook.image.adapter.mongodb.ImageRepository
 import pl.exbook.exbook.image.domain.Image
-import java.util.*
+import pl.exbook.exbook.shared.ImageId
+import pl.exbook.exbook.image.domain.ImageRepository
 
 class ImageFacade(
     private val imageRepository: ImageRepository
@@ -15,11 +15,13 @@ class ImageFacade(
         return imageRepository.save(image)
     }
 
-    fun deleteImage(id: String) {
-        imageRepository.deleteById(id)
+    fun deleteImage(imageId: ImageId) {
+        imageRepository.removeById(imageId)
     }
 
-    fun getImage(id: String): Optional<Image> {
-        return imageRepository.findById(id)
+    fun getImage(imageId: ImageId): Image {
+        return imageRepository.getById(imageId) ?: throw ImageNotFoundException(imageId)
     }
 }
+
+data class ImageNotFoundException(val imageId: ImageId) : RuntimeException("Image with id ${imageId.raw} not found")

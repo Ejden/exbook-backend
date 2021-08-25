@@ -1,7 +1,7 @@
 package pl.exbook.exbook.shipping.adapter.rest
 
 import org.springframework.web.bind.annotation.*
-import pl.exbook.exbook.shipping.ShippingFacade
+import pl.exbook.exbook.shipping.ShippingMethodFacade
 import pl.exbook.exbook.shipping.domain.Cost
 import pl.exbook.exbook.shipping.domain.ShippingMethod
 import pl.exbook.exbook.util.parseMoneyToString
@@ -11,17 +11,17 @@ const val CONTENT_TYPE = "application/vnd.exbook.v1+json"
 @RestController
 @RequestMapping("api/shipping")
 class ShippingEndpoint(
-    val shippingFacade: ShippingFacade
+    val shippingMethodFacade: ShippingMethodFacade
 ) {
 
     @GetMapping(produces = [CONTENT_TYPE])
     fun getShippingMethods(): List<ShippingMethodDto> {
-        return shippingFacade.getShippingMethods().map { it.toDto() }
+        return shippingMethodFacade.getShippingMethods().map { it.toDto() }
     }
 
     @PostMapping(produces = [CONTENT_TYPE])
     fun addShippingMethod(@RequestBody requestBody: NewShippingMethod): ShippingMethodDto {
-        return shippingFacade.addShippingMethod(requestBody).toDto()
+        return shippingMethodFacade.addShippingMethod(requestBody).toDto()
     }
 }
 

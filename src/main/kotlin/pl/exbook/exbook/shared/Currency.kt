@@ -1,4 +1,4 @@
-package pl.exbook.exbook.common
+package pl.exbook.exbook.shared
 
 enum class Currency {
     PLN
