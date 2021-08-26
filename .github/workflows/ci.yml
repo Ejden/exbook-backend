@@ -11,6 +11,9 @@ jobs:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
 
+      - name: Give gradlew execute permission
+        run: chmod +x ./gradlew
+
       - name: Validate Gradle Wrapper
         uses: gradle/wrapper-validation-action@v1
 
