@@ -12,7 +12,7 @@ import static pl.exbook.exbook.builders.CategoryBuilder.aCategoryBuilder
 import static pl.exbook.exbook.builders.UserBuilder.aUserBuilder
 import static pl.exbook.exbook.shared.TestData.*
 
-class CategoryFeatureSpec extends BaseFeatureE2ESpec {
+class CategoryEndpointSpec extends BaseFeatureE2ESpec {
 
     def "should get all categories"() {
         given:

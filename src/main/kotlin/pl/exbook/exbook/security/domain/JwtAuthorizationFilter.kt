@@ -36,6 +36,7 @@ class JwtAuthorizationFilter(
             chain.doFilter(request, response)
         } catch (e: TokenExpiredException) {
             logger.info("User token expired")
+            throw TokenExpiredException("User token expired")
         }
     }
 

@@ -1,6 +1,5 @@
 package pl.exbook.exbook
 
-
 import kotlin.text.Regex
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataMongo
@@ -21,6 +20,7 @@ import pl.exbook.exbook.category.domain.CategoryRepository
 import pl.exbook.exbook.security.adapter.rest.LoginCredentials
 import pl.exbook.exbook.user.adapter.mongodb.UserDocument
 import pl.exbook.exbook.user.adapter.mongodb.MongoUserRepository
+import pl.exbook.exbook.user.domain.UserRepository
 import spock.lang.Specification
 
 @SpringBootTest(classes = [AppRunner],
@@ -33,7 +33,7 @@ class BaseIntegrationSpec extends Specification {
     protected TestRestTemplate testRestTemplate
 
     @Autowired
-    private MongoUserRepository userRepository
+    private UserRepository userRepository
 
     @Autowired
     private CategoryRepository categoryRepository
@@ -58,7 +58,7 @@ class BaseIntegrationSpec extends Specification {
     }
 
     protected thereIsUser(UserBuilder userBuilder) {
-        userRepository.insert(userBuilder.build().toDocument())
+        userRepository.insert(userBuilder.build())
     }
 
     protected thereIsCategory(CategoryBuilder categoryBuilder) {
@@ -82,17 +82,21 @@ class BaseIntegrationSpec extends Specification {
     }
 
     protected ResponseEntity<Object> addNewCategoryWithCredentials(NewCategory category, LoginCredentials credentials) {
-        HttpHeaders headers = new HttpHeaders()
-        headers.add("Authorization", getTokenWithUserCredentials(credentials))
-        HttpEntity httpEntity = new HttpEntity(category, headers)
+        HttpEntity httpEntity = new HttpEntity(category, getHeadersWithAutorization(credentials))
         return testRestTemplate.postForEntity("/api/categories", httpEntity, Object.class)
     }
 
-    protected String getTokenWithUserCredentials(LoginCredentials credentials) {
+    private String getTokenWithUserCredentials(LoginCredentials credentials) {
         Regex regex = new Regex("\\[Authorization=(.*); Max-Age=(.*); Expires=(.*); Path=(.*)\\]")
         String response = testRestTemplate.postForEntity("/api/auth/login", credentials, Object.class)
                 .headers["Set-Cookie"]
                 .toString()
-        return regex.matchEntire(response).groups[1]
+        return regex.matchEntire(response).groups[1].value
+    }
+
+    private HttpHeaders getHeadersWithAutorization(LoginCredentials credentials) {
+        HttpHeaders headers = new HttpHeaders()
+        headers.add("Cookie", "Authorization=${getTokenWithUserCredentials(credentials)}")
+        return headers
     }
 }

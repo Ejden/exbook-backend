@@ -4,8 +4,8 @@ import groovy.transform.builder.Builder
 import groovy.transform.builder.SimpleStrategy
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
+import pl.exbook.exbook.shared.UserId
 import pl.exbook.exbook.user.domain.User
-import pl.exbook.exbook.user.domain.UserId
 
 import java.time.Instant
 

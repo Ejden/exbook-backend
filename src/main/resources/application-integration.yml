@@ -6,3 +6,7 @@ spring:
       port: 0
       username:
       password:
+
+jwt:
+  expirationTime: 604800000
+  secret: integration_tests_jwt_secret

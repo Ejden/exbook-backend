@@ -3,8 +3,8 @@ package pl.exbook.exbook.builders
 import groovy.transform.builder.Builder
 import groovy.transform.builder.SimpleStrategy
 import pl.exbook.exbook.category.domain.Category
-import pl.exbook.exbook.category.domain.CategoryId
 import pl.exbook.exbook.category.domain.Image
+import pl.exbook.exbook.shared.CategoryId
 
 @Builder(builderStrategy = SimpleStrategy, prefix = "with")
 class CategoryBuilder {
