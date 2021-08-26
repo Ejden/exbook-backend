@@ -1,0 +1,28 @@
+spring:
+  data:
+    mongodb:
+      host: ${MONGODB_HOST}
+      port: ${MONGODB_PORT}
+      database: ${MONGODB_DATABASE_NAME}
+      username: ${MONGODB_DATABASE_USERNAME}
+      password: ${MONGODB_DATABASE_PASSWORD}
+  jpa:
+    show-sql: true
+  servlet:
+    multipart:
+      max-file-size: 16MB
+      max-request-size: 16MB
+      enabled: true
+
+server:
+  port: 8082
+
+jwt:
+  expirationTime: ${JWT_EXP_TIME}
+  secret: ${JWT_SECRET}
+
+logging:
+  level:
+    pl:
+      exbook:
+        DEBUG

@@ -1,14 +1,3 @@
-spring:
-  data:
-    mongodb:
-      host: localhost
-      port: 27017
-      database: exbookDB_test
-      username: travis
-      password: test
-  jpa:
-    show-sql: true
-
 server:
   port: 8082
 
