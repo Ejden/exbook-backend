@@ -4,7 +4,7 @@ on: push
 jobs:
   run_tests:
     name: Build and test
-    runs-on: [self-hosted, ubuntu-latest]
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
         with:
