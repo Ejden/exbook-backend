@@ -1,0 +1,24 @@
+name: CI
+on: push
+
+jobs:
+  run_tests:
+    name: Build and test
+    runs-on: [self-hosted, ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - name: Validate Gradle Wrapper
+        uses: gradle/wrapper-validation-action@v1
+
+      - name: Setup JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'
+          distribution: 'adopt'
+
+      - name: Build and test
+        run: ./gradlew check --info
