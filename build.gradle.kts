@@ -84,4 +84,11 @@ sourceSets.create("integration") {
 tasks.create<Test>("integration") {
     testClassesDirs = sourceSets["integration"].output.classesDirs
     classpath = sourceSets["integration"].runtimeClasspath
+    mustRunAfter("test")
+}
+
+tasks {
+    check {
+        dependsOn("integration")
+    }
 }
