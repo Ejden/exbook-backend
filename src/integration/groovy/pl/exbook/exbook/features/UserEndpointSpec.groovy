@@ -18,4 +18,9 @@ class UserEndpointSpec extends BaseFeatureE2ESpec {
             1==1
             print(getDetailedUser(TestData.USER_ID))
     }
+
+    def "test"() {
+        expect:
+            1 == 2
+    }
 }
