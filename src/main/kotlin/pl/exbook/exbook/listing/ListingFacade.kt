@@ -1,7 +1,7 @@
 package pl.exbook.exbook.listing
 
 import org.springframework.data.domain.Page
-import pl.exbook.exbook.shared.Cost
+import pl.exbook.exbook.shared.Money
 import pl.exbook.exbook.listing.domain.DetailedOffer
 import pl.exbook.exbook.offer.OfferFacade
 import pl.exbook.exbook.offer.domain.Offer
@@ -24,7 +24,7 @@ class ListingFacade(
             val seller = userFacade.getUserById(it.seller.id)
             val shippingMethods = it.shippingMethods
                 .map { s -> Pair(shippingMethodFacade.getShippingMethodById(s.id), s) }
-                .map { s -> s.first.toDetailed(s.second.cost) }
+                .map { s -> s.first.toDetailed(s.second.money) }
             it.toDetailedOffer(seller, shippingMethods)
         }
     }
@@ -37,7 +37,7 @@ private fun Offer.toDetailedOffer(seller: User, shippingMethods: List<DetailedOf
     description = this.description,
     type = this.type,
     seller = seller.toDetailed(),
-    cost = this.cost,
+    money = this.money,
     location = this.location,
     category = this.category.toDetailed(),
     shippingMethods = shippingMethods
@@ -56,10 +56,10 @@ private fun User.toDetailed() = DetailedOffer.Seller(
     grade = this.grade
 )
 
-private fun ShippingMethod.toDetailed(customisedCost: Cost) = DetailedOffer.ShippingMethod(
+private fun ShippingMethod.toDetailed(customisedMoney: Money) = DetailedOffer.ShippingMethod(
     id = ShippingMethodId(this.id.raw),
     name = this.methodName,
-    cost = customisedCost
+    money = customisedMoney
 )
 
 private fun Offer.Images.toDetailed() = DetailedOffer.Images(

@@ -11,7 +11,7 @@ class DetailedOffer(
     val description: String?,
     val type: Type,
     val seller: Seller,
-    val cost: Cost?,
+    val money: Money?,
     val location: String,
     val category: Category,
     val shippingMethods: Collection<ShippingMethod>
@@ -32,7 +32,7 @@ class DetailedOffer(
     data class ShippingMethod(
         val id: ShippingMethodId,
         val name: String,
-        val cost: Cost
+        val money: Money
     )
 
     data class Images(

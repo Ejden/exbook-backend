@@ -5,14 +5,14 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import pl.exbook.exbook.shared.Cost
+import pl.exbook.exbook.shared.Money
 import pl.exbook.exbook.listing.ListingFacade
 import pl.exbook.exbook.listing.domain.DetailedOffer
 import pl.exbook.exbook.shared.ContentType
 import pl.exbook.exbook.util.parseMoneyToString
 
 @RestController
-@RequestMapping("/listing")
+@RequestMapping("api/listing")
 class ListingEndpoint(
     private val listingFacade: ListingFacade
 ) {
@@ -65,7 +65,7 @@ data class ShippingMethodDto(
 )
 
 data class CostDto(
-    val value: String,
+    val amount: String,
     val currency: String
 )
 
@@ -76,7 +76,7 @@ private fun DetailedOffer.toDto() = DetailedOfferDto(
     description = this.description,
     type = this.type.name,
     seller = this.seller.toDto(),
-    cost = this.cost?.toDto(),
+    cost = this.money?.toDto(),
     location = this.location,
     category = this.category.toDto(),
     shippingMethods = this.shippingMethods.map { it.toDto() }
@@ -102,8 +102,8 @@ private fun DetailedOffer.Seller.toDto() = SellerDto(
     grade = this.grade
 )
 
-private fun Cost.toDto() = CostDto(
-    value = parseMoneyToString(this.value),
+private fun Money.toDto() = CostDto(
+    amount = this.amount.toString(),
     currency = this.currency.name
 )
 
@@ -112,5 +112,5 @@ private fun DetailedOffer.Category.toDto() = CategoryDto(this.id.raw)
 private fun DetailedOffer.ShippingMethod.toDto() = ShippingMethodDto(
     id = this.id.raw,
     name = this.name,
-    cost = cost.toDto()
+    cost = money.toDto()
 )

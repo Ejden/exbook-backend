@@ -117,7 +117,7 @@ private fun Offer.toDto() = OfferDto(
     images = this.images.toDto(),
     seller = this.seller.toDto(),
     type = this.type.name,
-    cost = this.cost?.toDto(),
+    cost = this.money?.toDto(),
     location = this.location,
     shippingMethods = this.shippingMethods.map { it.toDto() },
     category = this.category.toDto()
@@ -141,7 +141,7 @@ private fun Offer.Seller.toDto() = OfferDto.SellerDto(this.id.raw)
 
 private fun Offer.ShippingMethod.toDto() = OfferDto.ShippingMethodDto(
     id = this.id.raw,
-    cost = this.cost.toDto()
+    cost = this.money.toDto()
 )
 
 private fun Offer.Category.toDto() = OfferDto.CategoryDto(this.id.raw)

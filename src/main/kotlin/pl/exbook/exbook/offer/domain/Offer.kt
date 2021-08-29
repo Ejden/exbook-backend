@@ -9,7 +9,7 @@ class Offer(
     val description: String?,
     val type: Type,
     val seller: Seller,
-    val cost: Cost?,
+    val money: Money?,
     val location: String,
     val category: Category,
     val shippingMethods: Collection<ShippingMethod>
@@ -20,7 +20,7 @@ class Offer(
 
     data class ShippingMethod(
         val id: ShippingMethodId,
-        val cost: Cost
+        val money: Money
     )
 
     data class Book(

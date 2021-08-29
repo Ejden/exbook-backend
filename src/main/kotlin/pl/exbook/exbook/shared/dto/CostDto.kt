@@ -1,14 +1,14 @@
 package pl.exbook.exbook.shared.dto
 
-import pl.exbook.exbook.shared.Cost
+import pl.exbook.exbook.shared.Money
 import pl.exbook.exbook.util.parseMoneyToString
 
 data class CostDto(
-    val value: String,
+    val amount: String,
     val currency: String
 )
 
-fun Cost.toDto() = CostDto(
-    value = parseMoneyToString(this.value),
+fun Money.toDto() = CostDto(
+    amount = this.amount.toString(),
     currency = this.currency.name
 )

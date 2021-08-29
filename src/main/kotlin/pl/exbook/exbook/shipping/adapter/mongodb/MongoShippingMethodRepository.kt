@@ -17,7 +17,7 @@ data class ShippingMethodDocument(
 )
 
 data class ShippingMethodCostDocument(
-    val value: Int,
+    val amount: String,
     val currency: String,
     val canBeOverridden: Boolean
 )

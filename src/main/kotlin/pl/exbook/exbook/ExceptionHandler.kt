@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseStatus
 import pl.exbook.exbook.image.ImageNotFoundException
+import pl.exbook.exbook.offer.adapter.mongodb.OfferNotFoundException
 
 @ControllerAdvice
 class ExceptionHandler {
@@ -34,6 +35,10 @@ class ExceptionHandler {
                 )
             )
     }
+
+    @ExceptionHandler(OfferNotFoundException::class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    fun handle(cause: OfferNotFoundException) {}
 }
 
 data class ErrorResponse(

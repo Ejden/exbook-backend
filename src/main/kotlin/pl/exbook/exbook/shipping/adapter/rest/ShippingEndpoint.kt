@@ -41,8 +41,9 @@ data class ShippingMethodDto(
     val defaultCost: CostDto
 ) {
     data class CostDto(
-        val value: String,
-        val currency: String
+        val amount: String,
+        val currency: String,
+        val canBeOverridden: Boolean
     )
 }
 
@@ -53,6 +54,7 @@ fun ShippingMethod.toDto() = ShippingMethodDto(
 )
 
 fun Cost.toDto() = ShippingMethodDto.CostDto(
-    value = parseMoneyToString(this.value),
-    currency = this.currency.toString()
+    amount = this.amount.toString(),
+    currency = this.currency.toString(),
+    canBeOverridden = this.canBeOverridden
 )

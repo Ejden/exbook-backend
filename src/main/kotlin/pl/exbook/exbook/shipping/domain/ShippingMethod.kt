@@ -1,6 +1,7 @@
 package pl.exbook.exbook.shipping.domain
 
 import pl.exbook.exbook.shared.ShippingMethodId
+import java.math.BigDecimal
 
 class ShippingMethod(
     val id: ShippingMethodId,
@@ -9,7 +10,7 @@ class ShippingMethod(
 )
 
 data class Cost(
-    val value: Int,
+    val amount: BigDecimal,
     val currency: Currency,
     val canBeOverridden: Boolean = true
 )

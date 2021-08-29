@@ -6,7 +6,7 @@ import pl.exbook.exbook.shipping.domain.Cost
 import pl.exbook.exbook.shipping.domain.Currency
 import pl.exbook.exbook.shipping.domain.ShippingMethod
 import pl.exbook.exbook.shipping.domain.ShippingMethodRepository
-import pl.exbook.exbook.util.parseMoneyToInt
+import java.math.BigDecimal
 
 class DatabaseShippingMethodRepository(
     private val mongoShippingMethodRepository: MongoShippingMethodRepository
@@ -26,7 +26,7 @@ class DatabaseShippingMethodRepository(
 private fun NewShippingMethod.toDocument() = ShippingMethodDocument(
     methodName = this.name,
     defaultCost = ShippingMethodCostDocument(
-        value = parseMoneyToInt(this.cost.defaultCost),
+        amount = this.cost.defaultCost,
         currency = Currency.PLN.name,
         canBeOverridden = this.cost.canBeOverridden
     )
@@ -39,6 +39,7 @@ fun ShippingMethodDocument.toDomain() = ShippingMethod(
 )
 
 fun ShippingMethodCostDocument.toDomain() = Cost(
-    value = this.value,
-    currency = Currency.valueOf(this.currency)
+    amount = BigDecimal(this.amount),
+    currency = Currency.valueOf(this.currency),
+    canBeOverridden = this.canBeOverridden
 )

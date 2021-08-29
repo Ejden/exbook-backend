@@ -7,6 +7,7 @@ import pl.exbook.exbook.offer.domain.Offer
 import pl.exbook.exbook.offer.domain.OfferRepository
 import pl.exbook.exbook.shared.*
 import pl.exbook.exbook.util.parseMoneyToInt
+import java.math.BigDecimal
 
 class DatabaseOfferRepository(private val mongoOfferRepository: MongoOfferRepository) : OfferRepository {
 
@@ -37,7 +38,7 @@ fun OfferDocument.toDomain() = Offer(
     description = description,
     type = type,
     seller = this.seller.toDomain(),
-    cost = this.cost?.toDomain(),
+    money = this.cost?.toDomain(),
     location = location,
     category = this.category.toDomain(),
     shippingMethods = shippingMethods.map { it.toDomain() }
@@ -59,16 +60,16 @@ private fun ImageDocument.toDomain() = Offer.Image(this.url)
 
 private fun SellerDocument.toDomain() = Offer.Seller(UserId(this.id))
 
-private fun CostDocument.toDomain() = Cost(
-    value = this.value,
-    currency = this.currency
+private fun MoneyDocument.toDomain() = Money(
+    amount = BigDecimal(this.amount),
+    currency = Currency.valueOf(this.currency)
 )
 
 private fun CategoryDocument.toDomain() = Offer.Category(CategoryId(this.id))
 
 private fun ShippingMethodDocument.toDomain() = Offer.ShippingMethod(
     id = ShippingMethodId(this.id),
-    cost = this.cost.toDomain()
+    money = this.cost.toDomain()
 )
 
 private fun NewOfferRequest.toDocument(userId: UserId) = OfferDocument(
@@ -85,17 +86,17 @@ private fun NewOfferRequest.toDocument(userId: UserId) = OfferDocument(
     description = this.description,
     seller = SellerDocument(userId.raw),
     type = this.type,
-    cost = if (this.cost == null) null else CostDocument(
-        value = parseMoneyToInt(this.cost.value),
-        currency = this.cost.currency
+    cost = if (this.cost == null) null else MoneyDocument(
+        amount = this.cost.value,
+        currency = this.cost.currency.name
     ),
     location = this.location,
     category = CategoryDocument(this.category),
     shippingMethods = this.shippingMethods.map { ShippingMethodDocument(
         id = it.id,
-        cost = CostDocument(
-            value = parseMoneyToInt(it.cost.value),
-            currency = it.cost.currency
+        cost = MoneyDocument(
+            amount = it.cost.value,
+            currency = it.cost.currency.name
         )
     )}
 )
