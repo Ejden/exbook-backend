@@ -18,5 +18,11 @@ interface MongoImageRepository : Repository<ImageDocument, String> {
 data class ImageDocument(
     @Id
     val id: String? = null,
-    val file: Binary
+    val file: Binary,
+    val contentType: ContentTypeDocument
+)
+
+data class ContentTypeDocument(
+    val type: String,
+    val subtype: String
 )

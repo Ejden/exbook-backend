@@ -19,7 +19,7 @@ data class OfferDocument(
     val type: Offer.Type,
     val cost: CostDocument?,
     val location: String,
-    val categories: Collection<CategoryDocument>,
+    val category: CategoryDocument,
     val shippingMethods: Collection<ShippingMethodDocument>
 )
 

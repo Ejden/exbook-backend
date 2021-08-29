@@ -39,7 +39,7 @@ private fun Offer.toDetailedOffer(seller: User, shippingMethods: List<DetailedOf
     seller = seller.toDetailed(),
     cost = this.cost,
     location = this.location,
-    categories = this.categories.map { it.toDetailed() },
+    category = this.category.toDetailed(),
     shippingMethods = shippingMethods
 )
 

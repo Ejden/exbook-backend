@@ -15,17 +15,17 @@ import pl.exbook.exbook.shared.dto.CostDto
 import pl.exbook.exbook.shared.dto.toDto
 import pl.exbook.exbook.offer.OfferFacade
 import pl.exbook.exbook.offer.domain.Offer
-import pl.exbook.exbook.shared.MediaType
+import pl.exbook.exbook.shared.ContentType
 import pl.exbook.exbook.shared.OfferId
 import pl.exbook.exbook.user.UserNotFoundException
 
 @RestController
-@RequestMapping("api/v1/offers")
+@RequestMapping("api/offers")
 class OfferEndpoint(private val offerFacade: OfferFacade) {
 
     companion object : KLogging()
 
-    @PostMapping(produces = [MediaType.V1])
+    @PostMapping(produces = [ContentType.V1])
     @PreAuthorize("hasAuthority('EXCHANGE_BOOKS')")
     fun addOffer(@RequestBody offer: NewOfferRequest, user: UsernamePasswordAuthenticationToken?): ResponseEntity<OfferDto> {
         return if (user != null) {
@@ -36,7 +36,7 @@ class OfferEndpoint(private val offerFacade: OfferFacade) {
         }
     }
 
-    @GetMapping("{offerId}", produces = [MediaType.V1])
+    @GetMapping("{offerId}", produces = [ContentType.V1])
     fun getOffer(@PathVariable offerId: OfferId): OfferDto {
         return offerFacade.getOffer(offerId).toDto()
     }
@@ -45,7 +45,7 @@ class OfferEndpoint(private val offerFacade: OfferFacade) {
 data class NewOfferRequest(
     val book: Book,
     val description: String?,
-    val categories: Collection<Category>,
+    val category: String,
     val type: Offer.Type,
     val cost: Cost?,
     val location: String,
@@ -81,7 +81,7 @@ data class OfferDto(
     val cost: CostDto?,
     val location: String,
     val shippingMethods: Collection<ShippingMethodDto>,
-    val categories: Collection<CategoryDto>
+    val category: CategoryDto
 ) {
 
     data class BookDto(
@@ -120,7 +120,7 @@ private fun Offer.toDto() = OfferDto(
     cost = this.cost?.toDto(),
     location = this.location,
     shippingMethods = this.shippingMethods.map { it.toDto() },
-    categories = this.categories.map { it.toDto() }
+    category = this.category.toDto()
 )
 
 private fun Offer.Book.toDto() = OfferDto.BookDto(

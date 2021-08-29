@@ -39,7 +39,7 @@ fun OfferDocument.toDomain() = Offer(
     seller = this.seller.toDomain(),
     cost = this.cost?.toDomain(),
     location = location,
-    categories = categories.map{ it.toDomain() },
+    category = this.category.toDomain(),
     shippingMethods = shippingMethods.map { it.toDomain() }
 )
 
@@ -90,7 +90,7 @@ private fun NewOfferRequest.toDocument(userId: UserId) = OfferDocument(
         currency = this.cost.currency
     ),
     location = this.location,
-    categories = this.categories.map { CategoryDocument(it.id) },
+    category = CategoryDocument(this.category),
     shippingMethods = this.shippingMethods.map { ShippingMethodDocument(
         id = it.id,
         cost = CostDocument(

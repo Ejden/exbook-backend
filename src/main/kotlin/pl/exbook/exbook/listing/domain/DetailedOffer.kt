@@ -13,7 +13,7 @@ class DetailedOffer(
     val seller: Seller,
     val cost: Cost?,
     val location: String,
-    val categories: Collection<Category>,
+    val category: Category,
     val shippingMethods: Collection<ShippingMethod>
 ) {
     data class Book(

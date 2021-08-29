@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController
 import pl.exbook.exbook.shared.Cost
 import pl.exbook.exbook.listing.ListingFacade
 import pl.exbook.exbook.listing.domain.DetailedOffer
-import pl.exbook.exbook.shared.MediaType
+import pl.exbook.exbook.shared.ContentType
 import pl.exbook.exbook.util.parseMoneyToString
 
 @RestController
@@ -17,7 +17,7 @@ class ListingEndpoint(
     private val listingFacade: ListingFacade
 ) {
 
-    @GetMapping(produces = [MediaType.V1])
+    @GetMapping(produces = [ContentType.V1])
     fun getOfferListing(@RequestParam offersPerPage: Int?, @RequestParam page: Int?, @RequestParam sorting: String?): Page<DetailedOfferDto> {
         return listingFacade.getOfferListing(offersPerPage, page, sorting).map { it.toDto() }
     }
@@ -32,7 +32,7 @@ data class DetailedOfferDto(
     val seller: SellerDto,
     val cost: CostDto?,
     val location: String,
-    val categories: Collection<CategoryDto>,
+    val category: CategoryDto,
     val shippingMethods: Collection<ShippingMethodDto>
 )
 
@@ -78,7 +78,7 @@ private fun DetailedOffer.toDto() = DetailedOfferDto(
     seller = this.seller.toDto(),
     cost = this.cost?.toDto(),
     location = this.location,
-    categories = this.categories.map { it.toDto() },
+    category = this.category.toDto(),
     shippingMethods = this.shippingMethods.map { it.toDto() }
 )
 
