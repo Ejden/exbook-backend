@@ -9,3 +9,7 @@ data class UserId(val raw: String)
 data class CategoryId(val raw: String)
 
 data class ImageId(val raw: String)
+
+data class UserStatisticsId(val raw: String)
+
+data class OrderId(val raw: String)

@@ -36,17 +36,17 @@ repositories {
 }
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
-    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-data-mongodb:2.5.5")
+    implementation("org.springframework.boot:spring-boot-starter-web:2.5.5")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    implementation("org.springframework.boot:spring-boot-starter-security")
-    implementation("io.github.microutils:kotlin-logging:1.12.0")
+    implementation("org.springframework.boot:spring-boot-starter-security:2.5.5")
+    implementation("io.github.microutils:kotlin-logging:2.0.11")
     implementation("io.springfox:springfox-swagger2:3.0.0")
     implementation("io.springfox:springfox-boot-starter:3.0.0")
     implementation("io.springfox:springfox-swagger-ui:3.0.0")
-    implementation("com.auth0:java-jwt:3.8.3")
+    implementation("com.auth0:java-jwt:3.18.2")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
     testImplementation("org.springframework.security:spring-security-test")

@@ -1,15 +1,12 @@
 package pl.exbook.exbook.listing.adapter.rest
 
 import org.springframework.data.domain.Page
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import pl.exbook.exbook.shared.Money
 import pl.exbook.exbook.listing.ListingFacade
 import pl.exbook.exbook.listing.domain.DetailedOffer
 import pl.exbook.exbook.shared.ContentType
-import pl.exbook.exbook.util.parseMoneyToString
+import pl.exbook.exbook.shared.OfferId
 
 @RestController
 @RequestMapping("api/listing")
@@ -21,6 +18,9 @@ class ListingEndpoint(
     fun getOfferListing(@RequestParam offersPerPage: Int?, @RequestParam page: Int?, @RequestParam sorting: String?): Page<DetailedOfferDto> {
         return listingFacade.getOfferListing(offersPerPage, page, sorting).map { it.toDto() }
     }
+
+    @GetMapping("{offerId}", produces = [ContentType.V1])
+    fun getOffer(@PathVariable offerId: OfferId) = listingFacade.getOffer(offerId).toDto()
 }
 
 data class DetailedOfferDto(
@@ -33,7 +33,7 @@ data class DetailedOfferDto(
     val cost: CostDto?,
     val location: String,
     val category: CategoryDto,
-    val shippingMethods: Collection<ShippingMethodDto>
+    val shipping: ShippingDto
 )
 
 data class BookDto(
@@ -58,6 +58,11 @@ data class SellerDto(
 
 data class CategoryDto(val id: String)
 
+data class ShippingDto(
+    val shippingMethods: Collection<ShippingMethodDto>,
+    val cheapestMethod: ShippingMethodDto
+)
+
 data class ShippingMethodDto(
     val id: String,
     val name: String,
@@ -79,7 +84,7 @@ private fun DetailedOffer.toDto() = DetailedOfferDto(
     cost = this.money?.toDto(),
     location = this.location,
     category = this.category.toDto(),
-    shippingMethods = this.shippingMethods.map { it.toDto() }
+    shipping = this.shipping.toDto()
 )
 
 private fun DetailedOffer.Book.toDto() = BookDto(
@@ -108,6 +113,11 @@ private fun Money.toDto() = CostDto(
 )
 
 private fun DetailedOffer.Category.toDto() = CategoryDto(this.id.raw)
+
+private fun DetailedOffer.Shipping.toDto() = ShippingDto(
+    shippingMethods = this.shippingMethods.map { it.toDto() },
+    cheapestMethod = this.cheapestMethod.toDto()
+)
 
 private fun DetailedOffer.ShippingMethod.toDto() = ShippingMethodDto(
     id = this.id.raw,

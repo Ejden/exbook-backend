@@ -1,5 +1,6 @@
 package pl.exbook.exbook
 
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import pl.exbook.exbook.category.CategoryFacade
@@ -15,10 +16,17 @@ import pl.exbook.exbook.offer.OfferFacade
 import pl.exbook.exbook.offer.adapter.mongodb.DatabaseOfferRepository
 import pl.exbook.exbook.offer.adapter.mongodb.MongoOfferRepository
 import pl.exbook.exbook.offer.domain.OfferRepository
+import pl.exbook.exbook.order.OrderFacade
+import pl.exbook.exbook.order.adapter.mongodb.DatabaseOrderRepository
+import pl.exbook.exbook.order.adapter.mongodb.MongoOrderRepository
 import pl.exbook.exbook.shipping.ShippingMethodFacade
 import pl.exbook.exbook.shipping.adapter.mongodb.DatabaseShippingMethodRepository
 import pl.exbook.exbook.shipping.adapter.mongodb.MongoShippingMethodRepository
 import pl.exbook.exbook.shipping.domain.ShippingMethodRepository
+import pl.exbook.exbook.statistics.UserStatisticsFacade
+import pl.exbook.exbook.statistics.adapter.mongodb.DatabaseUserStatisticsRepository
+import pl.exbook.exbook.statistics.adapter.mongodb.MongoUserStatisticsRepository
+import pl.exbook.exbook.statistics.domain.UserStatisticsRepository
 import pl.exbook.exbook.user.UserFacade
 import pl.exbook.exbook.user.adapter.mongodb.DatabaseUserRepository
 import pl.exbook.exbook.user.adapter.mongodb.MongoUserRepository
@@ -65,6 +73,27 @@ class ServicesConfiguration {
     fun listingFacade(
         offerFacade: OfferFacade,
         userFacade: UserFacade,
-        shippingMethodFacade: ShippingMethodFacade
-    ) = ListingFacade(offerFacade, userFacade, shippingMethodFacade)
+        shippingMethodFacade: ShippingMethodFacade,
+        applicationEventPublisher: ApplicationEventPublisher
+    ) = ListingFacade(offerFacade, userFacade, shippingMethodFacade, applicationEventPublisher)
+
+    @Bean
+    fun userStatisticsRepository(
+        mongoUserStatisticsRepository: MongoUserStatisticsRepository
+    ) = DatabaseUserStatisticsRepository(mongoUserStatisticsRepository)
+
+    @Bean
+    fun statisticsFacade(
+        userStatisticsRepository: UserStatisticsRepository
+    ) = UserStatisticsFacade(userStatisticsRepository)
+
+    @Bean
+    fun orderRepository(mongoOrderRepository: MongoOrderRepository) = DatabaseOrderRepository(mongoOrderRepository)
+
+    @Bean
+    fun orderFacade(
+        orderRepository: DatabaseOrderRepository,
+        offerFacade: OfferFacade,
+        userFacade: UserFacade
+    ) = OrderFacade(orderRepository, offerFacade, userFacade)
 }

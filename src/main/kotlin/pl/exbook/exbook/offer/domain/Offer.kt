@@ -9,7 +9,7 @@ class Offer(
     val description: String?,
     val type: Type,
     val seller: Seller,
-    val money: Money?,
+    val price: Money?,
     val location: String,
     val category: Category,
     val shippingMethods: Collection<ShippingMethod>

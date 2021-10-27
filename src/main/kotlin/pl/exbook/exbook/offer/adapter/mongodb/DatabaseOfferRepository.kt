@@ -6,7 +6,6 @@ import pl.exbook.exbook.offer.adapter.rest.NewOfferRequest
 import pl.exbook.exbook.offer.domain.Offer
 import pl.exbook.exbook.offer.domain.OfferRepository
 import pl.exbook.exbook.shared.*
-import pl.exbook.exbook.util.parseMoneyToInt
 import java.math.BigDecimal
 
 class DatabaseOfferRepository(private val mongoOfferRepository: MongoOfferRepository) : OfferRepository {
@@ -38,7 +37,7 @@ fun OfferDocument.toDomain() = Offer(
     description = description,
     type = type,
     seller = this.seller.toDomain(),
-    money = this.cost?.toDomain(),
+    price = this.cost?.toDomain(),
     location = location,
     category = this.category.toDomain(),
     shippingMethods = shippingMethods.map { it.toDomain() }

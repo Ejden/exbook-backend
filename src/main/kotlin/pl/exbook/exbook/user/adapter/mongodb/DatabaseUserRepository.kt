@@ -1,6 +1,5 @@
 package pl.exbook.exbook.user.adapter.mongodb
 
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import pl.exbook.exbook.shared.UserId
 import pl.exbook.exbook.user.domain.User
 import pl.exbook.exbook.user.domain.UserRepository
@@ -46,7 +45,7 @@ fun User.toDocument() = UserDocument(
     firstName = this.firstName,
     lastName = this.lastName,
     login = this.login,
-    password = BCryptPasswordEncoder().encode(this.password),
+    password = this.password,
     email = this.email,
     phoneNumber = this.phoneNumber,
     enabled = this.enabled,

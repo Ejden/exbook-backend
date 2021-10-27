@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import pl.exbook.exbook.shared.Currency
-import pl.exbook.exbook.shared.dto.CostDto
+import pl.exbook.exbook.shared.dto.MoneyDto
 import pl.exbook.exbook.shared.dto.toDto
 import pl.exbook.exbook.offer.OfferFacade
 import pl.exbook.exbook.offer.domain.Offer
@@ -78,9 +78,9 @@ data class OfferDto(
     val images: ImagesDto,
     val seller: SellerDto,
     val type: String,
-    val cost: CostDto?,
+    val cost: MoneyDto?,
     val location: String,
-    val shippingMethods: Collection<ShippingMethodDto>,
+    val shipping: ShippingDto,
     val category: CategoryDto
 ) {
 
@@ -104,10 +104,15 @@ data class OfferDto(
 
     data class ShippingMethodDto(
         val id: String,
-        val cost: CostDto
+        val cost: MoneyDto
     )
 
     data class CategoryDto(val id: String)
+
+    data class ShippingDto(
+        val shippingMethods: Collection<ShippingMethodDto>,
+        val cheapestMethod: ShippingMethodDto
+    )
 }
 
 private fun Offer.toDto() = OfferDto(
@@ -117,9 +122,12 @@ private fun Offer.toDto() = OfferDto(
     images = this.images.toDto(),
     seller = this.seller.toDto(),
     type = this.type.name,
-    cost = this.money?.toDto(),
+    cost = this.price?.toDto(),
     location = this.location,
-    shippingMethods = this.shippingMethods.map { it.toDto() },
+    shipping = OfferDto.ShippingDto(
+        shippingMethods = this.shippingMethods.map { it.toDto() },
+        cheapestMethod = this.shippingMethods.minByOrNull { it.money }!!.toDto()
+    ),
     category = this.category.toDto()
 )
 
