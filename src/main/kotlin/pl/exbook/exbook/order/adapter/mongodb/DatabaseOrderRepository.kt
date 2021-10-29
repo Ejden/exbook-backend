@@ -5,6 +5,7 @@ import pl.exbook.exbook.order.domain.Order
 import pl.exbook.exbook.order.domain.OrderRepository
 import pl.exbook.exbook.shared.OfferId
 import pl.exbook.exbook.shared.OrderId
+import pl.exbook.exbook.shared.ShippingId
 import pl.exbook.exbook.shared.UserId
 import pl.exbook.exbook.shared.dto.toDomain
 import pl.exbook.exbook.shared.dto.toDto
@@ -23,9 +24,11 @@ class DatabaseOrderRepository(private val mongoOrderRepository: MongoOrderReposi
 private fun OrderDocument.toDomain() = Order(
     id = OrderId(this.id!!),
     buyer = this.buyer.toDomain(),
+    shippingId = Order.ShippingId(this.shippingId),
     items = this.items.map { it.toDomain() },
     orderDate = this.orderDate,
-    returned = this.returned
+    returned = this.returned,
+    accepted = this.accepted
 )
 
 private fun BuyerDocument.toDomain() = Order.Buyer(UserId(this.id))
@@ -49,9 +52,11 @@ private fun ExchangeBookDocument.toDomain() = Order.ExchangeBook(
 private fun Order.toDocument() = OrderDocument(
     id = this.id?.raw,
     buyer = BuyerDocument(this.buyer.id.raw),
+    shippingId = this.shippingId.raw,
     items = this.items.map { it.toDocument() },
     orderDate = this.orderDate,
-    returned = this.returned
+    returned = this.returned,
+    accepted = this.accepted
 )
 
 private fun Order.OrderItem.toDocument() = OrderItemDocument(

@@ -1,4 +1,4 @@
-package pl.exbook.exbook.shipping.domain
+package pl.exbook.exbook.shippingmethod.domain
 
 import pl.exbook.exbook.shared.ShippingMethodId
 import java.math.BigDecimal
@@ -6,6 +6,7 @@ import java.math.BigDecimal
 class ShippingMethod(
     val id: ShippingMethodId,
     val methodName: String,
+    val pickupPointMethod: Boolean,
     val defaultCost: Cost
 )
 

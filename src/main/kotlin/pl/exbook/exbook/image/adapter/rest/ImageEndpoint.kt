@@ -17,8 +17,8 @@ class ImageEndpoint(
 ) {
 
     @PostMapping(produces = [ContentType.V1])
-    fun uploadImage(@RequestBody file: MultipartFile): ResponseEntity<Any> {
-        val uploadedImage = imageFacade.addImage(file)
+    fun uploadImage(@RequestBody file: MultipartFile?): ResponseEntity<Any> {
+        val uploadedImage = imageFacade.addImage(file!!)
 
         val location = ServletUriComponentsBuilder
             .fromCurrentRequest()

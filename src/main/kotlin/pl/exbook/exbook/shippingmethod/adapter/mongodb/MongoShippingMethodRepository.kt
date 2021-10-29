@@ -1,4 +1,4 @@
-package pl.exbook.exbook.shipping.adapter.mongodb
+package pl.exbook.exbook.shippingmethod.adapter.mongodb
 
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
@@ -13,6 +13,7 @@ data class ShippingMethodDocument(
     @Id
     val id: String? = null,
     val methodName: String,
+    val pickupPointMethod: Boolean,
     val defaultCost: ShippingMethodCostDocument
 )
 

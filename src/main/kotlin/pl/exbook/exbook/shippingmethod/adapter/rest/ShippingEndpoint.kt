@@ -1,10 +1,9 @@
-package pl.exbook.exbook.shipping.adapter.rest
+package pl.exbook.exbook.shippingmethod.adapter.rest
 
 import org.springframework.web.bind.annotation.*
-import pl.exbook.exbook.shipping.ShippingMethodFacade
-import pl.exbook.exbook.shipping.domain.Cost
-import pl.exbook.exbook.shipping.domain.ShippingMethod
-import pl.exbook.exbook.util.parseMoneyToString
+import pl.exbook.exbook.shippingmethod.ShippingMethodFacade
+import pl.exbook.exbook.shippingmethod.domain.Cost
+import pl.exbook.exbook.shippingmethod.domain.ShippingMethod
 
 const val CONTENT_TYPE = "application/vnd.exbook.v1+json"
 
@@ -27,6 +26,7 @@ class ShippingEndpoint(
 
 data class NewShippingMethod(
     val name: String,
+    val pickupPointMethod: Boolean,
     val cost: Cost
 ) {
     data class Cost(
@@ -38,6 +38,7 @@ data class NewShippingMethod(
 data class ShippingMethodDto(
     val id: String,
     val name: String,
+    val pickupPointMethod: Boolean,
     val defaultCost: CostDto
 ) {
     data class CostDto(
@@ -50,6 +51,7 @@ data class ShippingMethodDto(
 fun ShippingMethod.toDto() = ShippingMethodDto(
     id = this.id.raw,
     name = this.methodName,
+    pickupPointMethod = this.pickupPointMethod,
     defaultCost = this.defaultCost.toDto()
 )
 

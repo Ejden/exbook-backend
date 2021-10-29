@@ -1,7 +1,7 @@
-package pl.exbook.exbook.shipping.domain
+package pl.exbook.exbook.shippingmethod.domain
 
 import pl.exbook.exbook.shared.ShippingMethodId
-import pl.exbook.exbook.shipping.adapter.rest.NewShippingMethod
+import pl.exbook.exbook.shippingmethod.adapter.rest.NewShippingMethod
 
 interface ShippingMethodRepository {
 

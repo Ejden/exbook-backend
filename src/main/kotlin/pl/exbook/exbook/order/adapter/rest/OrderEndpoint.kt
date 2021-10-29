@@ -9,34 +9,29 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import pl.exbook.exbook.order.OrderFacade
 import pl.exbook.exbook.order.domain.Order
-import pl.exbook.exbook.shared.Currency
 import pl.exbook.exbook.shared.Money
 import pl.exbook.exbook.shared.dto.MoneyDto
 import pl.exbook.exbook.shared.dto.toDto
-import pl.exbook.exbook.user.UserNotFoundException
 import java.time.Instant
 
 @RestController
 @RequestMapping("api/order")
-class OrderEndpoint(private val orderFacade: OrderFacade) {
-
-    companion object : KLogging()
+class OrderEndpoint(
+    private val orderFacade: OrderFacade,
+) {
 
     @PreAuthorize("isFullyAuthenticated()")
     @PostMapping
-    fun placeOrder(@RequestBody newOrder: NewOrderDto, user: UsernamePasswordAuthenticationToken?): OrderDto {
-        return when {
-            user != null -> orderFacade.placeOrder(newOrder, user.name).toDto()
-            else ->  {
-                logger.warn { "Non logged user tried to place order" }
-                throw UserNotFoundException("Non logged user tried to place order")
-            }
-        }
+    fun placeOrder(@RequestBody newOrder: NewOrderDto, user: UsernamePasswordAuthenticationToken): OrderDto {
+        return orderFacade.placeOrder(newOrder, user.name).toDto()
     }
+
+    companion object : KLogging()
 }
 
 data class NewOrderDto(
-    val items: List<OrderItemDto>
+    val items: List<OrderItemDto>,
+    val shipping: Shipping
 ) {
     data class OrderItemDto(
         val offerId: String,
@@ -50,6 +45,29 @@ data class NewOrderDto(
         val title: String,
         val isbn: Long?,
         val condition: String
+    )
+
+    data class Shipping(
+        val shippingMethodId: String,
+        val shippingAddress: ShippingAddressDto?,
+        val pickupPoint: PickupPointDto?
+    )
+
+    data class ShippingAddressDto(
+        val firstAndLastName: String,
+        val phoneNumber: String,
+        val email: String,
+        val address: String,
+        val postalCode: String,
+        val city: String,
+        val country: String
+    )
+
+    data class PickupPointDto(
+        val firstAndLastName: String,
+        val phoneNumber: String,
+        val email: String,
+        val pickupPointId: String
     )
 }
 

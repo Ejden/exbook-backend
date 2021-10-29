@@ -2,9 +2,7 @@ package pl.exbook.exbook.order.adapter.mongodb
 
 import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.data.repository.Repository
-import pl.exbook.exbook.shared.Money
 import pl.exbook.exbook.shared.dto.MoneyDto
-import java.math.BigDecimal
 import java.time.Instant
 
 interface MongoOrderRepository : Repository<OrderDocument, String> {
@@ -20,7 +18,9 @@ data class OrderDocument(
     val buyer: BuyerDocument,
     val items: List<OrderItemDocument>,
     val orderDate: Instant,
-    val returned: Boolean
+    val returned: Boolean,
+    val accepted: Boolean,
+    val shippingId: String
 )
 
 data class BuyerDocument(

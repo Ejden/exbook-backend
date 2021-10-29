@@ -7,8 +7,8 @@ import pl.exbook.exbook.offer.OfferFacade
 import pl.exbook.exbook.offer.domain.Offer
 import pl.exbook.exbook.shared.*
 import pl.exbook.exbook.event.events.OfferViewEvent
-import pl.exbook.exbook.shipping.ShippingMethodFacade
-import pl.exbook.exbook.shipping.domain.ShippingMethod
+import pl.exbook.exbook.shippingmethod.ShippingMethodFacade
+import pl.exbook.exbook.shippingmethod.domain.ShippingMethod
 import pl.exbook.exbook.user.UserFacade
 import pl.exbook.exbook.user.domain.User
 

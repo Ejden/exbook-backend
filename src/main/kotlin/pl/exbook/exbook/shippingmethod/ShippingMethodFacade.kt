@@ -1,9 +1,9 @@
-package pl.exbook.exbook.shipping
+package pl.exbook.exbook.shippingmethod
 
 import pl.exbook.exbook.shared.ShippingMethodId
-import pl.exbook.exbook.shipping.adapter.rest.NewShippingMethod
-import pl.exbook.exbook.shipping.domain.ShippingMethod
-import pl.exbook.exbook.shipping.domain.ShippingMethodRepository
+import pl.exbook.exbook.shippingmethod.adapter.rest.NewShippingMethod
+import pl.exbook.exbook.shippingmethod.domain.ShippingMethod
+import pl.exbook.exbook.shippingmethod.domain.ShippingMethodRepository
 
 class ShippingMethodFacade(
     private val shippingRepository: ShippingMethodRepository

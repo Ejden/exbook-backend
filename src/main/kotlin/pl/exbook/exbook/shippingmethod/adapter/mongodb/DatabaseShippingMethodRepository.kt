@@ -1,11 +1,11 @@
-package pl.exbook.exbook.shipping.adapter.mongodb
+package pl.exbook.exbook.shippingmethod.adapter.mongodb
 
 import pl.exbook.exbook.shared.ShippingMethodId
-import pl.exbook.exbook.shipping.adapter.rest.NewShippingMethod
-import pl.exbook.exbook.shipping.domain.Cost
-import pl.exbook.exbook.shipping.domain.Currency
-import pl.exbook.exbook.shipping.domain.ShippingMethod
-import pl.exbook.exbook.shipping.domain.ShippingMethodRepository
+import pl.exbook.exbook.shippingmethod.adapter.rest.NewShippingMethod
+import pl.exbook.exbook.shippingmethod.domain.Cost
+import pl.exbook.exbook.shippingmethod.domain.Currency
+import pl.exbook.exbook.shippingmethod.domain.ShippingMethod
+import pl.exbook.exbook.shippingmethod.domain.ShippingMethodRepository
 import java.math.BigDecimal
 
 class DatabaseShippingMethodRepository(
@@ -25,6 +25,7 @@ class DatabaseShippingMethodRepository(
 
 private fun NewShippingMethod.toDocument() = ShippingMethodDocument(
     methodName = this.name,
+    pickupPointMethod = this.pickupPointMethod,
     defaultCost = ShippingMethodCostDocument(
         amount = this.cost.defaultCost,
         currency = Currency.PLN.name,
@@ -35,7 +36,8 @@ private fun NewShippingMethod.toDocument() = ShippingMethodDocument(
 fun ShippingMethodDocument.toDomain() = ShippingMethod(
     id = ShippingMethodId(this.id!!),
     methodName = this.methodName,
-    defaultCost = this.defaultCost.toDomain()
+    pickupPointMethod = this.pickupPointMethod,
+    defaultCost = this.defaultCost.toDomain(),
 )
 
 fun ShippingMethodCostDocument.toDomain() = Cost(

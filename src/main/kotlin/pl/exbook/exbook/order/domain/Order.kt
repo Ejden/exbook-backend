@@ -7,14 +7,16 @@ import pl.exbook.exbook.shared.OrderId
 import pl.exbook.exbook.shared.UserId
 import java.time.Instant
 
-class Order(
+data class Order(
     val id: OrderId?,
     val buyer: Buyer,
+    val shippingId: ShippingId,
     val items: List<OrderItem>,
     val orderDate: Instant,
-    val returned: Boolean
+    val returned: Boolean,
+    val accepted: Boolean
 ) {
-    class OrderItem(
+    data class OrderItem(
         val offerId: OfferId,
         val seller: Seller,
         val orderType: OrderType,
@@ -23,20 +25,18 @@ class Order(
         val price: Money?
     )
 
-    class Buyer(
-        val id: UserId
-    )
+    data class Buyer(val id: UserId)
 
-    class Seller(
-        val id: UserId
-    )
+    data class Seller(val id: UserId)
 
-    class ExchangeBook(
+    data class ExchangeBook(
         val author: String,
         val title: String,
         val isbn: Long?,
         val condition: Offer.Condition
     )
+
+    data class ShippingId(val raw: String)
 
     enum class OrderType {
         EXCHANGE,

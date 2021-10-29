@@ -44,4 +44,8 @@ class Offer(
     }
 
     data class Image(val url: String)
+
+    fun canBeBought(): Boolean = this.type == Type.EXCHANGE_AND_BUY || this.type == Type.BUY_ONLY
+
+    fun canBeExchanged(): Boolean = this.type == Type.EXCHANGE_AND_BUY || this.type == Type.EXCHANGE_ONLY
 }

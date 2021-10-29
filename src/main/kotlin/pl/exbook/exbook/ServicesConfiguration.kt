@@ -19,10 +19,19 @@ import pl.exbook.exbook.offer.domain.OfferRepository
 import pl.exbook.exbook.order.OrderFacade
 import pl.exbook.exbook.order.adapter.mongodb.DatabaseOrderRepository
 import pl.exbook.exbook.order.adapter.mongodb.MongoOrderRepository
-import pl.exbook.exbook.shipping.ShippingMethodFacade
-import pl.exbook.exbook.shipping.adapter.mongodb.DatabaseShippingMethodRepository
-import pl.exbook.exbook.shipping.adapter.mongodb.MongoShippingMethodRepository
-import pl.exbook.exbook.shipping.domain.ShippingMethodRepository
+import pl.exbook.exbook.order.domain.OrderFactory
+import pl.exbook.exbook.order.domain.OrderValidator
+import pl.exbook.exbook.shipping.ShippingFacade
+import pl.exbook.exbook.shipping.adapter.mongodb.DatabaseShippingRepository
+import pl.exbook.exbook.shipping.adapter.mongodb.MongoShippingRepository
+import pl.exbook.exbook.shipping.domain.ShippingCalculator
+import pl.exbook.exbook.shipping.domain.ShippingFactory
+import pl.exbook.exbook.shipping.domain.ShippingRepository
+import pl.exbook.exbook.shipping.domain.ShippingValidator
+import pl.exbook.exbook.shippingmethod.ShippingMethodFacade
+import pl.exbook.exbook.shippingmethod.adapter.mongodb.DatabaseShippingMethodRepository
+import pl.exbook.exbook.shippingmethod.adapter.mongodb.MongoShippingMethodRepository
+import pl.exbook.exbook.shippingmethod.domain.ShippingMethodRepository
 import pl.exbook.exbook.statistics.UserStatisticsFacade
 import pl.exbook.exbook.statistics.adapter.mongodb.DatabaseUserStatisticsRepository
 import pl.exbook.exbook.statistics.adapter.mongodb.MongoUserStatisticsRepository
@@ -67,7 +76,7 @@ class ServicesConfiguration {
     ) = DatabaseShippingMethodRepository(mongoShippingMethodRepository)
 
     @Bean
-    fun shippingFacade(shippingRepository: ShippingMethodRepository) = ShippingMethodFacade(shippingRepository)
+    fun shippingMethodFacade(shippingRepository: ShippingMethodRepository) = ShippingMethodFacade(shippingRepository)
 
     @Bean
     fun listingFacade(
@@ -91,9 +100,43 @@ class ServicesConfiguration {
     fun orderRepository(mongoOrderRepository: MongoOrderRepository) = DatabaseOrderRepository(mongoOrderRepository)
 
     @Bean
+    fun orderFactory(offerFacade: OfferFacade) = OrderFactory(offerFacade)
+
+    @Bean
+    fun shippingValidator() = ShippingValidator()
+
+    @Bean
+    fun shippingFactory() = ShippingFactory()
+
+    @Bean
+    fun shippingCalculator(
+        offerFacade: OfferFacade,
+        shippingFactory: ShippingFactory
+    ) = ShippingCalculator(offerFacade, shippingFactory)
+
+    @Bean
+    fun shippingRepository(
+        mongoShippingRepository: MongoShippingRepository
+    ) = DatabaseShippingRepository(mongoShippingRepository)
+
+    @Bean
+    fun shippingFacade(
+        shippingMethodFacade: ShippingMethodFacade,
+        shippingValidator: ShippingValidator,
+        shippingCalculator: ShippingCalculator,
+        shippingRepository: ShippingRepository
+    ) = ShippingFacade(shippingMethodFacade, shippingValidator, shippingCalculator, shippingRepository)
+
+    @Bean
+    fun orderValidator() = OrderValidator()
+
+    @Bean
     fun orderFacade(
         orderRepository: DatabaseOrderRepository,
+        userFacade: UserFacade,
+        shippingFacade: ShippingFacade,
         offerFacade: OfferFacade,
-        userFacade: UserFacade
-    ) = OrderFacade(orderRepository, offerFacade, userFacade)
+        orderValidator: OrderValidator,
+        orderFactory: OrderFactory,
+    ) = OrderFacade(orderRepository, userFacade, shippingFacade, offerFacade, orderValidator, orderFactory)
 }

@@ -2,7 +2,11 @@ package pl.exbook.exbook.shared
 
 data class OfferId(val raw: String)
 
+data class ShippingId(val raw: String)
+
 data class ShippingMethodId(val raw: String)
+
+data class PickupPointId(val raw: String)
 
 data class UserId(val raw: String)
 
