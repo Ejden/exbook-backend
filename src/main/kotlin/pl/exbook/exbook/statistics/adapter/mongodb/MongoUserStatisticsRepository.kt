@@ -17,7 +17,7 @@ interface MongoUserStatisticsRepository : MongoRepository<UserStatisticsDocument
     fun save(userStatisticsDocument: UserStatisticsDocument): UserStatisticsDocument
 }
 
-@Document(collation = "user-statistics")
+@Document(collection = "user-statistics")
 data class UserStatisticsDocument(
     @Id
     val id: String?,

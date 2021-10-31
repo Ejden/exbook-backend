@@ -7,19 +7,22 @@ import java.util.UUID
 
 class ShippingFactory {
 
-    fun createShipping(selectedShippingMethod: ShippingMethod, request: CalculateSelectedShippingRequest): Shipping {
+    fun createShipping(selectedShippingMethod: ShippingMethod, request: CalculateSelectedShippingRequest, cost: Shipping.Cost): Shipping {
         return when {
-            selectedShippingMethod.pickupPointMethod -> createShippingWithPickupPoint(selectedShippingMethod, request)
-            else -> createShippingOnAddress(selectedShippingMethod, request)
+            selectedShippingMethod.pickupPointMethod -> createShippingWithPickupPoint(selectedShippingMethod, request, cost)
+            else -> createShippingOnAddress(selectedShippingMethod, request, cost)
         }
     }
 
     private fun createShippingWithPickupPoint(
         selectedShippingMethod: ShippingMethod,
-        request: CalculateSelectedShippingRequest
+        request: CalculateSelectedShippingRequest,
+        cost: Shipping.Cost
     ) = PickupPointShipping(
         id = ShippingId(UUID.randomUUID().toString()),
+        cost = cost,
         shippingMethodId = selectedShippingMethod.id,
+        shippingMethodName = selectedShippingMethod.methodName,
         pickupPoint = request.pickupPoint!!.let { Shipping.PickupPoint(
             firstAndLastName = it.firstAndLastName,
             phoneNumber = it.phoneNumber,
@@ -30,10 +33,13 @@ class ShippingFactory {
 
     private fun createShippingOnAddress(
         selectedShippingMethod: ShippingMethod,
-        request: CalculateSelectedShippingRequest
+        request: CalculateSelectedShippingRequest,
+        cost: Shipping.Cost
     ) = AddressShipping(
         id = ShippingId(UUID.randomUUID().toString()),
+        cost = cost,
         shippingMethodId = selectedShippingMethod.id,
+        shippingMethodName = selectedShippingMethod.methodName,
         address = request.shippingAddress!!.let { Shipping.ShippingAddress(
             firstAndLastName = it.firstAndLastName,
             phoneNumber = it.phoneNumber,

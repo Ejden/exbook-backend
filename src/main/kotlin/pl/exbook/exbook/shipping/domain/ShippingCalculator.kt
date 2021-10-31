@@ -15,7 +15,13 @@ class ShippingCalculator(
 
     fun calculateSelectedShipping(selectedShippingMethod: ShippingMethod, request: CalculateSelectedShippingRequest): Shipping {
         validateSelectedShippingMethod(selectedShippingMethod.id, request.orderItems.map { it.offerId })
-        return shippingFactory.createShipping(selectedShippingMethod, request)
+        val cost = calculateShippingCost(selectedShippingMethod.id, request)
+        return shippingFactory.createShipping(selectedShippingMethod, request, cost)
+    }
+
+    private fun calculateShippingCost(shippingMethodId: ShippingMethodId, request: CalculateSelectedShippingRequest): Shipping.Cost {
+        val maxOfferDeliveryCostInOrder = request.offersShippingMethods.flatMap { it.value }.maxOf { it.money }
+        return Shipping.Cost(maxOfferDeliveryCostInOrder)
     }
 
     private fun validateSelectedShippingMethod(selectedShippingMethod: ShippingMethodId, offerIds: List<OfferId>) {

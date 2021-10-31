@@ -3,6 +3,7 @@ package pl.exbook.exbook.shipping.adapter.mongodb
 import pl.exbook.exbook.shared.PickupPointId
 import pl.exbook.exbook.shared.ShippingId
 import pl.exbook.exbook.shared.ShippingMethodId
+import pl.exbook.exbook.shared.dto.toDocument
 import pl.exbook.exbook.shipping.domain.AddressShipping
 import pl.exbook.exbook.shipping.domain.PickupPointShipping
 import pl.exbook.exbook.shipping.domain.Shipping
@@ -13,11 +14,11 @@ class DatabaseShippingRepository(
     private val mongoShippingRepository: MongoShippingRepository
 ) : ShippingRepository {
 
-    override fun findById(shippingId: ShippingId): Shipping? {
+    override fun findById(shippingId: ShippingId): Shipping {
         return mongoShippingRepository
             .findById(shippingId.raw)
             .orElseThrow{ ShippingNotFoundException(shippingId) }
-            ?.toDomain()
+            .toDomain()
     }
 
     override fun save(shipping: Shipping): Shipping {
@@ -36,12 +37,16 @@ private fun ShippingDocument.toDomain(): Shipping {
 private fun PickupPointShippingDocument.toPickupPointDomain() = PickupPointShipping(
     id = ShippingId(this.id!!),
     shippingMethodId = ShippingMethodId(this.shippingMethodId),
+    shippingMethodName = this.shippingMethodName,
+    cost = Shipping.Cost(this.cost.finalCost.toDomain()),
     pickupPoint = this.pickupPoint.toDomain()
 )
 
 private fun AddressShippingDocument.toAddressDomain() = AddressShipping(
     id = ShippingId(this.id!!),
     shippingMethodId = ShippingMethodId(this.shippingMethodId),
+    shippingMethodName = this.shippingMethodName,
+    cost = Shipping.Cost(this.cost.finalCost.toDomain()),
     address = this.address.toDomain()
 )
 
@@ -73,12 +78,16 @@ private fun Shipping.toDocument(): ShippingDocument {
 private fun PickupPointShipping.toDocument() = PickupPointShippingDocument(
     id = this.id.raw,
     shippingMethodId = this.shippingMethodId.raw,
+    shippingMethodName = this.shippingMethodName,
+    cost = DeliveryCostDocument(this.cost.finalCost.toDocument()),
     pickupPoint = this.pickupPoint.toDocument()
 )
 
 private fun AddressShipping.toDocument() = AddressShippingDocument(
     id = this.id.raw,
     shippingMethodId = this.shippingMethodId.raw,
+    shippingMethodName = this.shippingMethodName,
+    cost = DeliveryCostDocument(this.cost.finalCost.toDocument()),
     address = this.address.toDocument(),
 )
 

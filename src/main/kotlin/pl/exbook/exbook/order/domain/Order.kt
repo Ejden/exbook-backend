@@ -1,33 +1,32 @@
 package pl.exbook.exbook.order.domain
 
 import pl.exbook.exbook.offer.domain.Offer
-import pl.exbook.exbook.shared.Money
-import pl.exbook.exbook.shared.OfferId
-import pl.exbook.exbook.shared.OrderId
-import pl.exbook.exbook.shared.UserId
+import pl.exbook.exbook.shared.*
 import java.time.Instant
 
 data class Order(
     val id: OrderId?,
     val buyer: Buyer,
-    val shippingId: ShippingId,
+    val seller: Seller,
+    val shipping: Shipping,
     val items: List<OrderItem>,
     val orderDate: Instant,
-    val returned: Boolean,
-    val accepted: Boolean
+    val status: OrderStatus,
+    val totalCost: Money
 ) {
     data class OrderItem(
         val offerId: OfferId,
-        val seller: Seller,
         val orderType: OrderType,
         val exchangeBook: ExchangeBook?,
         val quantity: Int,
-        val price: Money?
+        val cost: Money?
     )
 
     data class Buyer(val id: UserId)
 
     data class Seller(val id: UserId)
+
+    data class Shipping(val id: ShippingId)
 
     data class ExchangeBook(
         val author: String,
@@ -36,10 +35,15 @@ data class Order(
         val condition: Offer.Condition
     )
 
-    data class ShippingId(val raw: String)
-
     enum class OrderType {
         EXCHANGE,
         BUY
+    }
+
+    enum class OrderStatus {
+        NEW,
+        DECLINED,
+        ACCEPTED,
+        RETURNED
     }
 }

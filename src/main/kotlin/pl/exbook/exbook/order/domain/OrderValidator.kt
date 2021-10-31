@@ -3,6 +3,7 @@ package pl.exbook.exbook.order.domain
 import pl.exbook.exbook.offer.domain.Offer
 import pl.exbook.exbook.order.adapter.rest.NewOrderDto
 import pl.exbook.exbook.shared.OfferId
+import pl.exbook.exbook.shared.UserId
 import java.lang.RuntimeException
 
 class OrderValidator {
@@ -10,6 +11,7 @@ class OrderValidator {
     fun validate(newOrder: NewOrderDto, offers: List<Offer>) {
         checkItemsQuantity(newOrder.items)
         checkOrderType(newOrder.items, offers)
+        checkThatOffersAreFromTheSameSeller(offers, newOrder.seller)
     }
 
     private fun checkItemsQuantity(orderItems: List<NewOrderDto.OrderItemDto>) {
@@ -41,6 +43,12 @@ class OrderValidator {
             if (it.first.orderType == Order.OrderType.EXCHANGE.name && it.first.exchangeBook == null) {
                 throw OrderValidationFailedException("Exchange book not provided for exchange offer ${it.second.id}")
             }
+        }
+    }
+
+    private fun checkThatOffersAreFromTheSameSeller(offers: List<Offer>, seller: NewOrderDto.SellerDto) {
+        if (!offers.all { it.seller.id == UserId(seller.id) }) {
+            throw OrderValidationFailedException("Offers $offers are not from the same seller ${seller.id}")
         }
     }
 }

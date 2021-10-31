@@ -1,39 +1,39 @@
 package pl.exbook.exbook.order.adapter.mongodb
 
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.data.mongodb.core.mapping.Document
+import org.springframework.data.repository.PagingAndSortingRepository
 import org.springframework.data.repository.Repository
+import pl.exbook.exbook.shared.dto.MoneyDocument
 import pl.exbook.exbook.shared.dto.MoneyDto
 import java.time.Instant
 
-interface MongoOrderRepository : Repository<OrderDocument, String> {
+interface MongoOrderRepository : PagingAndSortingRepository<OrderDocument, String> {
 
-    fun findById(id: String): OrderDocument?
+    fun findAllByBuyerId(buyerId: String, pageable: Pageable): Page<OrderDocument>
 
-    fun save(orderDocument: OrderDocument): OrderDocument
+    fun findAllBySellerId(sellerId: String, pageable: Pageable): Page<OrderDocument>
 }
 
-@Document(collation = "orders")
+@Document(collection = "orders")
 data class OrderDocument(
     val id: String?,
-    val buyer: BuyerDocument,
+    val buyerId: String,
+    val sellerId: String,
+    val shippingId: String,
     val items: List<OrderItemDocument>,
     val orderDate: Instant,
-    val returned: Boolean,
-    val accepted: Boolean,
-    val shippingId: String
-)
-
-data class BuyerDocument(
-    val id: String
+    val status: String,
+    val totalCost: MoneyDocument
 )
 
 data class OrderItemDocument(
     val offerId: String,
-    val seller: SellerDocument,
     val orderType: String,
     val exchangeBook: ExchangeBookDocument?,
     val quantity: Int,
-    val price: MoneyDto?
+    val cost: MoneyDto?
 )
 
 data class ExchangeBookDocument(
@@ -41,8 +41,4 @@ data class ExchangeBookDocument(
     val title: String,
     val isbn: Long?,
     val condition: String
-)
-
-data class SellerDocument(
-    val id: String
 )
