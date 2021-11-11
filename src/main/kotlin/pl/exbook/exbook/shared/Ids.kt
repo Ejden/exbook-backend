@@ -17,3 +17,6 @@ data class ImageId(val raw: String)
 data class UserStatisticsId(val raw: String)
 
 data class OrderId(val raw: String)
+
+@JvmInline
+value class BasketId(val raw: String)

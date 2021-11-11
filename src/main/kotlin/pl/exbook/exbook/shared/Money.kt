@@ -23,6 +23,15 @@ class Money(
         if (this.currency != other.currency) throw InconsistentCurrencyException()
         return Money(this.amount.plus(other.amount).setScale(2), this.currency)
     }
+
+    operator fun minus(other: Money): Money {
+        if (this.currency != other.currency) throw InconsistentCurrencyException()
+        return Money(this.amount.minus(other.amount).setScale(2), this.currency)
+    }
+
+    operator fun times(value: Long): Money {
+        return Money(this.amount.times(BigDecimal.valueOf(value)), this.currency)
+    }
 }
 
 class InconsistentCurrencyException : RuntimeException()

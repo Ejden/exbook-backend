@@ -25,7 +25,6 @@ enum class Authority(val value: String) {
     SEARCH_BOOKS("SEARCH_BOOKS"),
     EXCHANGE_BOOKS("EXCHANGE_BOOKS"),
     READ_ABOUT_ME("READ_ABOUT_ME")
-
 }
 
 enum class Role(val value: String) {
