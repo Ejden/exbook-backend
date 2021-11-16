@@ -22,7 +22,7 @@ class CategoryBuilder private constructor() {
         return this
     }
 
-    fun withName(id: String): CategoryBuilder {
+    fun withName(name: String): CategoryBuilder {
         this.name = name
         return this
     }

@@ -4,6 +4,7 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import org.junit.jupiter.api.Test
 import org.springframework.http.HttpStatus
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import pl.exbook.exbook.builders.CategoryBuilder.Companion.aCategoryBuilder
 import pl.exbook.exbook.builders.UserBuilder.Companion.aUserBuilder
 import pl.exbook.exbook.category.adapter.rest.CategoryDto
@@ -50,12 +51,11 @@ internal class CategoryEndpointTest: BaseFeatureE2ETest() {
 
         // and
         assertThatCategories()
-            .hasCategories(listOf(
+            .hasCategories(
                 CategoryDto(CATEGORY_ID_1, CATEGORY_NAME_1, ImageDto(IMAGE_URL_1), null),
                 CategoryDto(CATEGORY_ID_2, CATEGORY_NAME_2, ImageDto(IMAGE_URL_2), null),
                 CategoryDto(CATEGORY_ID_3, CATEGORY_NAME_3, ImageDto(IMAGE_URL_3), CATEGORY_ID_2)
-            ))
-
+            )
     }
 
     @Test
@@ -79,7 +79,7 @@ internal class CategoryEndpointTest: BaseFeatureE2ETest() {
         // given
         thereIsUser(aUserBuilder()
                 .withLogin("ADMIN")
-                .withPassword("ADMIN_PASSWORD")
+                .withPassword(BCryptPasswordEncoder().encode("ADMIN_PASSWORD"))
                 .withAdminPrivileges()
                 .withActiveAccount()
         )

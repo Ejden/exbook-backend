@@ -49,25 +49,25 @@ class CategoryDtoAssertions private constructor(
 
 @Suppress("UNCHECKED_CAST")
 class CategoriesDtoAssertions private constructor(
-    private val categories: Map<String, Any>
+    private val categories: List<Any>
 ){
 
     companion object {
         fun assert(categories: Any?): CategoriesDtoAssertions {
             assertThat(categories).isNotNull()
-            return CategoriesDtoAssertions(categories as Map<String, Any>)
+            return CategoriesDtoAssertions(categories as List<Any>)
         }
     }
 
-    fun hasCategories(categories: List<CategoryDto>): CategoriesDtoAssertions {
-        assertThat(this.categories.values.map {
-            (it as Map<String, Any>).let { cat -> CategoryDto(
-                cat["id"] as String,
-                it["name"] as String,
+    fun hasCategories(vararg categories: CategoryDto): CategoriesDtoAssertions {
+        assertThat(this.categories.map { it as Map<String, String> }.map {
+            CategoryDto(
+                it["id"]!!,
+                it["name"]!!,
                 ImageDto((it["icon"] as Map<String, Any>)["url"] as String),
-                it["parentId"] as String
-            ) }
-        }).containsExactly(categories)
+                it["parentId"]
+            )
+        }).containsExactly(*categories)
         return this
     }
 

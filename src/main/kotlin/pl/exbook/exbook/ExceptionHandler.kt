@@ -1,6 +1,7 @@
 package pl.exbook.exbook
 
 import com.auth0.jwt.exceptions.TokenExpiredException
+import com.fasterxml.jackson.databind.exc.MismatchedInputException
 import mu.KLogging
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -39,6 +40,21 @@ class ExceptionHandler {
     @ExceptionHandler(OfferNotFoundException::class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     fun handle(cause: OfferNotFoundException) {}
+
+    @ExceptionHandler(MismatchedInputException::class)
+    fun handle(cause: MismatchedInputException): ResponseEntity<ErrorResponse> {
+        return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(
+                ErrorResponse(
+                    message = cause.message.toString(),
+                    code = MismatchedInputException::class.simpleName,
+                    details = null,
+                    path = "",
+                    userMessage = null
+                )
+            )
+    }
 }
 
 data class ErrorResponse(
