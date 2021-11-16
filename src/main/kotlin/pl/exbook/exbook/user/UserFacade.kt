@@ -1,7 +1,7 @@
 package pl.exbook.exbook.user
 
 import com.mongodb.MongoWriteException
-import mu.KotlinLogging
+import mu.KLogging
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import pl.exbook.exbook.exceptions.UserAlreadyExistsException
@@ -12,11 +12,11 @@ import pl.exbook.exbook.user.domain.Role
 import pl.exbook.exbook.user.domain.User
 import pl.exbook.exbook.user.domain.UserRepository
 
-private val logger = KotlinLogging.logger {}
-
 class UserFacade(
     private val userRepository: UserRepository,
 ) {
+
+    companion object : KLogging()
 
     fun createUser(request: CreateUserRequest): User {
         try {
@@ -44,15 +44,15 @@ class UserFacade(
 
                 val user = userRepository.insert(newUser)
 
-                logger.info("Created new user with id = ${newUser.id}")
+                logger.info {"Created new user with id = ${newUser.id}" }
 
                 return user
             } else {
-                logger.error("User with email ${request.email} or login ${request.login} already exists")
+                logger.error { "User with email ${request.email} or login ${request.login} already exists" }
                 throw UserAlreadyExistsException();
             }
         } catch (e : MongoWriteException) {
-            logger.error("User with email ${request.email} or login ${request.login} already exists")
+            logger.error { "User with email ${request.email} or login ${request.login} already exists" }
             throw UserAlreadyExistsException()
         }
     }

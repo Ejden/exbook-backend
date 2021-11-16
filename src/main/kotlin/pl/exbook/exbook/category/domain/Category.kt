@@ -10,3 +10,11 @@ class Category(
 )
 
 data class Image(val url: String)
+
+data class CategoryNode(
+    val id: CategoryId,
+    val name: String,
+    val image: Image? = null,
+    val parentId: CategoryId?,
+    val children: MutableList<CategoryNode> = mutableListOf()
+)

@@ -5,5 +5,11 @@ import pl.exbook.exbook.shared.ImageId
 
 class Image (
     var id: ImageId?,
-    val file: Binary
+    val file: Binary,
+    val contentType: ContentType
+)
+
+class ContentType(
+    val type: String,
+    val subtype: String
 )

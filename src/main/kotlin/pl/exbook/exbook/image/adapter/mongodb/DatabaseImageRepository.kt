@@ -1,5 +1,6 @@
 package pl.exbook.exbook.image.adapter.mongodb
 
+import pl.exbook.exbook.image.domain.ContentType
 import pl.exbook.exbook.image.domain.Image
 import pl.exbook.exbook.shared.ImageId
 import pl.exbook.exbook.image.domain.ImageRepository
@@ -21,10 +22,22 @@ class DatabaseImageRepository(private val mongoImageRepository: MongoImageReposi
 
 private fun Image.toDocument() = ImageDocument(
     id = this.id?.raw,
-    file = this.file
+    file = this.file,
+    contentType = this.contentType.toDocument(),
 )
 
 private fun ImageDocument.toDomain() = Image(
     id = ImageId(this.id!!),
-    file = this.file
+    file = this.file,
+    contentType = this.contentType.toDomain()
+)
+
+private fun ContentType.toDocument() = ContentTypeDocument(
+    type = this.type,
+    subtype = this.subtype
+)
+
+private fun ContentTypeDocument.toDomain() = ContentType(
+    type = this.type,
+    subtype = this.subtype
 )

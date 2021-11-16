@@ -33,7 +33,8 @@ class SecurityConfig (
     private val objectMapper: ObjectMapper,
     private val successHandler: RestAuthenticationSuccessHandler,
     private val failureHandler: RestAuthenticationFailureHandler,
-    @Value("\${jwt.secret}") private val secret: String): WebSecurityConfigurerAdapter() {
+    @Value("\${jwt.secret}") private val secret: String
+) : WebSecurityConfigurerAdapter() {
 
     override fun configure(auth: AuthenticationManagerBuilder?) {
         auth?.userDetailsService(userDetailsServiceImpl)
@@ -61,10 +62,9 @@ class SecurityConfig (
             ?.and()
             ?.exceptionHandling()
             ?.authenticationEntryPoint(HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
-
     }
 
-    fun authenticationFilter() : JwtAuthenticationFilter {
+    fun authenticationFilter(): JwtAuthenticationFilter {
         val authenticationFilter = JwtAuthenticationFilter(objectMapper)
         authenticationFilter.setAuthenticationSuccessHandler(successHandler)
         authenticationFilter.setAuthenticationFailureHandler(failureHandler)
@@ -87,7 +87,7 @@ class SecurityConfig (
     }
 
     @Bean
-    fun passwordEncoder() : PasswordEncoder {
+    fun passwordEncoder(): PasswordEncoder {
         return BCryptPasswordEncoder()
     }
 }

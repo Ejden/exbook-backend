@@ -11,21 +11,21 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import pl.exbook.exbook.shared.Currency
-import pl.exbook.exbook.shared.dto.CostDto
+import pl.exbook.exbook.shared.dto.MoneyDto
 import pl.exbook.exbook.shared.dto.toDto
 import pl.exbook.exbook.offer.OfferFacade
 import pl.exbook.exbook.offer.domain.Offer
-import pl.exbook.exbook.shared.MediaType
+import pl.exbook.exbook.shared.ContentType
 import pl.exbook.exbook.shared.OfferId
 import pl.exbook.exbook.user.UserNotFoundException
 
 @RestController
-@RequestMapping("api/v1/offers")
+@RequestMapping("api/offers")
 class OfferEndpoint(private val offerFacade: OfferFacade) {
 
     companion object : KLogging()
 
-    @PostMapping(produces = [MediaType.V1])
+    @PostMapping(produces = [ContentType.V1])
     @PreAuthorize("hasAuthority('EXCHANGE_BOOKS')")
     fun addOffer(@RequestBody offer: NewOfferRequest, user: UsernamePasswordAuthenticationToken?): ResponseEntity<OfferDto> {
         return if (user != null) {
@@ -36,7 +36,7 @@ class OfferEndpoint(private val offerFacade: OfferFacade) {
         }
     }
 
-    @GetMapping("{offerId}", produces = [MediaType.V1])
+    @GetMapping("{offerId}", produces = [ContentType.V1])
     fun getOffer(@PathVariable offerId: OfferId): OfferDto {
         return offerFacade.getOffer(offerId).toDto()
     }
@@ -45,7 +45,7 @@ class OfferEndpoint(private val offerFacade: OfferFacade) {
 data class NewOfferRequest(
     val book: Book,
     val description: String?,
-    val categories: Collection<Category>,
+    val category: String,
     val type: Offer.Type,
     val cost: Cost?,
     val location: String,
@@ -78,10 +78,10 @@ data class OfferDto(
     val images: ImagesDto,
     val seller: SellerDto,
     val type: String,
-    val cost: CostDto?,
+    val cost: MoneyDto?,
     val location: String,
-    val shippingMethods: Collection<ShippingMethodDto>,
-    val categories: Collection<CategoryDto>
+    val shipping: ShippingDto,
+    val category: CategoryDto
 ) {
 
     data class BookDto(
@@ -104,10 +104,15 @@ data class OfferDto(
 
     data class ShippingMethodDto(
         val id: String,
-        val cost: CostDto
+        val cost: MoneyDto
     )
 
     data class CategoryDto(val id: String)
+
+    data class ShippingDto(
+        val shippingMethods: Collection<ShippingMethodDto>,
+        val cheapestMethod: ShippingMethodDto
+    )
 }
 
 private fun Offer.toDto() = OfferDto(
@@ -117,10 +122,13 @@ private fun Offer.toDto() = OfferDto(
     images = this.images.toDto(),
     seller = this.seller.toDto(),
     type = this.type.name,
-    cost = this.cost?.toDto(),
+    cost = this.price?.toDto(),
     location = this.location,
-    shippingMethods = this.shippingMethods.map { it.toDto() },
-    categories = this.categories.map { it.toDto() }
+    shipping = OfferDto.ShippingDto(
+        shippingMethods = this.shippingMethods.map { it.toDto() },
+        cheapestMethod = this.shippingMethods.minByOrNull { it.money }!!.toDto()
+    ),
+    category = this.category.toDto()
 )
 
 private fun Offer.Book.toDto() = OfferDto.BookDto(
@@ -141,7 +149,7 @@ private fun Offer.Seller.toDto() = OfferDto.SellerDto(this.id.raw)
 
 private fun Offer.ShippingMethod.toDto() = OfferDto.ShippingMethodDto(
     id = this.id.raw,
-    cost = this.cost.toDto()
+    cost = this.money.toDto()
 )
 
 private fun Offer.Category.toDto() = OfferDto.CategoryDto(this.id.raw)

@@ -9,9 +9,9 @@ class Offer(
     val description: String?,
     val type: Type,
     val seller: Seller,
-    val cost: Cost?,
+    val price: Money?,
     val location: String,
-    val categories: Collection<Category>,
+    val category: Category,
     val shippingMethods: Collection<ShippingMethod>
 ) {
     enum class Type {
@@ -20,7 +20,7 @@ class Offer(
 
     data class ShippingMethod(
         val id: ShippingMethodId,
-        val cost: Cost
+        val money: Money
     )
 
     data class Book(
@@ -44,4 +44,8 @@ class Offer(
     }
 
     data class Image(val url: String)
+
+    fun canBeBought(): Boolean = this.type == Type.EXCHANGE_AND_BUY || this.type == Type.BUY_ONLY
+
+    fun canBeExchanged(): Boolean = this.type == Type.EXCHANGE_AND_BUY || this.type == Type.EXCHANGE_ONLY
 }

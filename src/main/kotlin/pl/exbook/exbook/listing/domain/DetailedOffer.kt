@@ -11,10 +11,10 @@ class DetailedOffer(
     val description: String?,
     val type: Type,
     val seller: Seller,
-    val cost: Cost?,
+    val money: Money?,
     val location: String,
-    val categories: Collection<Category>,
-    val shippingMethods: Collection<ShippingMethod>
+    val category: Category,
+    val shipping: Shipping
 ) {
     data class Book(
         val author: String,
@@ -29,10 +29,15 @@ class DetailedOffer(
         val grade: Double
     )
 
+    data class Shipping(
+        val shippingMethods: Collection<ShippingMethod>,
+        val cheapestMethod: ShippingMethod
+    )
+
     data class ShippingMethod(
         val id: ShippingMethodId,
         val name: String,
-        val cost: Cost
+        val money: Money
     )
 
     data class Images(

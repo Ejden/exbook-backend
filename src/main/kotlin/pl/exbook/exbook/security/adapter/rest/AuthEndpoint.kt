@@ -2,11 +2,13 @@ package pl.exbook.exbook.security.adapter.rest
 
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.GrantedAuthority
-import org.springframework.web.bind.annotation.*
-import pl.exbook.exbook.exceptions.BadRequest
 import pl.exbook.exbook.user.UserFacade
 import pl.exbook.exbook.user.domain.User
 import java.time.Instant
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("api/auth")
@@ -14,19 +16,13 @@ class AuthEndpoint(private val userFacade: UserFacade) {
 
     @PreAuthorize("permitAll()")
     @PostMapping("signup")
-    fun signUp(@RequestBody request : CreateUserRequest?): DetailedUserDto {
-        if (request != null) {
-            return userFacade.createUser(request).toDetailedUserDto()
-        } else {
-            throw BadRequest("Something is no yes")
-        }
+    fun signUp(@RequestBody request : CreateUserRequest): DetailedUserDto {
+        return userFacade.createUser(request).toDetailedUserDto()
     }
 
     @PreAuthorize("permitAll()")
     @PostMapping("login")
-    fun signIn(@RequestBody loginCredentials: LoginCredentials) {
-
-    }
+    fun signIn(@RequestBody loginCredentials: LoginCredentials) {}
 }
 
 class CreateUserRequest (

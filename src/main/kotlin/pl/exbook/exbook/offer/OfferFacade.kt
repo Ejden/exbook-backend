@@ -89,7 +89,7 @@ class OfferFacade (
 
         val offer =  offerRepository.save(request, user.id!!)
 
-        logger.debug("User with id = ${user.id} added new offer with id = ${offer.id}")
+        logger.debug { "User with id = ${user.id} added new offer with id = ${offer.id}" }
 
         return offer
     }
