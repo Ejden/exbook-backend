@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseStatus
 import pl.exbook.exbook.image.ImageNotFoundException
 import pl.exbook.exbook.offer.adapter.mongodb.OfferNotFoundException
+import pl.exbook.exbook.stock.domain.InsufficientStockException
+import pl.exbook.exbook.stock.domain.NonPositiveAmountException
+import pl.exbook.exbook.stock.domain.StockNotFoundException
 
 @ControllerAdvice
 class ExceptionHandler {
@@ -55,12 +58,36 @@ class ExceptionHandler {
                 )
             )
     }
+
+    @ExceptionHandler(StockNotFoundException::class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    fun handle(cause: StockNotFoundException) {}
+
+    @ExceptionHandler(InsufficientStockException::class)
+    fun handle(cause: InsufficientStockException): ResponseEntity<ErrorResponse> = ResponseEntity
+        .status(HttpStatus.UNPROCESSABLE_ENTITY)
+        .body(
+            ErrorResponse(
+                message = cause.message.toString(),
+                code = InsufficientStockException::class.simpleName
+            )
+        )
+
+    @ExceptionHandler(NonPositiveAmountException::class)
+    fun handle(cause: NonPositiveAmountException): ResponseEntity<ErrorResponse> = ResponseEntity
+        .status(HttpStatus.UNPROCESSABLE_ENTITY)
+        .body(
+            ErrorResponse(
+                message = cause.message.toString(),
+                code = NonPositiveAmountException::class.simpleName
+            )
+        )
 }
 
 data class ErrorResponse(
     val message: String,
-    val code: String?,
-    val details: String?,
-    val path: String,
-    val userMessage: String?
+    val code: String? = null,
+    val details: String? = null,
+    val path: String? = null,
+    val userMessage: String? = null
 )

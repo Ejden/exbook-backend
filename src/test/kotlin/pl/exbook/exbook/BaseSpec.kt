@@ -4,7 +4,7 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import org.junit.jupiter.api.Test
 
-internal class BaseSpec {
+abstract class BaseSpec {
 
     @Test
     fun `1 == 1`() {

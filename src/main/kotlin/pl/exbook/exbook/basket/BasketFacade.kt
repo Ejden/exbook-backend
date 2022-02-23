@@ -20,7 +20,6 @@ class BasketFacade(
     private val validator: BasketValidator,
     private val basketFactory: BasketFactory
 ) {
-
     fun getUserBasket(userId: UserId): Basket {
         return try {
             basketRepository.getUserBasket(userId)
@@ -33,15 +32,15 @@ class BasketFacade(
         val user = userFacade.getUserByUsername(username)
 
         return try {
-            basketRepository.getUserBasket(user.id!!)
+            basketRepository.getUserBasket(user.id)
         } catch (cause: BasketNotFoundException) {
-            basketRepository.save(basketFactory.createEmptyBasket(user.id!!))
+            basketRepository.save(basketFactory.createEmptyBasket(user.id))
         }
     }
 
     fun getDetailedUserBasket(username: String): DetailedBasket {
         val user = userFacade.getUserByUsername(username)
-        val basket = getUserBasket(user.id!!)
+        val basket = getUserBasket(user.id)
         val detailedItems = basket.items.toDetailed()
 
         return basket.toDetailed(detailedItems)
@@ -88,7 +87,7 @@ class BasketFacade(
                 ),
                 images = DetailedBasket.Images(
                     thumbnail = offer.images.thumbnail?.let { img -> DetailedBasket.Image(img.url) },
-                    otherImages = offer.images.otherImages.map { img -> DetailedBasket.Image(img.url) }
+                    otherImages = offer.images.allImages.map { img -> DetailedBasket.Image(img.url) }
                 ),
                 seller = DetailedBasket.Seller(
                     id = offer.seller.id,

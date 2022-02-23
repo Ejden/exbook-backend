@@ -13,9 +13,12 @@ data class OrderSnippet(
     val seller: Seller,
     val shipping: Shipping,
     val items: List<OrderItem>,
+    val orderType: Order.OrderType,
+    val exchangeBooks: List<Order.ExchangeBook>,
     val orderDate: Instant,
     val status: Order.OrderStatus,
-    val totalCost: Money
+    val totalCost: Money,
+    val note: String
 ) {
     data class Buyer(val id: UserId)
 
@@ -35,7 +38,6 @@ data class OrderSnippet(
     data class OrderItem(
         val offerId: OfferId,
         val book: Book,
-        val orderType: Order.OrderType,
         val images: Images,
         val quantity: Int,
         val cost: Money?

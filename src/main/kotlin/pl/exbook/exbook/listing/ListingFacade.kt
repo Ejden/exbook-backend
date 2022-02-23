@@ -1,12 +1,10 @@
 package pl.exbook.exbook.listing
 
-import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.Page
 import pl.exbook.exbook.listing.domain.DetailedOffer
 import pl.exbook.exbook.offer.OfferFacade
 import pl.exbook.exbook.offer.domain.Offer
 import pl.exbook.exbook.shared.*
-import pl.exbook.exbook.event.events.OfferViewEvent
 import pl.exbook.exbook.shippingmethod.ShippingMethodFacade
 import pl.exbook.exbook.shippingmethod.domain.ShippingMethod
 import pl.exbook.exbook.user.UserFacade
@@ -15,8 +13,7 @@ import pl.exbook.exbook.user.domain.User
 class ListingFacade(
     private val offerFacade: OfferFacade,
     private val userFacade: UserFacade,
-    private val shippingMethodFacade: ShippingMethodFacade,
-    private val applicationEventPublisher: ApplicationEventPublisher
+    private val shippingMethodFacade: ShippingMethodFacade
 ) {
 
     fun getOfferListing(offersPerPage: Int?, page: Int?, sorting: String?): Page<DetailedOffer> {
@@ -24,7 +21,7 @@ class ListingFacade(
             val seller = userFacade.getUserById(it.seller.id)
             val shippingMethods = it.shippingMethods
                 .map { s -> Pair(shippingMethodFacade.getShippingMethodById(s.id), s) }
-                .map { s -> s.first.toDetailed(s.second.money) }
+                .map { s -> s.first.toDetailed(s.second.price) }
             it.toDetailedOffer(seller, shippingMethods, findCheapestShippingMethod(shippingMethods))
         }
     }
@@ -34,16 +31,7 @@ class ListingFacade(
         val seller = userFacade.getUserById(offer.seller.id)
         val shippingMethods = offer.shippingMethods
             .map { s -> Pair(shippingMethodFacade.getShippingMethodById(s.id), s) }
-            .map { s -> s.first.toDetailed(s.second.money) }
-
-        applicationEventPublisher.publishEvent(
-            OfferViewEvent(
-                source = this,
-                offerId = offerId,
-                sellerId = offer.seller.id,
-                viewerId = null
-            )
-        )
+            .map { s -> s.first.toDetailed(s.second.price) }
 
         return offer.toDetailedOffer(seller, shippingMethods, findCheapestShippingMethod(shippingMethods))
     }
@@ -51,7 +39,7 @@ class ListingFacade(
     private fun findCheapestShippingMethod(shippingMethods: List<DetailedOffer.ShippingMethod>): DetailedOffer.ShippingMethod {
         return when {
             shippingMethods.size == 1 && shippingMethods[0].name == "Odbiór osobisty" -> shippingMethods[0]
-            else -> shippingMethods.filterNot { it.name == "Odbiór osobisty" }.minByOrNull { it.money }!!
+            else -> shippingMethods.filterNot { it.name == "Odbiór osobisty" }.minByOrNull { it.price }!!
         }
     }
 }
@@ -67,7 +55,7 @@ private fun Offer.toDetailedOffer(
     description = this.description,
     type = this.type,
     seller = seller.toDetailed(),
-    money = this.price,
+    price = this.price,
     location = this.location,
     category = this.category.toDetailed(),
     shipping = DetailedOffer.Shipping(
@@ -85,19 +73,19 @@ private fun Offer.Book.toDetailed() = DetailedOffer.Book(
 
 private fun User.toDetailed() = DetailedOffer.Seller(
     id = UserId(this.id!!.raw),
-    username = this.login,
+    username = this.username,
     grade = this.grade
 )
 
 private fun ShippingMethod.toDetailed(customisedMoney: Money) = DetailedOffer.ShippingMethod(
     id = ShippingMethodId(this.id.raw),
     name = this.methodName,
-    money = customisedMoney
+    price = customisedMoney
 )
 
 private fun Offer.Images.toDetailed() = DetailedOffer.Images(
     thumbnail = this.thumbnail?.toDetailed(),
-    otherImages = this.otherImages.map { it.toDetailed() }
+    otherImages = this.allImages.map { it.toDetailed() }
 )
 
 private fun Offer.Image.toDetailed() = DetailedOffer.Image(this.url)

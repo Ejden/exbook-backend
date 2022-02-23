@@ -5,19 +5,20 @@ import pl.exbook.exbook.shared.*
 import java.time.Instant
 
 data class Order(
-    val id: OrderId?,
+    val id: OrderId,
     val buyer: Buyer,
     val seller: Seller,
     val shipping: Shipping,
     val items: List<OrderItem>,
+    val orderType: OrderType,
+    val exchangeBooks: List<ExchangeBook>,
     val orderDate: Instant,
     val status: OrderStatus,
-    val totalCost: Money
+    val totalCost: Money,
+    val note: String
 ) {
     data class OrderItem(
         val offerId: OfferId,
-        val orderType: OrderType,
-        val exchangeBook: ExchangeBook?,
         val quantity: Int,
         val cost: Money?
     )
@@ -42,6 +43,7 @@ data class Order(
 
     enum class OrderStatus {
         NEW,
+        WAITING_FOR_ACCEPT,
         DECLINED,
         ACCEPTED,
         RETURNED

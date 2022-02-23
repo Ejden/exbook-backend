@@ -26,9 +26,11 @@ class JwtAuthenticationFilter(private val objectMapper: ObjectMapper) : Username
         }
 
         val cred = objectMapper.readValue(sb.toString(), LoginCredentials::class.java)
-        val token = UsernamePasswordAuthenticationToken(cred.login, cred.password)
+        val token = UsernamePasswordAuthenticationToken(cred.username, cred.password)
         setDetails(request, token)
 
         return this.authenticationManager.authenticate(token)
     }
+
+
 }

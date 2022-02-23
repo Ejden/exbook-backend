@@ -1,6 +1,7 @@
 package pl.exbook.exbook.user
 
 import com.mongodb.MongoWriteException
+import java.util.UUID
 import mu.KLogging
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
@@ -20,13 +21,14 @@ class UserFacade(
 
     fun createUser(request: CreateUserRequest): User {
         try {
-            val foundUser = userRepository.findByLoginOrEmail(request.login, request.email)
+            val foundUser = userRepository.findByLoginOrEmail(request.username, request.email)
 
             if (foundUser == null) {
                 val newUser = User(
+                    id = UserId(UUID.randomUUID().toString()),
                     firstName = request.firstName,
                     lastName = request.lastName,
-                    login = request.login,
+                    username = request.username,
                     password = BCryptPasswordEncoder().encode(request.password),
                     email = request.email,
                     phoneNumber = null,
@@ -48,11 +50,11 @@ class UserFacade(
 
                 return user
             } else {
-                logger.error { "User with email ${request.email} or login ${request.login} already exists" }
+                logger.error { "User with email ${request.email} or login ${request.username} already exists" }
                 throw UserAlreadyExistsException();
             }
         } catch (e : MongoWriteException) {
-            logger.error { "User with email ${request.email} or login ${request.login} already exists" }
+            logger.error { "User with email ${request.email} or login ${request.username} already exists" }
             throw UserAlreadyExistsException()
         }
     }

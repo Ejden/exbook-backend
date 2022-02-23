@@ -8,8 +8,9 @@ import pl.exbook.exbook.shippingmethod.domain.ShippingMethodRepository
 class ShippingMethodFacade(
     private val shippingRepository: ShippingMethodRepository
 ) {
-
     fun getShippingMethods(): List<ShippingMethod> = shippingRepository.findAll()
+
+    fun getShippingMethod(shippingMethodId: ShippingMethodId): ShippingMethod? = shippingRepository.findById(shippingMethodId)
 
     fun getShippingMethodById(
         shippingMethodId: ShippingMethodId

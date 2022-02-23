@@ -12,7 +12,6 @@ const val CONTENT_TYPE = "application/vnd.exbook.v1+json"
 class ShippingEndpoint(
     val shippingMethodFacade: ShippingMethodFacade
 ) {
-
     @GetMapping(produces = [CONTENT_TYPE])
     fun getShippingMethods(): List<ShippingMethodDto> {
         return shippingMethodFacade.getShippingMethods().map { it.toDto() }

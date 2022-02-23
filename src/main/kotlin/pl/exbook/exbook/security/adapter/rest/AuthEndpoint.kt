@@ -26,14 +26,14 @@ class AuthEndpoint(private val userFacade: UserFacade) {
 }
 
 class CreateUserRequest (
-    var login: String,
+    var username: String,
     var firstName: String,
     var lastName: String,
     var password: String,
     var email: String
 )
 
-data class LoginCredentials(val login: String, val password: String)
+data class LoginCredentials(val username: String, val password: String)
 
 data class DetailedUserDto (
     val id: String,
@@ -55,7 +55,7 @@ private fun User.toDetailedUserDto() = DetailedUserDto(
     id = this.id!!.raw,
     firstName = this.firstName,
     lastName = this.lastName,
-    username = this.login,
+    username = this.username,
     email = this.email,
     phoneNumber = this.phoneNumber,
     enabled = this.enabled,

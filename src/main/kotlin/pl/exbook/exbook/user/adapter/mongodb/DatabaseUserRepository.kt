@@ -12,11 +12,11 @@ class DatabaseUserRepository(private val mongoUserRepository: MongoUserRepositor
     }
 
     override fun findByLogin(login: String): User? {
-       return mongoUserRepository.findByLogin(login)?.toDomain()
+       return mongoUserRepository.findByUsername(login)?.toDomain()
     }
 
     override fun findByLoginOrEmail(login: String, email: String): User? {
-        return mongoUserRepository.findByLoginOrEmail(login, email)?.toDomain()
+        return mongoUserRepository.findByUsernameOrEmail(login, email)?.toDomain()
     }
 
     override fun insert(user: User): User {
@@ -28,7 +28,7 @@ fun UserDocument.toDomain() = User(
     id = UserId(this.id!!),
     firstName = this.firstName,
     lastName = this.lastName,
-    login = this.login,
+    username = this.username,
     password = this.password,
     email = this.email,
     phoneNumber = this.phoneNumber,
@@ -44,7 +44,7 @@ fun UserDocument.toDomain() = User(
 fun User.toDocument() = UserDocument(
     firstName = this.firstName,
     lastName = this.lastName,
-    login = this.login,
+    username = this.username,
     password = this.password,
     email = this.email,
     phoneNumber = this.phoneNumber,

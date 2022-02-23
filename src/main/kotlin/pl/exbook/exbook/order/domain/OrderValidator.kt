@@ -1,53 +1,51 @@
 package pl.exbook.exbook.order.domain
 
 import pl.exbook.exbook.offer.domain.Offer
-import pl.exbook.exbook.order.adapter.rest.NewOrderDto
-import pl.exbook.exbook.shared.OfferId
-import pl.exbook.exbook.shared.UserId
 import java.lang.RuntimeException
 
 class OrderValidator {
-
-    fun validate(newOrder: NewOrderDto, offers: List<Offer>) {
-        checkItemsQuantity(newOrder.items)
-        checkOrderType(newOrder.items, offers)
-        checkThatOffersAreFromTheSameSeller(offers, newOrder.seller)
+    fun validate(command: PlaceOrdersCommand.Order, offers: List<Offer>) {
+        validateNumberOfItems(command.items)
+        validateItemsQuantity(command.items)
+        validateOrderType(command, offers)
+        validateSeller(offers, command.seller)
     }
 
-    private fun checkItemsQuantity(orderItems: List<NewOrderDto.OrderItemDto>) {
-        if (orderItems.any { it.quantity <= 0 }) throw OrderValidationFailedException("Order item quantity is below or equal to 0")
+    private fun validateNumberOfItems(items: List<PlaceOrdersCommand.Item>) {
+        if (items.isEmpty()) {
+            throw OrderValidationFailedException("There are no items in order")
+        }
     }
 
-    private fun checkOrderType(orderItems: List<NewOrderDto.OrderItemDto>, offers: List<Offer>) {
-        val orderItemsByOfferId = orderItems.associateBy { OfferId(it.offerId) }
-        val offersByOfferId = offers.associateBy { it.id }
+    private fun validateItemsQuantity(items: List<PlaceOrdersCommand.Item>) {
+        if (items.any { it.quantity <= 0 }) {
+            throw OrderValidationFailedException("Order item quantity is below or equal to 0")
+        }
+    }
 
-        val items = (orderItemsByOfferId.keys + offersByOfferId.keys)
-            .toSet()
-            .associateWith { Pair(orderItemsByOfferId[it]!!, offersByOfferId[it]!!) }
-            .values
-
-        items.forEach {
-            if (it.first.orderType == Order.OrderType.BUY.name && !it.second.canBeBought()) {
-                throw OrderValidationFailedException("Can't buy offer ${it.second.id} with order type = ${it.second.type}")
+    private fun validateOrderType(order: PlaceOrdersCommand.Order, offers: List<Offer>) {
+        when (order.orderType) {
+            Order.OrderType.BUY -> {
+                if (offers.any { !it.canBeBought() }) {
+                    throw OrderValidationFailedException("At least one offer from $offers cannot be bought")
+                }
+                if (order.exchangeBooks.isNotEmpty()) {
+                    throw OrderValidationFailedException("Cannot buy offers with exchanging book provided")
+                }
             }
-
-            if (it.first.orderType == Order.OrderType.EXCHANGE.name && !it.second.canBeExchanged()) {
-                throw OrderValidationFailedException("Can't exchange offer ${it.second.id} with order type = ${it.second.type}")
-            }
-
-            if (it.first.orderType == Order.OrderType.BUY.name && it.first.exchangeBook != null) {
-                throw OrderValidationFailedException("Can't buy offer ${it.second.id} with exchanging book")
-            }
-
-            if (it.first.orderType == Order.OrderType.EXCHANGE.name && it.first.exchangeBook == null) {
-                throw OrderValidationFailedException("Exchange book not provided for exchange offer ${it.second.id}")
+            Order.OrderType.EXCHANGE -> {
+                if (offers.any { !it.canBeExchanged() }) {
+                    throw OrderValidationFailedException("At least one offer from $offers cannot be exchanged")
+                }
+                if (order.exchangeBooks.isEmpty()) {
+                    throw OrderValidationFailedException("Cannot exchange books without any exchange book provided")
+                }
             }
         }
     }
 
-    private fun checkThatOffersAreFromTheSameSeller(offers: List<Offer>, seller: NewOrderDto.SellerDto) {
-        if (!offers.all { it.seller.id == UserId(seller.id) }) {
+    private fun validateSeller(offers: List<Offer>, seller: PlaceOrdersCommand.Seller) {
+        if (offers.any { it.seller.id != seller.id }) {
             throw OrderValidationFailedException("Offers $offers are not from the same seller ${seller.id}")
         }
     }

@@ -5,10 +5,10 @@ import pl.exbook.exbook.shared.UserId
 import java.time.Instant
 
 class User(
-    val id: UserId? = null,
+    val id: UserId,
     val firstName: String,
     val lastName: String,
-    val login: String,
+    val username: String,
     val password: String,
     val email: String,
     val phoneNumber: String? = null,

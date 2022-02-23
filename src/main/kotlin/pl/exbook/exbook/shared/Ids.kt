@@ -20,3 +20,18 @@ data class OrderId(val raw: String)
 
 @JvmInline
 value class BasketId(val raw: String)
+
+@JvmInline
+value class StockId(val raw: String)
+
+@JvmInline
+value class StockReservationId(val raw: String)
+
+@JvmInline
+value class EventId(val raw: String)
+
+@JvmInline
+value class PurchaseId(val raw: String)
+
+@JvmInline
+value class OfferVersionId(val raw: String)

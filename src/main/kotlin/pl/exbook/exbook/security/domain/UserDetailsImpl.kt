@@ -15,7 +15,7 @@ class UserDetailsImpl(private var user : User) : UserDetails {
     }
 
     override fun getUsername(): String? {
-        return user.login
+        return user.username
     }
 
     override fun isAccountNonExpired(): Boolean {

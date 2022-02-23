@@ -36,26 +36,29 @@ class DatabaseOrderRepository(private val mongoOrderRepository: MongoOrderReposi
         return mongoOrderRepository.findAllBySellerId(sellerId.raw, createPageable(itemsPerPage, page, sorting)).map { it.toDomain() }
     }
 
+    override fun remove(orderId: OrderId) = mongoOrderRepository.removeById(orderId.raw)
+
     private fun createPageable(itemsPerPage: Int?, page: Int?, sorting: String?): Pageable {
         return PageRequest.of(page ?: 0, itemsPerPage ?: 10, Sort.Direction.DESC, "orderDate")
     }
 }
 
 private fun OrderDocument.toDomain() = Order(
-    id = OrderId(this.id!!),
+    id = OrderId(this.id),
     buyer = Order.Buyer(UserId(this.buyerId)),
     seller = Order.Seller(UserId(this.sellerId)),
     shipping = Order.Shipping(ShippingId(this.shippingId)),
     items = this.items.map { it.toDomain() },
+    orderType = Order.OrderType.valueOf(this.orderType),
+    exchangeBooks = this.exchangeBooks.map { it.toDomain() },
     orderDate = this.orderDate,
     status = Order.OrderStatus.valueOf(this.status),
-    totalCost = this.totalCost.toDomain()
+    totalCost = this.totalCost.toDomain(),
+    note = this.note
 )
 
 private fun OrderItemDocument.toDomain() = Order.OrderItem(
     offerId = OfferId(this.offerId),
-    orderType = Order.OrderType.valueOf(this.orderType),
-    exchangeBook = this.exchangeBook?.toDomain(),
     quantity = this.quantity,
     cost = this.cost?.toDomain()
 )
@@ -68,20 +71,21 @@ private fun ExchangeBookDocument.toDomain() = Order.ExchangeBook(
 )
 
 private fun Order.toDocument() = OrderDocument(
-    id = this.id?.raw,
+    id = this.id.raw,
     buyerId = this.buyer.id.raw,
     sellerId = this.seller.id.raw,
     shippingId = this.shipping.id.raw,
     items = this.items.map { it.toDocument() },
+    orderType = this.orderType.name,
+    exchangeBooks = this.exchangeBooks.map { it.toDocument() },
     orderDate = this.orderDate,
     status = this.status.name,
-    totalCost = this.totalCost.toDocument()
+    totalCost = this.totalCost.toDocument(),
+    note = this.note
 )
 
 private fun Order.OrderItem.toDocument() = OrderItemDocument(
     offerId = this.offerId.raw,
-    orderType = this.orderType.name,
-    exchangeBook = exchangeBook?.toDocument(),
     quantity = this.quantity,
     cost = this.cost?.toDto()
 )

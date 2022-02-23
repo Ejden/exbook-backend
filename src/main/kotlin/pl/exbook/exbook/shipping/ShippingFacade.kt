@@ -19,7 +19,7 @@ class ShippingFacade(
     private val shippingRepository: ShippingRepository
 ) {
 
-    fun calculateSelectedShipping(request: CalculateSelectedShippingRequest): Shipping {
+    fun calculateSelectedShipping(request: CalculateSelectedShippingCommand): Shipping {
         val shippingMethod = shippingMethodFacade.getShippingMethodById(request.shippingMethodId)
         shippingValidator.validate(shippingMethod, request)
         return shippingCalculator.calculateSelectedShipping(shippingMethod, request)
@@ -32,9 +32,11 @@ class ShippingFacade(
     fun findShipping(shippingId: ShippingId): Shipping {
         return shippingRepository.findById(shippingId)
     }
+
+    fun remove(shippingId: ShippingId) = shippingRepository.remove(shippingId)
 }
 
-data class CalculateSelectedShippingRequest(
+data class CalculateSelectedShippingCommand(
     val shippingMethodId: ShippingMethodId,
     val orderItems: List<OrderItem>,
     val shippingAddress: ShippingAddress?,
@@ -43,16 +45,7 @@ data class CalculateSelectedShippingRequest(
 ) {
     data class OrderItem(
         val offerId: OfferId,
-        val orderType: Order.OrderType,
-        val exchangeBook: ExchangeBook?,
         val quantity: Int
-    )
-
-    data class ExchangeBook(
-        val author: String,
-        val title: String,
-        val isbn: Long?,
-        val condition: Offer.Condition
     )
 
     data class ShippingAddress(

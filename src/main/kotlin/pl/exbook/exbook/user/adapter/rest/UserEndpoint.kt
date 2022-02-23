@@ -57,7 +57,7 @@ private fun User.toDetailedUserDto() = DetailedUserDto(
     id = this.id!!.raw,
     firstName = this.firstName,
     lastName = this.lastName,
-    username = this.login,
+    username = this.username,
     email = this.email,
     phoneNumber = this.phoneNumber,
     enabled = this.enabled,
@@ -73,7 +73,7 @@ private fun User.toUserDto() = UserDto(
     id = this.id!!.raw,
     firstName = this.firstName,
     lastName = this.lastName,
-    username = this.login,
+    username = this.username,
     grade = this.grade,
     creationDate = this.creationDate
 )

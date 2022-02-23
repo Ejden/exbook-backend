@@ -2,11 +2,12 @@ package pl.exbook.exbook.listing.adapter.rest
 
 import org.springframework.data.domain.Page
 import org.springframework.web.bind.annotation.*
-import pl.exbook.exbook.shared.Money
 import pl.exbook.exbook.listing.ListingFacade
 import pl.exbook.exbook.listing.domain.DetailedOffer
 import pl.exbook.exbook.shared.ContentType
 import pl.exbook.exbook.shared.OfferId
+import pl.exbook.exbook.shared.dto.MoneyDto
+import pl.exbook.exbook.shared.dto.toDto
 
 @RestController
 @RequestMapping("api/listing")
@@ -30,7 +31,7 @@ data class DetailedOfferDto(
     val description: String?,
     val type: String,
     val seller: SellerDto,
-    val cost: CostDto?,
+    val price: MoneyDto?,
     val location: String,
     val category: CategoryDto,
     val shipping: ShippingDto
@@ -66,12 +67,7 @@ data class ShippingDto(
 data class ShippingMethodDto(
     val id: String,
     val name: String,
-    val cost: CostDto
-)
-
-data class CostDto(
-    val amount: String,
-    val currency: String
+    val price: MoneyDto
 )
 
 private fun DetailedOffer.toDto() = DetailedOfferDto(
@@ -81,7 +77,7 @@ private fun DetailedOffer.toDto() = DetailedOfferDto(
     description = this.description,
     type = this.type.name,
     seller = this.seller.toDto(),
-    cost = this.money?.toDto(),
+    price = this.price?.toDto(),
     location = this.location,
     category = this.category.toDto(),
     shipping = this.shipping.toDto()
@@ -107,11 +103,6 @@ private fun DetailedOffer.Seller.toDto() = SellerDto(
     grade = this.grade
 )
 
-private fun Money.toDto() = CostDto(
-    amount = this.amount.toString(),
-    currency = this.currency.name
-)
-
 private fun DetailedOffer.Category.toDto() = CategoryDto(this.id.raw)
 
 private fun DetailedOffer.Shipping.toDto() = ShippingDto(
@@ -122,5 +113,5 @@ private fun DetailedOffer.Shipping.toDto() = ShippingDto(
 private fun DetailedOffer.ShippingMethod.toDto() = ShippingMethodDto(
     id = this.id.raw,
     name = this.name,
-    cost = money.toDto()
+    price = this.price.toDto()
 )

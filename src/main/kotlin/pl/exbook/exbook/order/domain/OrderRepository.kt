@@ -13,4 +13,6 @@ interface OrderRepository {
     fun findByBuyerId(buyerId: UserId, itemsPerPage: Int?, page: Int?, sorting: String?): Page<Order>
 
     fun findBySellerId(sellerId: UserId, itemsPerPage: Int?, page: Int?, sorting: String?): Page<Order>
+
+    fun remove(orderId: OrderId)
 }

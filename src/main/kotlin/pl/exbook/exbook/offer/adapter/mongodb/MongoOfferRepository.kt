@@ -1,46 +1,48 @@
 package pl.exbook.exbook.offer.adapter.mongodb
 
+import java.time.Instant
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.data.repository.PagingAndSortingRepository
-import pl.exbook.exbook.offer.domain.Offer
+import org.springframework.stereotype.Repository
+import pl.exbook.exbook.shared.dto.MoneyDocument
 
+@Repository
 interface MongoOfferRepository : PagingAndSortingRepository<OfferDocument, String>
 
 @Document(collection = "offers")
 data class OfferDocument(
     @Id
-    val id: String? = null,
+    val id: String,
+    val versionId: String,
+    val versionCreationDate: Instant,
+    val versionExpireDate: Instant?,
     val book: BookDocument,
     val images: ImagesDocument,
-    val description: String?,
+    val description: String,
     val seller: SellerDocument,
-    val type: Offer.Type,
-    val cost: MoneyDocument?,
+    val type: String,
+    val price: MoneyDocument?,
     val location: String,
     val category: CategoryDocument,
-    val shippingMethods: Collection<ShippingMethodDocument>
+    val shippingMethods: Collection<ShippingMethodDocument>,
+    val stockId: String
 )
 
 data class BookDocument(
     val author: String,
     val title: String,
     val isbn: Long?,
-    val condition: Offer.Condition
+    val condition: String
 )
 
 data class SellerDocument(val id: String)
 
 data class CategoryDocument(val id: String)
 
-data class MoneyDocument(
-    val amount: String,
-    val currency: String
-)
-
 data class ShippingMethodDocument(
     val id: String,
-    val cost: MoneyDocument
+    val price: MoneyDocument
 )
 
 data class ImagesDocument(

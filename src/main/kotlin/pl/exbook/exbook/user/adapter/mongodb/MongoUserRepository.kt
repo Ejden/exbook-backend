@@ -8,9 +8,9 @@ import java.time.Instant
 
 interface MongoUserRepository : MongoRepository<UserDocument, String> {
 
-    fun findByLogin(login: String): UserDocument?
+    fun findByUsername(login: String): UserDocument?
 
-    fun findByLoginOrEmail(login: String, email: String): UserDocument?
+    fun findByUsernameOrEmail(login: String, email: String): UserDocument?
 }
 
 @Document(collection = "users")
@@ -19,7 +19,7 @@ data class UserDocument(
     val id: String? = null,
     val firstName: String,
     val lastName: String,
-    val login: String,
+    val username: String,
     val password: String,
     val email: String,
     val phoneNumber: String?,
