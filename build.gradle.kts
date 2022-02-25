@@ -1,5 +1,9 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+val versions: Map<String, String> = mapOf(
+
+)
+
 plugins {
     id("org.springframework.boot") version "2.4.2"
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
@@ -53,9 +57,6 @@ dependencies {
     testImplementation("org.springframework.security:spring-security-test")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("com.willowtreeapps.assertk:assertk-jvm:0.25")
-    testImplementation("org.mockito:mockito-core:4.3.1")
-    testImplementation("org.mockito:mockito-junit-jupiter:4.3.1")
-    testImplementation("org.mockito.kotlin:mockito-kotlin:4.0.0")
     testImplementation("io.mockk:mockk:1.12.2")
     testImplementation("io.kotest:kotest-runner-junit5:5.1.0")
     testImplementation("io.kotest:kotest-assertions-core:5.1.0")
@@ -64,6 +65,10 @@ dependencies {
     integrationImplementation("org.springframework.boot:spring-boot-starter-test")
     integrationImplementation("org.springframework:spring-test:5.3.9")
     integrationImplementation("de.flapdoodle.embed:de.flapdoodle.embed.mongo")
+}
+
+tasks.wrapper {
+    gradleVersion = "7.3.3"
 }
 
 tasks.withType<KotlinCompile> {
