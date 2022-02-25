@@ -8,6 +8,8 @@ import org.springframework.data.repository.Repository
 interface MongoStockRepository : Repository<StockDocument, String> {
     fun findById(id: String): StockDocument?
 
+    fun findByOfferId(offerId: String): StockDocument?
+
     fun save(stock: StockDocument): StockDocument
 }
 

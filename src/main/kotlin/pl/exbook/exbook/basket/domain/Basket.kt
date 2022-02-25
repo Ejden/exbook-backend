@@ -1,73 +1,123 @@
 package pl.exbook.exbook.basket.domain
 
+import pl.exbook.exbook.order.domain.Order
 import pl.exbook.exbook.shared.BasketId
-import pl.exbook.exbook.shared.Currency
 import pl.exbook.exbook.shared.Money
 import pl.exbook.exbook.shared.OfferId
 import pl.exbook.exbook.shared.UserId
 
-open class Basket(
+data class Basket(
     val id: BasketId,
     val userId: UserId,
-    val items: MutableList<Item>
+    val itemsGroups: MutableMap<ItemsGroupKey, List<Item>>
 ) {
+    data class Item(
+        val offer: Offer,
+        val quantity: Long
+    ): Comparable<Item> {
+        constructor(offerId: OfferId, quantity: Long): this(Offer(offerId), quantity)
 
-    open class Item(
-        val offerId: OfferId,
-        val offerPrice: Money,
-        var quantity: Long
+        fun addQuantity(quantity: Long) = Item(offer, this.quantity + quantity)
+
+        fun changeQuantity(quantity: Long) = Item(offer, quantity)
+
+        override fun compareTo(other: Item): Int {
+            return offer.id.raw.compareTo(other.offer.id.raw)
+        }
+    }
+
+    data class Offer(val id: OfferId)
+
+    data class ItemsGroupKey(
+        val sellerId: UserId,
+        val orderType: Order.OrderType
     )
 
-    fun addToBasket(offerId: OfferId, offerPrice: Money, quantity: Long) {
-        items.add(Item(offerId, offerPrice, quantity))
+    data class Seller(
+        val id: UserId
+    )
+
+    fun addToBasket(offerId: OfferId, sellerId: UserId, orderType: Order.OrderType, quantity: Long) {
+        val key = ItemsGroupKey(sellerId, orderType)
+        val groupItems = itemsGroups[key] ?: emptyList()
+        val item = groupItems.find { it.offer.id == offerId }
+
+        if (item == null) {
+            this.itemsGroups[key] = groupItems + Item(offerId, quantity)
+        } else {
+            this.itemsGroups[key] = groupItems.filterNot { it.offer.id == offerId } + item.addQuantity(quantity)
+        }
     }
 
-    fun removeFromBasket(offerId: OfferId) {
-        items.removeIf { it.offerId == offerId }
+    fun removeFromBasket(offerId: OfferId, orderType: Order.OrderType) {
+        itemsGroups.entries
+            .firstOrNull { it.key.orderType == orderType && it.value.any { item -> item.offer.id == offerId } }
+            ?.let {
+                val newItemGroup = it.value.filterNot { item -> item.offer.id == offerId }
+                if (newItemGroup.isEmpty()) {
+                    this.itemsGroups.remove(it.key)
+                } else {
+                    this.itemsGroups[it.key] = newItemGroup
+                }
+            }
     }
 
-    fun changeItemQuantity(offerId: OfferId, newQuantity: Long) {
-        items.find { it.offerId == offerId }?.quantity = newQuantity
-    }
+    fun changeItemQuantity(offerId: OfferId, newQuantity: Long, sellerId: UserId, orderType: Order.OrderType) {
+        val itemGroup = itemsGroups.entries
+            .firstOrNull { it.key.orderType == orderType && it.value.any { item -> item.offer.id == offerId} }
 
-    fun totalOffersCost(): Money = items
-        .map { it.offerPrice * it.quantity }
-        .fold(Money.zero(Currency.PLN)) { sum, arg2 -> sum + arg2 }
+        if (itemGroup == null) {
+            addToBasket(offerId, sellerId, orderType, newQuantity)
+        } else {
+            val oldItem = itemGroup.value.find { it.offer.id == offerId }
 
-    fun toDetailed(items: List<DetailedBasket.Item>): DetailedBasket {
-        return DetailedBasket(
-            id = this.id,
-            userId = this.userId,
-            items = items
-        )
+            if (oldItem == null) {
+                addToBasket(offerId, sellerId, orderType, newQuantity)
+            } else {
+                this.itemsGroups[itemGroup.key] = itemGroup.value.filterNot { it.offer.id == offerId } + oldItem.changeQuantity(newQuantity)
+            }
+        }
     }
 }
 
-class DetailedBasket(
-    id: BasketId,
-    userId: UserId,
-    items: List<Item>
-): Basket(id, userId, items.toMutableList()) {
+data class DetailedBasket(
+    val id: BasketId,
+    val userId: UserId,
+    val itemsGroups: List<ItemGroup>,
+) {
+    val totalOffersCost: Money = itemsGroups.foldRight(Money.zeroPln()) { itemGroup, acc -> itemGroup.groupTotalOffersPrice + acc }
 
-    class Item(
+    data class ItemGroup(
+        val seller: Seller,
+        val orderType: Order.OrderType,
+        val items: List<Item>,
+    ) {
+        val groupTotalOffersPrice: Money = this.items.foldRight(Money.zeroPln()) { item, acc ->
+            item.totalPrice + acc
+        }
+    }
+
+    data class Item(
         val offer: Offer,
-        quantity: Long
-    ): Basket.Item(offer.id, offer.price, quantity)
+        val quantity: Long,
+    ) {
+        val totalPrice: Money = this.offer.price?.times(this.quantity) ?: Money.zeroPln()
+    }
 
-    class Offer(
+    data class Offer(
         val id: OfferId,
-        val price: Money,
+        val price: Money?,
         val book: Book,
         val images: Images,
         val seller: Seller
     )
 
-    class Book(
+    data class Book(
         val author: String,
         val title: String
     )
 
-    class Seller(
+    data class Seller(
         val id: UserId,
         val firstName: String,
         val lastName: String

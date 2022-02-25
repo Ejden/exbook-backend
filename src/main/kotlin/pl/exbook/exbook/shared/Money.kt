@@ -10,6 +10,8 @@ class Money(
     companion object {
         fun zero(currency: Currency): Money = Money(BigDecimal("0.00"), currency)
 
+        fun zeroPln(): Money = zero(Currency.PLN)
+
         fun sum(money: List<Money?>): Money {
             return money.reduce { sum, x -> if (x != null) sum?.plus(x) else sum?.plus(zero(sum.currency)) } ?: zero(Currency.PLN)
         }

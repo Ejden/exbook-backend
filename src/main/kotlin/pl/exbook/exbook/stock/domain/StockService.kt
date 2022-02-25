@@ -22,6 +22,8 @@ class StockService(
 
     fun getStock(stockId: StockId): Stock = stockRepository.getStock(stockId) ?: throw StockNotFoundException(stockId)
 
+    fun getStockForOffer(offerId: OfferId): Stock = stockRepository.getStockForOffer(offerId) ?: throw StockForOfferNotFoundException(offerId)
+
     fun getReservation(
         reservationId: StockReservationId
     ): StockReservation = stockReservationRepository.getReservation(reservationId)

@@ -10,7 +10,9 @@ import pl.exbook.exbook.stock.domain.StockService
 
 @Service
 class StockFacade(private val stockService: StockService) {
-    fun getStock (stockId: StockId): Stock = stockService.getStock(stockId)
+    fun getStock(stockId: StockId): Stock = stockService.getStock(stockId)
+
+    fun getStockForOffer(offerId: OfferId): Stock = stockService.getStockForOffer(offerId)
 
     fun getFromStock(stockId: StockId, amount: Int): Stock = stockService.getFromStock(stockId, amount)
 
