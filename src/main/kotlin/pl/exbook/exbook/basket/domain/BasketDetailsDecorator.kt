@@ -31,7 +31,7 @@ class BasketDetailsDecorator(
                         ),
                         images = DetailedBasket.Images(
                             thumbnail = offer.images.thumbnail?.let { img -> DetailedBasket.Image(img.url) },
-                            otherImages = offer.images.allImages.map { img -> DetailedBasket.Image(img.url) }
+                            allImages = offer.images.allImages.map { img -> DetailedBasket.Image(img.url) }
                         ),
                         seller = DetailedBasket.Seller(
                             id = offer.seller.id,

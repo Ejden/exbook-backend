@@ -16,6 +16,7 @@ import pl.exbook.exbook.order.domain.Order
 import pl.exbook.exbook.shared.OfferId
 import pl.exbook.exbook.shared.UserId
 import pl.exbook.exbook.user.UserFacade
+import pl.exbook.exbook.user.domain.User
 
 @Service
 class BasketFacade(
@@ -53,7 +54,8 @@ class BasketFacade(
 
     fun addItemToBasket(command: AddItemToBasketCommand): Basket {
         val offer = offerFacade.getOffer(command.offerId)
-        command.validate(offer)
+        val buyer = userFacade.getUserByUsername(command.username)
+        command.validate(offer, buyer)
 
         val basket = getUserBasket(command.username)
 
@@ -70,13 +72,19 @@ class BasketFacade(
     fun changeItemQuantityInBasket(command: ChangeItemQuantityCommand): Basket {
         val basket = getUserBasket(command.username)
         val offer = offerFacade.getOffer(command.offerId)
+        command.validate(basket.userId)
 
         basket.changeItemQuantity(command.offerId, command.newQuantity, offer.seller.id, command.orderType)
         return basketRepository.save(basket)
     }
 
-    private fun AddItemToBasketCommand.validate(offer: Offer): AddItemToBasketCommand {
-        validator.validateAddingItem(offer, this)
+    private fun AddItemToBasketCommand.validate(offer: Offer, buyer: User): AddItemToBasketCommand {
+        validator.validateAddingItem(offer, buyer, this)
+        return this
+    }
+
+    private fun ChangeItemQuantityCommand.validate(buyerId: UserId): ChangeItemQuantityCommand {
+        validator.validateItemQuantityChange(buyerId, this)
         return this
     }
 }

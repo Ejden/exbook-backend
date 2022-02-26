@@ -63,6 +63,11 @@ data class Basket(
     }
 
     fun changeItemQuantity(offerId: OfferId, newQuantity: Long, sellerId: UserId, orderType: Order.OrderType) {
+        if (newQuantity == 0L) {
+            removeFromBasket(offerId, orderType)
+            return
+        }
+
         val itemGroup = itemsGroups.entries
             .firstOrNull { it.key.orderType == orderType && it.value.any { item -> item.offer.id == offerId} }
 
@@ -125,7 +130,7 @@ data class DetailedBasket(
 
     data class Images(
         val thumbnail: Image?,
-        val otherImages: Collection<Image>
+        val allImages: List<Image>
     )
 
     data class Image(val url: String)

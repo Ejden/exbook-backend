@@ -1,16 +1,15 @@
-package pl.exbook.exbook.features.basket
+package pl.exbook.exbook.ability
 
-import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.mockk
 import java.time.Instant
-import org.junit.jupiter.api.BeforeEach
 import pl.exbook.exbook.adapters.InMemoryBasketRepository
 import pl.exbook.exbook.basket.BasketFacade
 import pl.exbook.exbook.basket.domain.BasketDetailsDecorator
 import pl.exbook.exbook.basket.domain.BasketFactory
 import pl.exbook.exbook.basket.domain.BasketValidator
 import pl.exbook.exbook.offer.OfferFacade
+import pl.exbook.exbook.offer.adapter.mongodb.OfferNotFoundException
 import pl.exbook.exbook.offer.domain.Offer
 import pl.exbook.exbook.shared.Money
 import pl.exbook.exbook.shared.OfferId
@@ -19,16 +18,17 @@ import pl.exbook.exbook.shared.StockId
 import pl.exbook.exbook.shared.TestData
 import pl.exbook.exbook.shared.UserId
 import pl.exbook.exbook.user.UserFacade
+import pl.exbook.exbook.user.UserNotFoundException
 import pl.exbook.exbook.user.domain.User
 
-abstract class BasketFacadeTestSpecification {
+class BasketDomainAbility {
     private val basketRepository: InMemoryBasketRepository = InMemoryBasketRepository()
     private val userFacade: UserFacade = mockk()
     private val offerFacade: OfferFacade = mockk()
     private val validator: BasketValidator = BasketValidator()
     private val basketFactory: BasketFactory = BasketFactory()
     private val basketDetailsDecorator: BasketDetailsDecorator = BasketDetailsDecorator(offerFacade, userFacade)
-    val basketFacade = BasketFacade(
+    val facade = BasketFacade(
         basketRepository = basketRepository,
         userFacade = userFacade,
         offerFacade = offerFacade,
@@ -36,11 +36,6 @@ abstract class BasketFacadeTestSpecification {
         basketFactory = basketFactory,
         basketDetailsDecorator = basketDetailsDecorator
     )
-
-    @BeforeEach
-    fun cleanup() {
-        clearMocks(offerFacade, userFacade)
-    }
 
     fun thereIsUser(
         userId: UserId = TestData.sampleUserId,
@@ -82,27 +77,20 @@ abstract class BasketFacadeTestSpecification {
         versionId: OfferVersionId = TestData.sampleOfferVersionId,
         versionCreationDate: Instant = Instant.EPOCH,
         versionExpireDate: Instant? = null,
-        book: Offer.Book = Offer.Book(
-            author = "Jan",
-            title = "Jan na drzewie",
-            isbn = 123123123L,
-            condition = Offer.Condition.NEW
-        ),
-        images: Offer.Images = Offer.Images(
-            thumbnail = Offer.Image(TestData.sampleImageUrl),
-            allImages = listOf(Offer.Image(TestData.sampleImageUrl))
-        ),
+        bookAuthor: String = "Jan",
+        bookTitle: String = "Jan na drzewie",
+        thumbnailUrl: String? = TestData.sampleImageUrl,
+        allImagesUrls: List<String> = emptyList(),
         description: String = "Offer description",
         type: Offer.Type = Offer.Type.EXCHANGE_AND_BUY,
-        seller: Offer.Seller = Offer.Seller(
-            id = TestData.sampleSellerId
-        ),
+        sellerId: UserId = TestData.sampleSellerId,
         price: Money? = TestData.tenPln,
         location: String = "Warsaw",
         category: Offer.Category = Offer.Category(
             id = TestData.sampleCategoryId
         ),
-        shippingMethods: Collection<Offer.ShippingMethod> = listOf(Offer.ShippingMethod(
+        shippingMethods: Collection<Offer.ShippingMethod> = listOf(
+            Offer.ShippingMethod(
             id = TestData.sampleShippingMethodId,
             price = TestData.tenPln
         )),
@@ -113,11 +101,21 @@ abstract class BasketFacadeTestSpecification {
             versionId = versionId,
             versionCreationDate = versionCreationDate,
             versionExpireDate = versionExpireDate,
-            book = book,
-            images = images,
+            book = Offer.Book(
+                author = bookAuthor,
+                title = bookTitle,
+                isbn = 123123123L,
+                condition = Offer.Condition.NEW
+            ),
+            images = Offer.Images(
+                thumbnail = thumbnailUrl?.let { Offer.Image(it) },
+                allImages = allImagesUrls.map { Offer.Image(it) },
+            ),
             description = description,
             type = type,
-            seller = seller,
+            seller = Offer.Seller(
+                id = sellerId
+            ),
             price = price,
             location = location,
             category = category,
@@ -129,4 +127,22 @@ abstract class BasketFacadeTestSpecification {
     fun thereIsNoBasketFor(userId: UserId) {
         basketRepository.removeBasket(userId)
     }
+
+    fun thereIsNoOfferFor(offerId: OfferId) {
+        every { offerFacade.getOffer(offerId) } throws OfferNotFoundException(offerId)
+    }
+
+    fun thereIsNoUserFor(userId: UserId, username: String) {
+        every { userFacade.getUserById(userId) } throws UserNotFoundException("")
+        every { userFacade.getUserByUsername(username) } throws UserNotFoundException("")
+    }
 }
+
+data class BasketItem(
+    val buyerId: UserId,
+    val buyerUsername: String,
+    val sellerId: UserId,
+    val sellerUsername: String,
+    val offerId: OfferId,
+    val quantity: Int
+)

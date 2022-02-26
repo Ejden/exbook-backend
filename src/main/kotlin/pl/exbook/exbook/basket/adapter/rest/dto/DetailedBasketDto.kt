@@ -91,7 +91,7 @@ private fun DetailedBasket.Book.toDto() = DetailedBasketDto.BookDto(
 
 private fun DetailedBasket.Images.toDto() = DetailedBasketDto.ImagesDto(
     thumbnail = this.thumbnail?.let { DetailedBasketDto.ImageDto(it.url) },
-    otherImages = this.otherImages.map { DetailedBasketDto.ImageDto(it.url) }
+    otherImages = this.allImages.map { DetailedBasketDto.ImageDto(it.url) }
 )
 
 private fun DetailedBasket.Seller.toDto() = DetailedBasketDto.SellerDto(
