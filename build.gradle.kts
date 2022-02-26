@@ -64,7 +64,6 @@ dependencies {
     testImplementation("io.kotest:kotest-assertions-core:5.1.0")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0")
     testImplementation("io.kotest:kotest-framework-datatest:5.1.0")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.2")
 
     integrationImplementation("org.springframework.security:spring-security-test")
     integrationImplementation(  "org.springframework.boot:spring-boot-starter-test")
