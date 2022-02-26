@@ -11,6 +11,10 @@ import pl.exbook.exbook.shared.ContentType
 import pl.exbook.exbook.shared.OfferId
 import pl.exbook.exbook.shared.StockId
 import pl.exbook.exbook.stock.StockFacade
+import pl.exbook.exbook.stock.adapter.rest.dto.AddToStockRequest
+import pl.exbook.exbook.stock.adapter.rest.dto.CreateStockRequest
+import pl.exbook.exbook.stock.adapter.rest.dto.GetFromStockRequest
+import pl.exbook.exbook.stock.adapter.rest.dto.StockDto
 import pl.exbook.exbook.stock.domain.Stock
 
 @RestController
@@ -37,27 +41,4 @@ class StockEndpoint(private val stockFacade: StockFacade) {
     ): StockDto = stockFacade.createStockForOffer(OfferId(request.offerId), request.startQuantity).toDto()
 }
 
-data class GetFromStockRequest(
-    val amount: Int
-)
-
-data class AddToStockRequest(
-    val amount: Int
-)
-
-data class CreateStockRequest(
-    val offerId: String,
-    val startQuantity: Int
-)
-
-data class StockDto(
-    val id: String,
-    val offerId: String,
-    val inStock: Int
-)
-
-private fun Stock.toDto() = StockDto(
-    id = this.id.raw,
-    offerId = this.offerId.raw,
-    inStock = this.inStock
-)
+private fun Stock.toDto() = StockDto.fromDomain(this)

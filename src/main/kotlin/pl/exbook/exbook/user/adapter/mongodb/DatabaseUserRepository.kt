@@ -1,9 +1,11 @@
 package pl.exbook.exbook.user.adapter.mongodb
 
+import org.springframework.stereotype.Component
 import pl.exbook.exbook.shared.UserId
 import pl.exbook.exbook.user.domain.User
 import pl.exbook.exbook.user.domain.UserRepository
 
+@Component
 class DatabaseUserRepository(private val mongoUserRepository: MongoUserRepository) : UserRepository {
 
     override fun findById(userId: UserId): User? {

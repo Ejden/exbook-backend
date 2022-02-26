@@ -22,7 +22,7 @@ import pl.exbook.exbook.shared.TestData.sampleBuyerUsername
 import pl.exbook.exbook.shared.TestData.sampleOfferId
 import pl.exbook.exbook.shared.TestData.sampleSellerId
 import pl.exbook.exbook.shared.TestData.sampleSellerUsername
-import pl.exbook.exbook.user.UserNotFoundException
+import pl.exbook.exbook.user.domain.UserNotFoundException
 
 class AddItemsToBasketSpec : ShouldSpec({
     val domain = BasketDomainAbility()

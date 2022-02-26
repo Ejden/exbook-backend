@@ -20,7 +20,7 @@ import pl.exbook.exbook.offer.domain.CreateOfferCommand
 import pl.exbook.exbook.offer.domain.Offer
 import pl.exbook.exbook.shared.ContentType
 import pl.exbook.exbook.shared.OfferId
-import pl.exbook.exbook.user.UserNotFoundException
+import pl.exbook.exbook.user.domain.UserNotFoundException
 
 @RestController
 @RequestMapping("api/offers")

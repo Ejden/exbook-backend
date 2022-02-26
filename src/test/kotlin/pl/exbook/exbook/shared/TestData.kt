@@ -13,6 +13,7 @@ object TestData {
     val thirdSampleOfferId = OfferId("third-offer-id")
     val sampleStockId = StockId("stock-id")
     val otherStockId = StockId("other-stock-id")
+    val sampleStockReservationId = StockReservationId("stock-reservation-id")
     val sampleOfferVersionId = OfferVersionId("offer-version-id")
     val sampleCategoryId = CategoryId("category-id")
     val sampleShippingMethodId = ShippingMethodId("shipping-method-id")

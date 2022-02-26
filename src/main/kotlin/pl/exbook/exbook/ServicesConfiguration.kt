@@ -37,9 +37,6 @@ import pl.exbook.exbook.shippingmethod.adapter.mongodb.MongoShippingMethodReposi
 import pl.exbook.exbook.shippingmethod.domain.ShippingMethodRepository
 import pl.exbook.exbook.stock.StockFacade
 import pl.exbook.exbook.user.UserFacade
-import pl.exbook.exbook.user.adapter.mongodb.DatabaseUserRepository
-import pl.exbook.exbook.user.adapter.mongodb.MongoUserRepository
-import pl.exbook.exbook.user.domain.UserRepository
 
 @Configuration
 class ServicesConfiguration {
@@ -57,12 +54,6 @@ class ServicesConfiguration {
 
     @Bean
     fun imageFacade(imageRepository: ImageRepository) = ImageFacade(imageRepository)
-
-    @Bean
-    fun userRepository(mongoUserRepository: MongoUserRepository) = DatabaseUserRepository(mongoUserRepository)
-
-    @Bean
-    fun userFacade(userRepository: UserRepository) = UserFacade(userRepository)
 
     @Bean
     fun offerRepository(

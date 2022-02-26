@@ -13,7 +13,8 @@ import pl.exbook.exbook.shared.StockReservationId
 @Service
 class StockService(
     private val stockRepository: StockRepository,
-    private val stockReservationRepository: StockReservationRepository
+    private val stockReservationRepository: StockReservationRepository,
+    private val stockValidator: StockValidator
 ) {
     private val semaphores: Cache<StockId, Semaphore> = CacheBuilder.newBuilder()
         .maximumSize(100000)
@@ -102,7 +103,8 @@ class StockService(
             offerId = offerId,
             inStock = startQuantity,
             reserved = 0
-        ).let { stockRepository.saveStock(it) }
+        ).also { stockValidator.validateCreationOfStock(it.offerId, it.inStock) }
+        .let { stockRepository.saveStock(it) }
 
     private fun createReservation(stockId: StockId, amount: Int): StockReservation = StockReservation(
         reservationId = StockReservationId(UUID.randomUUID().toString()),

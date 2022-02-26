@@ -18,8 +18,8 @@ import pl.exbook.exbook.shared.StockId
 import pl.exbook.exbook.shared.TestData
 import pl.exbook.exbook.shared.UserId
 import pl.exbook.exbook.user.UserFacade
-import pl.exbook.exbook.user.UserNotFoundException
 import pl.exbook.exbook.user.domain.User
+import pl.exbook.exbook.user.domain.UserNotFoundException
 
 class BasketDomainAbility {
     private val basketRepository: InMemoryBasketRepository = InMemoryBasketRepository()
