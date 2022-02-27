@@ -8,6 +8,8 @@ interface MongoCategoryRepository : Repository<CategoryDocument, String> {
 
     fun findById(id: String): CategoryDocument?
 
+    fun findByName(name: String): CategoryDocument?
+
     fun findAll(): List<CategoryDocument>
 
     fun save(categoryDocument: CategoryDocument): CategoryDocument
@@ -16,7 +18,7 @@ interface MongoCategoryRepository : Repository<CategoryDocument, String> {
 @Document(collection = "categories")
 data class CategoryDocument(
     @Id
-    val id: String? = null,
+    val id: String,
     val name: String,
     val image: ImageDocument? = null,
     val parentId: String? = null

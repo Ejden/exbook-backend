@@ -40,7 +40,7 @@ data class DetailedOfferDto(
 data class BookDto(
     val author: String,
     val title: String,
-    val isbn: Long?,
+    val isbn: String?,
     val condition: String
 )
 

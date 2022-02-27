@@ -6,7 +6,7 @@ import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
 import assertk.assertions.isNull
-import pl.exbook.exbook.category.adapter.rest.CategoryDto
+import pl.exbook.exbook.category.adapter.rest.dto.CategoryDto
 import pl.exbook.exbook.category.adapter.rest.ImageDto
 
 @Suppress("UNCHECKED_CAST")

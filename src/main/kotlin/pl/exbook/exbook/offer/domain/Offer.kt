@@ -37,7 +37,7 @@ data class Offer(
     data class Book(
         val author: String,
         val title: String,
-        val isbn: Long?,
+        val isbn: String?,
         val condition: Condition
     )
 

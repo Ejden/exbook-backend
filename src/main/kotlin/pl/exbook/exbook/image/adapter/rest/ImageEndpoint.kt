@@ -12,10 +12,7 @@ import pl.exbook.exbook.shared.ContentType
 
 @Controller
 @RequestMapping("api/images")
-class ImageEndpoint(
-    val imageFacade: ImageFacade
-) {
-
+class ImageEndpoint(val imageFacade: ImageFacade) {
     @PostMapping(produces = [ContentType.V1])
     fun uploadImage(@RequestBody file: MultipartFile?): ResponseEntity<Any> {
         val uploadedImage = imageFacade.addImage(file!!)
@@ -23,7 +20,7 @@ class ImageEndpoint(
         val location = ServletUriComponentsBuilder
             .fromCurrentRequest()
             .path("/{id}")
-            .buildAndExpand(uploadedImage.id!!.raw)
+            .buildAndExpand(uploadedImage.id.raw)
             .toUri()
 
         return ResponseEntity.created(location).build()

@@ -38,7 +38,7 @@ data class OfferVersionDocument(
     data class BookDocument(
         val author: String,
         val title: String,
-        val isbn: Long?,
+        val isbn: String?,
         val condition: String
     )
 

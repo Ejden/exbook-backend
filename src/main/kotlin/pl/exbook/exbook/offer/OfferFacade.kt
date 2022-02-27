@@ -1,24 +1,29 @@
 package pl.exbook.exbook.offer
 
+import java.time.Instant
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import org.springframework.stereotype.Component
+import org.springframework.stereotype.Service
 import pl.exbook.exbook.offer.adapter.mongodb.OfferNotFoundException
 import pl.exbook.exbook.offer.domain.Offer
 import pl.exbook.exbook.offer.domain.OfferRepository
 import pl.exbook.exbook.shared.OfferId
 import pl.exbook.exbook.offer.domain.CreateOfferCommand
 import pl.exbook.exbook.offer.domain.OfferCreator
+import pl.exbook.exbook.offer.domain.OfferVersionNotFoundException
+import pl.exbook.exbook.offer.domain.OfferVersioningRepository
 import pl.exbook.exbook.offer.domain.UpdateOfferCommand
 import pl.exbook.exbook.security.domain.UnauthorizedException
+import pl.exbook.exbook.shared.OfferVersionId
 import pl.exbook.exbook.user.UserFacade
 
-@Component
+@Service
 class OfferFacade (
     private val offerRepository: OfferRepository,
+    private val offerVersioningRepository: OfferVersioningRepository,
     private val offerCreator: OfferCreator,
     private val userFacade: UserFacade
 ){
@@ -29,14 +34,16 @@ class OfferFacade (
         return offerRepository.findAll(pageRequest)
     }
 
-    fun debug(): List<Offer> {
-        val a = offerRepository.findAll()
-        val b = 3
-        print(b)
-        return a
-    }
-
     fun getOffer(offerId: OfferId) = offerRepository.findById(offerId) ?: throw OfferNotFoundException(offerId)
+
+    fun getOfferVersion(
+        offerId: OfferId,
+        version: Instant
+    ): Offer = offerVersioningRepository.getOfferVersion(offerId, version) ?: throw OfferVersionNotFoundException(offerId, version)
+
+    fun getOfferVersion(
+        offerVersionId: OfferVersionId
+    ): Offer = offerVersioningRepository.getOfferVersion(offerVersionId) ?: throw OfferVersionNotFoundException(offerVersionId)
 
     fun addOffer(
         request: CreateOfferCommand,

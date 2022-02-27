@@ -6,7 +6,6 @@ import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.data.repository.Repository
 
 interface MongoImageRepository : Repository<ImageDocument, String> {
-
     fun findById(id: String): ImageDocument?
 
     fun save(imageDocument: ImageDocument): ImageDocument
@@ -17,7 +16,7 @@ interface MongoImageRepository : Repository<ImageDocument, String> {
 @Document("images")
 data class ImageDocument(
     @Id
-    val id: String? = null,
+    val id: String,
     val file: Binary,
     val contentType: ContentTypeDocument
 )

@@ -4,12 +4,17 @@ import org.springframework.stereotype.Service
 import pl.exbook.exbook.offer.domain.Offer
 import pl.exbook.exbook.offer.domain.UpdateOfferCommand
 import pl.exbook.exbook.shared.OfferId
+import pl.exbook.exbook.shared.ValidationException
 import pl.exbook.exbook.shippingmethod.ShippingMethodFacade
 
 @Service
-class OfferChangeValidator(
+class OfferValidator(
     private val shippingMethodFacade: ShippingMethodFacade
 ){
+    fun validateCreatingOffer() {
+
+    }
+
     fun validateOfferChange(currentOffer: Offer, updateCommand: UpdateOfferCommand) {
         if ((updateCommand.type == Offer.Type.BUY_ONLY || updateCommand.type == Offer.Type.EXCHANGE_AND_BUY) && updateCommand.price == null) {
             throw OfferChangeValidationException(updateCommand.offerId, "Missing price for buy offer type")
@@ -32,7 +37,7 @@ class OfferChangeValidator(
                 )
             }
 
-            if (!shippingMethod.defaultCost.canBeOverridden && it.price.amount != shippingMethod.defaultCost.amount) {
+            if (!shippingMethod.defaultCost.canBeOverridden && it.price.amount != shippingMethod.defaultCost.cost.amount) {
                 throw OfferChangeValidationException(
                     updateCommand.offerId, "Cannot override shipping method cost with id ${shippingMethod.id}"
                 )
@@ -43,4 +48,4 @@ class OfferChangeValidator(
 
 class OfferChangeValidationException(
     offerId: OfferId, message: String
-) : RuntimeException("Illegal offer change on offer ${offerId.raw} : $message")
+) : ValidationException("Illegal offer change on offer ${offerId.raw} : $message")

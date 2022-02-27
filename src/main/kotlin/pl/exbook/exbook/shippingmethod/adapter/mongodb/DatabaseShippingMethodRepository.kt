@@ -1,13 +1,13 @@
 package pl.exbook.exbook.shippingmethod.adapter.mongodb
 
 import pl.exbook.exbook.shared.ShippingMethodId
-import pl.exbook.exbook.shippingmethod.adapter.rest.NewShippingMethod
 import pl.exbook.exbook.shippingmethod.domain.Cost
-import pl.exbook.exbook.shippingmethod.domain.Currency
 import pl.exbook.exbook.shippingmethod.domain.ShippingMethod
 import pl.exbook.exbook.shippingmethod.domain.ShippingMethodRepository
-import java.math.BigDecimal
+import org.springframework.stereotype.Component
+import pl.exbook.exbook.shared.dto.toDocument
 
+@Component
 class DatabaseShippingMethodRepository(
     private val mongoShippingMethodRepository: MongoShippingMethodRepository
 ) : ShippingMethodRepository {
@@ -17,31 +17,34 @@ class DatabaseShippingMethodRepository(
         return if (shippingMethod.isPresent) shippingMethod.get().toDomain() else null
     }
 
+    override fun findByName(name: String): ShippingMethod? {
+        return mongoShippingMethodRepository.findByMethodName(name)?.toDomain()
+    }
+
     override fun findAll(): List<ShippingMethod> = mongoShippingMethodRepository.findAll().map { it.toDomain() }
 
-    override fun save(newShippingMethod: NewShippingMethod): ShippingMethod = mongoShippingMethodRepository
-        .save(newShippingMethod.toDocument()).toDomain()
+    override fun save(shippingMethod: ShippingMethod): ShippingMethod = mongoShippingMethodRepository
+        .save(shippingMethod.toDocument()).toDomain()
 }
 
-private fun NewShippingMethod.toDocument() = ShippingMethodDocument(
-    methodName = this.name,
+private fun ShippingMethod.toDocument() = ShippingMethodDocument(
+    id = this.id.raw,
+    methodName = this.methodName,
     pickupPointMethod = this.pickupPointMethod,
     defaultCost = ShippingMethodCostDocument(
-        amount = this.cost.defaultCost,
-        currency = Currency.PLN.name,
-        canBeOverridden = this.cost.canBeOverridden
+        cost = this.defaultCost.cost.toDocument(),
+        canBeOverridden = this.defaultCost.canBeOverridden
     )
 )
 
-fun ShippingMethodDocument.toDomain() = ShippingMethod(
-    id = ShippingMethodId(this.id!!),
+private fun ShippingMethodDocument.toDomain() = ShippingMethod(
+    id = ShippingMethodId(this.id),
     methodName = this.methodName,
     pickupPointMethod = this.pickupPointMethod,
     defaultCost = this.defaultCost.toDomain(),
 )
 
-fun ShippingMethodCostDocument.toDomain() = Cost(
-    amount = BigDecimal(this.amount),
-    currency = Currency.valueOf(this.currency),
+private fun ShippingMethodCostDocument.toDomain() = Cost(
+    cost = this.cost.toDomain(),
     canBeOverridden = this.canBeOverridden
 )

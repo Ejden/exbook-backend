@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import pl.exbook.exbook.builders.CategoryBuilder.Companion.aCategoryBuilder
 import pl.exbook.exbook.builders.UserBuilder.Companion.aUserBuilder
-import pl.exbook.exbook.category.adapter.rest.CategoryDto
+import pl.exbook.exbook.category.adapter.rest.dto.CategoryDto
 import pl.exbook.exbook.category.adapter.rest.ImageDto
 import pl.exbook.exbook.category.adapter.rest.NewCategory
 import pl.exbook.exbook.category.domain.Image

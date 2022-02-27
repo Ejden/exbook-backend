@@ -104,7 +104,7 @@ class BasketDomainAbility {
             book = Offer.Book(
                 author = bookAuthor,
                 title = bookTitle,
-                isbn = 123123123L,
+                isbn = "1234567890",
                 condition = Offer.Condition.NEW
             ),
             images = Offer.Images(

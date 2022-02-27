@@ -5,23 +5,21 @@ import java.util.UUID
 import mu.KLogging
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
-import pl.exbook.exbook.offer.adapter.mongodb.OfferNotFoundException
 import pl.exbook.exbook.shared.Money
 import pl.exbook.exbook.shared.OfferId
 import pl.exbook.exbook.shared.OfferVersionId
 import pl.exbook.exbook.stock.StockFacade
-import pl.exbook.exbook.stock.domain.OfferChangeValidator
+import pl.exbook.exbook.stock.domain.OfferValidator
 import pl.exbook.exbook.user.UserFacade
 
 @Service
 class OfferCreator(
     private val offerRepository: OfferRepository,
+    private val offerVersioningService: OfferVersioningService,
     private val userFacade: UserFacade,
     private val stockFacade: StockFacade,
-    private val offerChangeValidator: OfferChangeValidator
+    private val offerValidator: OfferValidator
 ) {
-    @Transactional
     fun addOffer(request: CreateOfferCommand, token: UsernamePasswordAuthenticationToken): Offer {
         val user = userFacade.getUserByUsername(token.name)
         val offerId = OfferId(UUID.randomUUID().toString())
@@ -60,15 +58,20 @@ class OfferCreator(
             stockId = stock.id
         )
 
-        val addedOffer = offerRepository.save(offer)
+        try {
+            offerVersioningService.saveNewOfferVersion(offer)
+            val addedOffer = offerRepository.save(offer)
 
-        logger.debug { "User with id = ${user.id.raw} created offer with id = ${offer.id.raw}" }
-
-        return addedOffer
+            logger.debug { "User with id = ${user.id.raw} created offer with id = ${offer.id.raw}" }
+            return addedOffer
+        } catch (cause: Exception) {
+            // TODO: revert new offer version
+            throw cause
+        }
     }
 
     fun updateOffer(command: UpdateOfferCommand, currentOffer: Offer): Offer {
-        offerChangeValidator.validateOfferChange(currentOffer, command)
+        offerValidator.validateOfferChange(currentOffer, command)
         val newVersionId = OfferVersionId(UUID.randomUUID().toString())
         val newVersionValidFrom = Instant.now()
         val newOfferVersion = currentOffer.copy(

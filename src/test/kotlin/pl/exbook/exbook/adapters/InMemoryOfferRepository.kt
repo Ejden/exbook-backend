@@ -1,6 +1,5 @@
 package pl.exbook.exbook.adapters
 
-import java.time.Instant
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import pl.exbook.exbook.offer.domain.Offer
@@ -12,10 +11,6 @@ class InMemoryOfferRepository : OfferRepository {
 
     override fun findById(offerId: OfferId): Offer? {
         return memory.firstOrNull { it.id == offerId }
-    }
-
-    override fun getOfferVersionFrom(offerId: OfferId, timestamp: Instant): Offer? {
-        return memory.firstOrNull { it.id == offerId && timestamp >= it.versionCreationDate && timestamp < it.versionExpireDate  }
     }
 
     override fun findAll(pageable: Pageable): Page<Offer> {
