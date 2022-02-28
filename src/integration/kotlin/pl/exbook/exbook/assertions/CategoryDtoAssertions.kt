@@ -7,7 +7,6 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
 import assertk.assertions.isNull
 import pl.exbook.exbook.category.adapter.rest.dto.CategoryDto
-import pl.exbook.exbook.category.adapter.rest.ImageDto
 
 @Suppress("UNCHECKED_CAST")
 class CategoryDtoAssertions private constructor(
@@ -64,7 +63,7 @@ class CategoriesDtoAssertions private constructor(
             CategoryDto(
                 it["id"]!!,
                 it["name"]!!,
-                ImageDto((it["icon"] as Map<String, Any>)["url"] as String),
+                CategoryDto.ImageDto((it["icon"] as Map<String, Any>)["url"] as String),
                 it["parentId"]
             )
         }).containsExactly(*categories)
