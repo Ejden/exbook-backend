@@ -1,24 +1,23 @@
 package pl.exbook.exbook.features
 
-import assertk.assertThat
-import assertk.assertions.isEqualTo
-import org.junit.jupiter.api.Test
-import org.springframework.http.HttpStatus
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
-import pl.exbook.exbook.category.adapter.rest.dto.CategoryDto
-import pl.exbook.exbook.category.domain.Image
-import pl.exbook.exbook.security.adapter.rest.LoginCredentials
-import pl.exbook.exbook.shared.TestData.CATEGORY_ID_1
-import pl.exbook.exbook.shared.TestData.CATEGORY_ID_2
-import pl.exbook.exbook.shared.TestData.CATEGORY_ID_3
-import pl.exbook.exbook.shared.TestData.CATEGORY_NAME_1
-import pl.exbook.exbook.shared.TestData.CATEGORY_NAME_2
-import pl.exbook.exbook.shared.TestData.CATEGORY_NAME_3
-import pl.exbook.exbook.shared.TestData.IMAGE_URL_1
-import pl.exbook.exbook.shared.TestData.IMAGE_URL_2
-import pl.exbook.exbook.shared.TestData.IMAGE_URL_3
+import org.springframework.boot.test.web.client.TestRestTemplate
+import pl.exbook.exbook.BaseIntegrationSpec
+import pl.exbook.exbook.category.CategoryFacade
+import pl.exbook.exbook.category.domain.CreateCategoryCommand
 
-internal class CategoryEndpointTest: BaseFeatureE2ETest() {
+class CategoryEndpointSpec(private val categoryFacade: CategoryFacade, private val rest: TestRestTemplate) : BaseIntegrationSpec({
+    should("do something") {
+        categoryFacade.addCategory(CreateCategoryCommand(
+            name = "new-category",
+            parentId = null
+        ))
+        val categories = rest.getForEntity("/api/categories", Any::class.java)
+
+        println(categories)
+    }
+})
+
+//internal class CategoryEndpointSpec: BaseFeatureE2ESpec() {
 
 //    @Test
 //    fun `should get all categories`() {
@@ -88,4 +87,4 @@ internal class CategoryEndpointTest: BaseFeatureE2ETest() {
 //        // then
 //        assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
 //    }
-}
+//}

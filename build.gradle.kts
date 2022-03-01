@@ -1,7 +1,11 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val versions: Map<String, String> = mapOf(
-
+    "kotest" to "5.1.0",
+    "kotest_spring" to "1.1.0",
+    "kotest_testcontainers" to "1.1.1",
+    "kotest_wiremock" to "1.0.3",
+    "testcontainers_mongodb" to "1.16.3"
 )
 
 plugins {
@@ -66,9 +70,14 @@ dependencies {
     testImplementation("io.kotest:kotest-framework-datatest:5.1.0")
 
     integrationImplementation("org.springframework.security:spring-security-test")
-    integrationImplementation(  "org.springframework.boot:spring-boot-starter-test")
+    integrationImplementation("org.springframework.boot:spring-boot-starter-test")
     integrationImplementation("org.springframework:spring-test:5.3.15")
     integrationImplementation("de.flapdoodle.embed:de.flapdoodle.embed.mongo")
+
+    integrationImplementation("io.kotest.extensions:kotest-extensions-spring:${versions["kotest_spring"]}")
+    integrationImplementation("io.kotest.extensions:kotest-extensions-testcontainers:${versions["kotest_testcontainers"]}")
+    integrationImplementation("io.kotest.extensions:kotest-extensions-wiremock:${versions["kotest_wiremock"]}")
+    integrationImplementation("org.testcontainers:mongodb:${versions["testcontainers_mongodb"]}")
 }
 
 tasks.wrapper {

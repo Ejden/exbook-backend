@@ -1,13 +1,6 @@
 package pl.exbook.exbook.features
 
-import assertk.assertThat
-import assertk.assertions.isEqualTo
-import org.junit.jupiter.api.Test
-import org.springframework.security.core.authority.SimpleGrantedAuthority
-import pl.exbook.exbook.shared.TestData
-import pl.exbook.exbook.user.domain.Role
-
-internal class UserEndpointTest : BaseFeatureE2ETest() {
+//internal class UserEndpointSpec : BaseFeatureE2ESpec() {
 
 //    @Test
 //    fun `should get simplified user`() {
@@ -21,4 +14,4 @@ internal class UserEndpointTest : BaseFeatureE2ETest() {
 //        assertThat(1).isEqualTo(1)
 //        print(getDetailedUser(TestData.USER_ID))
 //    }
-}
+//}
