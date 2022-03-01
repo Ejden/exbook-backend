@@ -1,11 +1,13 @@
 package pl.exbook.exbook.basket.domain
 
+import org.springframework.stereotype.Service
 import java.lang.RuntimeException
 import pl.exbook.exbook.offer.domain.Offer
 import pl.exbook.exbook.order.domain.Order
 import pl.exbook.exbook.shared.UserId
 import pl.exbook.exbook.user.domain.User
 
+@Service
 class BasketValidator {
     fun validateAddingItem(offer: Offer, buyer: User, command: AddItemToBasketCommand) {
         checkOfferType(offer, command.orderType)

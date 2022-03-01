@@ -38,7 +38,7 @@ class StockEndpoint(private val stockFacade: StockFacade) {
     @PostMapping(consumes = [ContentType.V1], produces = [ContentType.V1])
     fun createStockForOffer(
         request: CreateStockRequest
-    ): StockDto = stockFacade.createStockForOffer(OfferId(request.offerId), request.startQuantity).toDto()
+    ): StockDto = stockFacade.createStock(request.startQuantity).toDto()
 }
 
 private fun Stock.toDto() = StockDto.fromDomain(this)

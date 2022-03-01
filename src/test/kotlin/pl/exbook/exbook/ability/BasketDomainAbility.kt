@@ -89,7 +89,7 @@ class BasketDomainAbility {
         category: Offer.Category = Offer.Category(
             id = TestData.sampleCategoryId
         ),
-        shippingMethods: Collection<Offer.ShippingMethod> = listOf(
+        shippingMethods: List<Offer.ShippingMethod> = listOf(
             Offer.ShippingMethod(
             id = TestData.sampleShippingMethodId,
             price = TestData.tenPln

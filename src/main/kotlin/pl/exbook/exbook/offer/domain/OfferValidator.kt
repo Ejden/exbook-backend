@@ -1,8 +1,6 @@
-package pl.exbook.exbook.stock.domain
+package pl.exbook.exbook.offer.domain
 
 import org.springframework.stereotype.Service
-import pl.exbook.exbook.offer.domain.Offer
-import pl.exbook.exbook.offer.domain.UpdateOfferCommand
 import pl.exbook.exbook.shared.OfferId
 import pl.exbook.exbook.shared.ValidationException
 import pl.exbook.exbook.shippingmethod.ShippingMethodFacade
@@ -11,8 +9,10 @@ import pl.exbook.exbook.shippingmethod.ShippingMethodFacade
 class OfferValidator(
     private val shippingMethodFacade: ShippingMethodFacade
 ){
-    fun validateCreatingOffer() {
-
+    fun validateCreatingOffer(command: CreateOfferCommand) {
+        if (command.shippingMethods.any { shippingMethodFacade.getShippingMethod(it.id) == null }) {
+            throw ValidationException("Cannot create offer with non existing shipping method")
+        }
     }
 
     fun validateOfferChange(currentOffer: Offer, updateCommand: UpdateOfferCommand) {

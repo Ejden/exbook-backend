@@ -6,7 +6,6 @@ import java.util.UUID
 import java.util.concurrent.Semaphore
 import java.util.concurrent.TimeUnit
 import org.springframework.stereotype.Service
-import pl.exbook.exbook.shared.OfferId
 import pl.exbook.exbook.shared.StockId
 import pl.exbook.exbook.shared.StockReservationId
 
@@ -22,8 +21,6 @@ class StockService(
         .build()
 
     fun getStock(stockId: StockId): Stock = stockRepository.getStock(stockId) ?: throw StockNotFoundException(stockId)
-
-    fun getStockForOffer(offerId: OfferId): Stock = stockRepository.getStockForOffer(offerId) ?: throw StockForOfferNotFoundException(offerId)
 
     fun getReservation(
         reservationId: StockReservationId
@@ -98,12 +95,11 @@ class StockService(
         }
     }
 
-    fun createStockForOffer(offerId: OfferId, startQuantity: Int): Stock = Stock(
+    fun createStockForOffer(startQuantity: Int): Stock = Stock(
             id = StockId(UUID.randomUUID().toString()),
-            offerId = offerId,
             inStock = startQuantity,
             reserved = 0
-        ).also { stockValidator.validateCreationOfStock(it.offerId, it.inStock) }
+        ).also { stockValidator.validateCreationOfStock(it.inStock) }
         .let { stockRepository.saveStock(it) }
 
     private fun createReservation(stockId: StockId, amount: Int): StockReservation = StockReservation(

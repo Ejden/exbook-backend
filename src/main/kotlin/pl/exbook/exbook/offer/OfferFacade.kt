@@ -5,7 +5,6 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.stereotype.Service
 import pl.exbook.exbook.offer.adapter.mongodb.OfferNotFoundException
 import pl.exbook.exbook.offer.domain.Offer
@@ -46,12 +45,12 @@ class OfferFacade (
     ): Offer = offerVersioningRepository.getOfferVersion(offerVersionId) ?: throw OfferVersionNotFoundException(offerVersionId)
 
     fun addOffer(
-        request: CreateOfferCommand,
-        token: UsernamePasswordAuthenticationToken
-    ): Offer = offerCreator.addOffer(request, token)
+        command: CreateOfferCommand,
+        username: String
+    ): Offer = offerCreator.addOffer(command, username)
 
-    fun updateOffer(command: UpdateOfferCommand, token: UsernamePasswordAuthenticationToken): Offer {
-        val user = userFacade.getUserByUsername(token.name)
+    fun updateOffer(command: UpdateOfferCommand): Offer {
+        val user = userFacade.getUserByUsername(command.username)
         val offer = offerRepository.findById(command.offerId) ?: throw OfferNotFoundException(command.offerId)
         if (user.id != offer.seller.id) {
             throw UnauthorizedException()

@@ -22,7 +22,7 @@ data class Offer(
     val price: Money?,
     val location: String,
     val category: Category,
-    val shippingMethods: Collection<ShippingMethod>,
+    val shippingMethods: List<ShippingMethod>,
     val stockId: StockId
 ) {
     enum class Type {
@@ -43,7 +43,7 @@ data class Offer(
 
     data class Images(
         val thumbnail: Image?,
-        val allImages: Collection<Image>
+        val allImages: List<Image>
     )
 
     data class Seller(val id: UserId)

@@ -28,7 +28,7 @@ class OfferEndpoint(private val offerFacade: OfferFacade) {
     @PreAuthorize("hasAuthority('EXCHANGE_BOOKS')")
     fun addOffer(@RequestBody request: CreateOfferRequest, user: UsernamePasswordAuthenticationToken?): ResponseEntity<OfferDto> {
         return if (user != null) {
-            ResponseEntity.ok(offerFacade.addOffer(request.toCommand(), user).toDto())
+            ResponseEntity.ok(offerFacade.addOffer(request.toCommand(), user.name).toDto())
         } else {
             logger.warn { "Non logged user tried to add new offer" }
             throw UserNotFoundException("Non logged user tried to add new offer")
@@ -43,7 +43,7 @@ class OfferEndpoint(private val offerFacade: OfferFacade) {
         token: UsernamePasswordAuthenticationToken?
     ): ResponseEntity<OfferDto> {
         return if (token != null) {
-            ResponseEntity.ok(offerFacade.updateOffer(request.toCommand(offerId), token).toDto())
+            ResponseEntity.ok(offerFacade.updateOffer(request.toCommand(offerId, token.name)).toDto())
         } else {
             logger.warn { "Non logged user tried to add new offer" }
             throw UserNotFoundException("Non logged user tried to update offer")

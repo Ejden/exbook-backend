@@ -1,11 +1,9 @@
 package pl.exbook.exbook.stock.domain
 
-import pl.exbook.exbook.shared.OfferId
 import pl.exbook.exbook.shared.StockId
 
 data class Stock(
     val id: StockId,
-    val offerId: OfferId,
     val inStock: Int,
     val reserved: Int
 ) {

@@ -33,23 +33,19 @@ data class CreateOfferCommand(
 
     init {
         if (initialStock <= 0) {
-            throw InvalidInitialStockException(initialStock)
+            throw IllegalParameterException("Initial stock should be grater than 0")
         }
 
-        if (book.author.isBlank() || book.author.length > 256) {
+        if (book.author.isBlank() || book.author.length >= 256) {
             throw IllegalParameterException("Book author length should be between 1 and 256")
         }
 
-        if (book.title.isNotBlank() || book.title.length >= 256) {
+        if (book.title.isBlank() || book.title.length >= 256) {
             throw IllegalParameterException("Book title length should be between 1 and 256")
         }
 
-        if (book.title.isNotBlank() || book.title.length >= 256) {
-            throw IllegalParameterException("Book title length should be between 1 and 256")
-        }
-
-        if ((book.isbn != null) && (book.isbn.length != 13 || book.isbn.length != 10)) {
-            throw IllegalParameterException("Book isbn length should be between 13 or 10")
+        if (!((book.isbn == null) || (book.isbn.length == 13) || (book.isbn.length == 10))) {
+            throw IllegalParameterException("Book isbn length should be 13 or 10")
         }
 
         if (description.isBlank() || description.length > 2000) {

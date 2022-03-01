@@ -17,9 +17,9 @@ class UserFacade(
 
     fun getUserByUsername(
         username: String
-    ): User = userRepository.findByLogin(username) ?: throw UserNotFoundException("User with username $username not found")
+    ): User = userRepository.findByLogin(username) ?: throw UserNotFoundException(username)
 
     fun getUserById(
         userId: UserId
-    ): User = userRepository.findById(userId) ?: throw UserNotFoundException("User with id $userId not found")
+    ): User = userRepository.findById(userId) ?: throw UserNotFoundException(userId)
 }

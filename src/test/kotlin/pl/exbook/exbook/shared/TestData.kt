@@ -19,9 +19,11 @@ object TestData {
     val sampleOfferVersionId = OfferVersionId("offer-version-id")
     val sampleCategoryId = CategoryId("category-id")
     val sampleShippingMethodId = ShippingMethodId("shipping-method-id")
+    val otherSampleShippingMethodId = ShippingMethodId("other-shipping-method-id")
     val tenPln = Money(BigDecimal("10.00"), Currency.PLN)
     val sampleImageBinary = Binary(BsonBinarySubType.BINARY, byteArrayOf(0x1, 0x2, 0x3, 0x4, 0x5, 0xf))
     val sampleImageId = ImageId("image-id")
+
     const val sampleCategoryName = "category-name"
     const val otherSampleCategoryName = "other-category-name"
     const val sampleBuyerUsername = "buyer-username"

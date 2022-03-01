@@ -12,20 +12,16 @@ class DatabaseStockRepository(private val mongoStockRepository: MongoStockReposi
         ?.toDomain()
 
     override fun saveStock(stock: Stock): Stock = mongoStockRepository.save(stock.toDocument()).toDomain()
-
-    override fun getStockForOffer(offerId: OfferId): Stock? = mongoStockRepository.findByOfferId(offerId.raw)?.toDomain()
 }
 
 private fun Stock.toDocument() = StockDocument(
     id = this.id.raw,
-    offerId = this.offerId.raw,
     inStock = this.inStock,
     reserved = this.reserved
 )
 
 private fun StockDocument.toDomain() = Stock(
     id = StockId(this.id),
-    offerId = OfferId(this.offerId),
     inStock = this.inStock,
     reserved = this.reserved
 )

@@ -26,7 +26,7 @@ class InMemoryOfferVersioningRepository : OfferVersioningRepository {
     }
 
     override fun insertNewVersion(offer: Offer): Offer {
-        if (memory[offer.versionId] == null) {
+        if (memory[offer.versionId] != null) {
             throw RuntimeException()
         }
 

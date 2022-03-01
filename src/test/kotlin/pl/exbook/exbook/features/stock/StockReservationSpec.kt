@@ -6,7 +6,6 @@ import io.kotest.matchers.ints.shouldBeExactly
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import pl.exbook.exbook.ability.StockDomainAbility
-import pl.exbook.exbook.shared.TestData.sampleOfferId
 import pl.exbook.exbook.shared.TestData.sampleStockReservationId
 import pl.exbook.exbook.stock.domain.InsufficientStockException
 import pl.exbook.exbook.stock.domain.StockReservationNotFoundException
@@ -16,7 +15,7 @@ class StockReservationSpec : ShouldSpec({
 
     should("reserve stock") {
         // given
-        val stockId = domain.facade.createStockForOffer(sampleOfferId, 100).id
+        val stockId = domain.facade.createStock(100).id
 
         // when
         val result = domain.facade.reserve(stockId, 10)
@@ -35,7 +34,7 @@ class StockReservationSpec : ShouldSpec({
 
     should("make couple reservation on stock") {
         // given
-        val stockId = domain.facade.createStockForOffer(sampleOfferId, 100).id
+        val stockId = domain.facade.createStock(100).id
 
         // when
         val result1 = domain.facade.reserve(stockId, 10)
@@ -58,7 +57,7 @@ class StockReservationSpec : ShouldSpec({
 
     should("throw an error while trying to reserve more stock than actual amount in stock") {
         // given
-        val stockId = domain.facade.createStockForOffer(sampleOfferId, 100).id
+        val stockId = domain.facade.createStock(100).id
 
         // then
         shouldThrowExactly<InsufficientStockException> {
@@ -73,7 +72,7 @@ class StockReservationSpec : ShouldSpec({
 
     should("confirm reservation") {
         // given
-        val stockId = domain.facade.createStockForOffer(sampleOfferId, 100).id
+        val stockId = domain.facade.createStock(100).id
         val reservation = domain.facade.reserve(stockId, 5)
 
         // when
@@ -81,14 +80,13 @@ class StockReservationSpec : ShouldSpec({
         val stock = domain.facade.getStock(stockId)
 
         // then
-        stock.offerId shouldBe sampleOfferId
         stock.reserved shouldBeExactly 0
         stock.inStock shouldBeExactly 95
     }
 
     should("confirm couple reservation for one stock") {
         // given
-        val stockId = domain.facade.createStockForOffer(sampleOfferId, 100).id
+        val stockId = domain.facade.createStock(100).id
         val reservation1 = domain.facade.reserve(stockId, 5)
         val reservation2 = domain.facade.reserve(stockId, 10)
 
@@ -98,14 +96,13 @@ class StockReservationSpec : ShouldSpec({
         val stock = domain.facade.getStock(stockId)
 
         // then
-        stock.offerId shouldBe sampleOfferId
         stock.reserved shouldBeExactly 0
         stock.inStock shouldBeExactly 85
     }
 
     should("throw an error when trying to confirm non existing reservation") {
         // given
-        val stockId = domain.facade.createStockForOffer(sampleOfferId, 100).id
+        val stockId = domain.facade.createStock(100).id
 
         // then
         shouldThrowExactly<StockReservationNotFoundException> {
@@ -115,7 +112,7 @@ class StockReservationSpec : ShouldSpec({
 
     should("throw an error when trying to confirm reservation more than once") {
         // given
-        val stockId = domain.facade.createStockForOffer(sampleOfferId, 100).id
+        val stockId = domain.facade.createStock(100).id
         val reservation = domain.facade.reserve(stockId, 5)
         domain.facade.confirmReservation(reservation.reservationId)
 
@@ -127,14 +124,13 @@ class StockReservationSpec : ShouldSpec({
         // and: stock was not modified
         val stock = domain.facade.getStock(stockId)
 
-        stock.offerId shouldBe sampleOfferId
         stock.reserved shouldBeExactly 0
         stock.inStock shouldBeExactly 95
     }
 
     should("cancel stock reservation") {
         // given
-        val stockId = domain.facade.createStockForOffer(sampleOfferId, 100).id
+        val stockId = domain.facade.createStock(100).id
         val reservation = domain.facade.reserve(stockId, 5)
 
         // when
@@ -149,7 +145,7 @@ class StockReservationSpec : ShouldSpec({
 
     should("cancel more than one stock reservation") {
         // given
-        val stockId = domain.facade.createStockForOffer(sampleOfferId, 100).id
+        val stockId = domain.facade.createStock(100).id
         val reservation1 = domain.facade.reserve(stockId, 5)
         val reservation2 = domain.facade.reserve(stockId, 10)
 
@@ -166,7 +162,7 @@ class StockReservationSpec : ShouldSpec({
 
     should("throw an error when trying to cancel non existing stock reservation") {
         // given
-        val stockId = domain.facade.createStockForOffer(sampleOfferId, 100).id
+        val stockId = domain.facade.createStock(100).id
 
         // then
         shouldThrowExactly<StockReservationNotFoundException> {

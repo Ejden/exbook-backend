@@ -2,10 +2,6 @@ package pl.exbook.exbook
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import pl.exbook.exbook.basket.adapter.mongodb.DatabaseBasketRepository
-import pl.exbook.exbook.basket.adapter.mongodb.MongoBasketRepository
-import pl.exbook.exbook.basket.domain.BasketFactory
-import pl.exbook.exbook.basket.domain.BasketValidator
 import pl.exbook.exbook.listing.ListingFacade
 import pl.exbook.exbook.offer.OfferFacade
 import pl.exbook.exbook.order.OrderFacade
@@ -66,15 +62,6 @@ class ServicesConfiguration {
 
     @Bean
     fun orderValidator() = OrderValidator()
-
-    @Bean
-    fun basketRepository(mongoBasketRepository: MongoBasketRepository) = DatabaseBasketRepository(mongoBasketRepository)
-
-    @Bean
-    fun basketValidator() = BasketValidator()
-
-    @Bean
-    fun basketFactory() = BasketFactory()
 
     @Bean
     fun orderFacade(

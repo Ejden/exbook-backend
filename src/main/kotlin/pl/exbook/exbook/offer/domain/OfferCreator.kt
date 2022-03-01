@@ -3,13 +3,11 @@ package pl.exbook.exbook.offer.domain
 import java.time.Instant
 import java.util.UUID
 import mu.KLogging
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.stereotype.Service
 import pl.exbook.exbook.shared.Money
 import pl.exbook.exbook.shared.OfferId
 import pl.exbook.exbook.shared.OfferVersionId
 import pl.exbook.exbook.stock.StockFacade
-import pl.exbook.exbook.stock.domain.OfferValidator
 import pl.exbook.exbook.user.UserFacade
 
 @Service
@@ -20,11 +18,12 @@ class OfferCreator(
     private val stockFacade: StockFacade,
     private val offerValidator: OfferValidator
 ) {
-    fun addOffer(request: CreateOfferCommand, token: UsernamePasswordAuthenticationToken): Offer {
-        val user = userFacade.getUserByUsername(token.name)
+    fun addOffer(command: CreateOfferCommand, username: String): Offer {
+        offerValidator.validateCreatingOffer(command)
+        val user = userFacade.getUserByUsername(username)
         val offerId = OfferId(UUID.randomUUID().toString())
         val versionId = OfferVersionId(UUID.randomUUID().toString())
-        val stock = stockFacade.createStockForOffer(offerId, request.initialStock)
+        val stock = stockFacade.createStock(command.initialStock)
 
         val offer = Offer(
             id = offerId,
@@ -32,24 +31,24 @@ class OfferCreator(
             versionExpireDate = null,
             versionId = versionId,
             book = Offer.Book(
-                author = request.book.author,
-                title = request.book.title,
-                isbn = request.book.isbn,
-                condition = request.book.condition
+                author = command.book.author,
+                title = command.book.title,
+                isbn = command.book.isbn,
+                condition = command.book.condition
             ),
             images = Offer.Images(
                 thumbnail = null,
                 allImages = emptyList()
             ),
-            description = request.description,
-            type = request.type,
+            description = command.description,
+            type = command.type,
             seller = Offer.Seller(
                 id = user.id
             ),
-            price = request.price?.let { Money(it.amount, it.currency) },
-            location = request.location,
-            category = Offer.Category(request.category.id),
-            shippingMethods = request.shippingMethods.map {
+            price = command.price?.let { Money(it.amount, it.currency) },
+            location = command.location,
+            category = Offer.Category(command.category.id),
+            shippingMethods = command.shippingMethods.map {
                 Offer.ShippingMethod(
                     id = it.id,
                     price = it.price

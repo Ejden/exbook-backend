@@ -16,14 +16,18 @@ class OfferVersioningService(private val repository: OfferVersioningRepository) 
     // TODO: Add transaction
     fun saveNewOfferVersion(newOfferVersion: Offer): Offer {
         val activeOfferVersion = repository.getActiveOfferVersion(newOfferVersion.id)
-            ?: throw OfferVersionNotFoundException(newOfferVersion.id)
-        val deactivatedOfferVersion = activeOfferVersion.deactivate(newOfferVersion.versionCreationDate)
-        try {
-            repository.saveOfferVersion(deactivatedOfferVersion)
-            return repository.insertNewVersion(newOfferVersion)
-        } catch (cause: Exception) {
-            repository.saveOfferVersion(activeOfferVersion)
-            throw cause
+
+        return if (activeOfferVersion != null) {
+            val deactivatedOfferVersion = activeOfferVersion.deactivate(newOfferVersion.versionCreationDate)
+            try {
+                repository.saveOfferVersion(deactivatedOfferVersion)
+                repository.insertNewVersion(newOfferVersion)
+            } catch (cause: Exception) {
+                repository.saveOfferVersion(activeOfferVersion)
+                throw cause
+            }
+        } else {
+            repository.insertNewVersion(newOfferVersion)
         }
     }
 }

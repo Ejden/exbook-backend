@@ -1,5 +1,6 @@
 package pl.exbook.exbook.basket.adapter.mongodb
 
+import org.springframework.stereotype.Component
 import java.lang.RuntimeException
 import pl.exbook.exbook.basket.domain.Basket
 import pl.exbook.exbook.basket.domain.BasketRepository
@@ -8,6 +9,7 @@ import pl.exbook.exbook.shared.BasketId
 import pl.exbook.exbook.shared.OfferId
 import pl.exbook.exbook.shared.UserId
 
+@Component
 class DatabaseBasketRepository(
     private val mongoBasketRepository: MongoBasketRepository
 ) : BasketRepository {

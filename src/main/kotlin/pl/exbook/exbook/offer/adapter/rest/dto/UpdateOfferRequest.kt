@@ -38,8 +38,9 @@ data class UpdateOfferRequest(
         val price: MoneyDto
     )
 
-    fun toCommand(offerId: OfferId): UpdateOfferCommand = UpdateOfferCommand(
+    fun toCommand(offerId: OfferId, username: String): UpdateOfferCommand = UpdateOfferCommand(
         offerId = offerId,
+        username = username,
         book = this.book.let {
             UpdateOfferCommand.Book(
                 author = it.author,
