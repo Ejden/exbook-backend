@@ -4,6 +4,9 @@ import io.mockk.every
 import io.mockk.mockk
 import pl.exbook.exbook.adapters.InMemoryOfferRepository
 import pl.exbook.exbook.adapters.InMemoryOfferVersioningRepository
+import pl.exbook.exbook.category.CategoryFacade
+import pl.exbook.exbook.category.domain.Category
+import pl.exbook.exbook.category.domain.CategoryNotFoundException
 import pl.exbook.exbook.offer.OfferFacade
 import pl.exbook.exbook.offer.domain.CreateOfferCommand
 import pl.exbook.exbook.offer.domain.Offer
@@ -19,6 +22,7 @@ import pl.exbook.exbook.shared.ShippingMethodId
 import pl.exbook.exbook.shared.StockId
 import pl.exbook.exbook.shared.TestData
 import pl.exbook.exbook.shared.TestData.sampleCategoryId
+import pl.exbook.exbook.shared.TestData.sampleCategoryName
 import pl.exbook.exbook.shared.TestData.sampleImageUrl
 import pl.exbook.exbook.shared.TestData.sampleOfferId
 import pl.exbook.exbook.shared.TestData.sampleOfferVersionId
@@ -45,7 +49,8 @@ class OfferDomainAbility {
     private val userFacade: UserFacade = mockk()
     private val stockFacade: StockFacade = mockk()
     private val shippingMethodFacade: ShippingMethodFacade = mockk()
-    private val offerValidator: OfferValidator = OfferValidator(shippingMethodFacade)
+    private val categoryFacade: CategoryFacade = mockk()
+    private val offerValidator: OfferValidator = OfferValidator(shippingMethodFacade, categoryFacade)
     private val offerCreator: OfferCreator = OfferCreator(
         offerRepository = offerRepository,
         offerVersioningService = offerVersioningService,
@@ -132,6 +137,18 @@ class OfferDomainAbility {
 
     fun thereIsNoShippingMethod(shippingMethodId: ShippingMethodId = sampleShippingMethodId) {
         every { shippingMethodFacade.getShippingMethod(shippingMethodId) } returns null
+    }
+
+    fun thereIsCategory(
+        categoryId: CategoryId,
+        name: String = sampleCategoryName,
+        parentId: CategoryId? = null
+    ) {
+        every { categoryFacade.getCategory(categoryId) } returns Category(categoryId, name, null, parentId)
+    }
+
+    fun thereIsNoCategory(categoryId: CategoryId) {
+        every { categoryFacade.getCategory(categoryId) } throws CategoryNotFoundException(categoryId)
     }
 
     fun createOffer(

@@ -36,8 +36,6 @@ class DatabaseOfferRepository(
     }
 }
 
-class OfferNotFoundException(offerId: OfferId) : RuntimeException("Offer with id ${offerId.raw} not found")
-
 private fun OfferDocument.toDomain() = Offer(
     id = OfferId(this.id),
     versionId = OfferVersionId(this.versionId),

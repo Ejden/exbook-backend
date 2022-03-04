@@ -28,4 +28,9 @@ class InMemoryUserRepository : UserRepository {
         memory[user.id] = user
         return user
     }
+
+    override fun save(user: User): User {
+        memory[user.id] = user
+        return memory[user.id]!!
+    }
 }

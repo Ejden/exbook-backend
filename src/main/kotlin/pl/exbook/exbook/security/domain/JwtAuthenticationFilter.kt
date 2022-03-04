@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 class JwtAuthenticationFilter(private val objectMapper: ObjectMapper) : UsernamePasswordAuthenticationFilter() {
-
     override fun attemptAuthentication(request: HttpServletRequest?, response: HttpServletResponse?): Authentication {
         val reader: BufferedReader? = request?.reader
         val sb: StringBuilder = StringBuilder()
@@ -31,6 +30,4 @@ class JwtAuthenticationFilter(private val objectMapper: ObjectMapper) : Username
 
         return this.authenticationManager.authenticate(token)
     }
-
-
 }

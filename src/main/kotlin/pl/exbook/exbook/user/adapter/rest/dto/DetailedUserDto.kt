@@ -16,7 +16,6 @@ data class DetailedUserDto (
     val locked: Boolean,
     val credentialExpired: Boolean,
     val grade: Double,
-    val authorities: MutableSet<GrantedAuthority>,
     val creationDate: Instant
 ) {
     companion object {
@@ -33,7 +32,6 @@ data class DetailedUserDto (
             credentialExpired = user.credentialExpired,
             grade = user.grade,
             creationDate = user.creationDate,
-            authorities = user.authorities
         )
     }
 }

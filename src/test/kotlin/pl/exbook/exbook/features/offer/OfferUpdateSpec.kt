@@ -9,10 +9,10 @@ import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import pl.exbook.exbook.ability.OfferDomainAbility
-import pl.exbook.exbook.offer.adapter.mongodb.OfferNotFoundException
 import pl.exbook.exbook.offer.domain.CreateOfferCommand
 import pl.exbook.exbook.offer.domain.Offer
 import pl.exbook.exbook.offer.domain.OfferChangeValidationException
+import pl.exbook.exbook.offer.domain.OfferNotFoundException
 import pl.exbook.exbook.offer.domain.UpdateOfferCommand
 import pl.exbook.exbook.pln
 import pl.exbook.exbook.security.domain.UnauthorizedException
@@ -48,6 +48,7 @@ class OfferUpdateSpec : ShouldSpec({
             domain.thereIsShippingMethod(shippingMethodId = otherSampleShippingMethodId)
             domain.stockFacadeWillCreateStockForOffer(stockId = sampleStockId, initialStock = 100)
             domain.thereIsUser(userId = sampleSellerId, username = sampleSellerUsername)
+            domain.thereIsCategory(categoryId = sampleCategoryId)
             val oldOffer = domain.createOffer(
                 sellerUsername = sampleSellerUsername,
                 bookAuthor = "standard",
@@ -229,6 +230,7 @@ class OfferUpdateSpec : ShouldSpec({
         domain.stockFacadeWillCreateStockForOffer(stockId = sampleStockId, initialStock = 100)
         domain.thereIsUser(userId = sampleSellerId, username = sampleSellerUsername)
         domain.thereIsUser(userId = otherSampleSellerId, username = otherSampleSellerUsername)
+        domain.thereIsCategory(categoryId = sampleCategoryId)
         val oldOffer = domain.createOffer(
             sellerUsername = sampleSellerUsername,
             bookAuthor = "standard",
@@ -276,6 +278,7 @@ class OfferUpdateSpec : ShouldSpec({
         domain.thereIsNoShippingMethod(shippingMethodId = otherSampleShippingMethodId)
         domain.stockFacadeWillCreateStockForOffer(stockId = sampleStockId, initialStock = 100)
         domain.thereIsUser(userId = sampleSellerId, username = sampleSellerUsername)
+        domain.thereIsCategory(categoryId = sampleCategoryId)
         val oldOffer = domain.createOffer(
             sellerUsername = sampleSellerUsername,
             bookAuthor = "standard",

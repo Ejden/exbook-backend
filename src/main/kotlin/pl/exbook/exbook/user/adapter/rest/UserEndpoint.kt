@@ -10,6 +10,7 @@ import pl.exbook.exbook.shared.UserId
 import pl.exbook.exbook.user.UserFacade
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
+import pl.exbook.exbook.shared.ContentType
 import pl.exbook.exbook.user.adapter.rest.dto.CreateUserRequest
 import pl.exbook.exbook.user.adapter.rest.dto.DetailedUserDto
 import pl.exbook.exbook.user.adapter.rest.dto.UserDto
@@ -19,21 +20,31 @@ import pl.exbook.exbook.user.domain.User
 @RequestMapping("api")
 class UserController(private val userFacade: UserFacade) {
 
-    @GetMapping("me")
+    @GetMapping("me", produces = [ContentType.V1])
     @PreAuthorize("isAuthenticated()")
     fun getCurrentUser(user: UsernamePasswordAuthenticationToken): DetailedUserDto? {
         return userFacade.getUserByUsername(user.name).toDetailedUserDto()
     }
 
-    @GetMapping("users/{userId}")
+    @GetMapping("users/{userId}", produces = [ContentType.V1])
     fun getUser(@PathVariable userId: UserId): UserDto {
         return userFacade.getUserById(userId).toUserDto()
     }
 
     @PreAuthorize("permitAll()")
-    @PostMapping("signup")
+    @PostMapping("signup", consumes = [ContentType.V1], produces = [ContentType.V1])
     fun signUp(@RequestBody request : CreateUserRequest): DetailedUserDto {
         return userFacade.createUser(request.toCommand()).toDetailedUserDto()
+    }
+
+    @PostMapping("users/activation/{username}", produces = [ContentType.V1])
+    fun activateAccount(@PathVariable username: String): DetailedUserDto {
+        return userFacade.activateUserProfile(username).toDetailedUserDto()
+    }
+
+    @PostMapping("users/{username}/make-admin", produces = [ContentType.V1])
+    fun makeAdmin(@PathVariable username: String): DetailedUserDto {
+        return userFacade.addAdminAuthority(username).toDetailedUserDto()
     }
 }
 

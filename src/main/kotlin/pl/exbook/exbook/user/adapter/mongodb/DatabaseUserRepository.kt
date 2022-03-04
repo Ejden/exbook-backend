@@ -24,10 +24,14 @@ class DatabaseUserRepository(private val mongoUserRepository: MongoUserRepositor
     override fun insert(user: User): User {
         return mongoUserRepository.insert(user.toDocument()).toDomain()
     }
+
+    override fun save(user: User): User {
+        return mongoUserRepository.save(user.toDocument()).toDomain()
+    }
 }
 
 fun UserDocument.toDomain() = User(
-    id = UserId(this.id!!),
+    id = UserId(this.id),
     firstName = this.firstName,
     lastName = this.lastName,
     username = this.username,
@@ -44,6 +48,7 @@ fun UserDocument.toDomain() = User(
 )
 
 fun User.toDocument() = UserDocument(
+    id = this.id.raw,
     firstName = this.firstName,
     lastName = this.lastName,
     username = this.username,

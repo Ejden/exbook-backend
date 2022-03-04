@@ -1,17 +1,26 @@
 package pl.exbook.exbook.offer.domain
 
 import org.springframework.stereotype.Service
+import pl.exbook.exbook.category.CategoryFacade
+import pl.exbook.exbook.category.domain.CategoryNotFoundException
 import pl.exbook.exbook.shared.OfferId
 import pl.exbook.exbook.shared.ValidationException
 import pl.exbook.exbook.shippingmethod.ShippingMethodFacade
 
 @Service
 class OfferValidator(
-    private val shippingMethodFacade: ShippingMethodFacade
+    private val shippingMethodFacade: ShippingMethodFacade,
+    private val categoryFacade: CategoryFacade
 ){
     fun validateCreatingOffer(command: CreateOfferCommand) {
         if (command.shippingMethods.any { shippingMethodFacade.getShippingMethod(it.id) == null }) {
             throw ValidationException("Cannot create offer with non existing shipping method")
+        }
+
+        try {
+            categoryFacade.getCategory(command.category.id)
+        } catch (cause: CategoryNotFoundException) {
+            throw ValidationException("Cannot create offer with non existing category")
         }
     }
 

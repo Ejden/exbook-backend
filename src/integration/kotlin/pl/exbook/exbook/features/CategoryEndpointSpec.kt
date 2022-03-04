@@ -1,90 +1,175 @@
 package pl.exbook.exbook.features
 
+import io.kotest.assertions.json.shouldEqualJson
+import io.kotest.assertions.json.shouldEqualSpecifiedJson
+import io.kotest.matchers.shouldBe
 import org.springframework.boot.test.web.client.TestRestTemplate
+import org.springframework.http.HttpStatus
 import pl.exbook.exbook.BaseIntegrationSpec
-import pl.exbook.exbook.category.CategoryFacade
-import pl.exbook.exbook.category.domain.CreateCategoryCommand
+import pl.exbook.exbook.ability.AuthAbility
+import pl.exbook.exbook.ability.CategoryDomainAbility
+import pl.exbook.exbook.category.adapter.rest.dto.CreateCategoryRequest
+import pl.exbook.exbook.shared.TestData.otherSampleCategoryName
+import pl.exbook.exbook.shared.TestData.sampleAdminUsername
+import pl.exbook.exbook.shared.TestData.sampleCategoryId
+import pl.exbook.exbook.shared.TestData.sampleCategoryName
+import pl.exbook.exbook.shared.TestData.samplePassword
 
-class CategoryEndpointSpec(private val categoryFacade: CategoryFacade, private val rest: TestRestTemplate) : BaseIntegrationSpec({
-    should("do something") {
-        categoryFacade.addCategory(CreateCategoryCommand(
-            name = "new-category",
+class CategoryEndpointSpec(private val rest: TestRestTemplate) : BaseIntegrationSpec({
+    val domain = CategoryDomainAbility(rest)
+    val authAbility = AuthAbility(rest)
+
+    should("get empty list of categories") {
+        // when
+        val response = domain.getCategories()
+
+        // then
+        response.statusCode shouldBe HttpStatus.OK
+        response.body!! shouldEqualJson """
+            {
+                "categories": []
+            }
+        """
+    }
+
+    should("get all categories as list") {
+        // given
+        val token = authAbility.getTokenForNewAdmin(username = sampleAdminUsername, password = samplePassword)
+        val cat = domain.thereIsCategory(name = sampleCategoryName, token = token)
+        domain.thereIsCategory(name = otherSampleCategoryName, parentId = cat.body!!.id, token = token)
+
+        // when
+        val response = domain.getCategories()
+
+        // then
+        response.statusCode shouldBe HttpStatus.OK
+        response.body!! shouldEqualSpecifiedJson  """
+            {
+                "categories": [
+                    {
+                        "id": "${cat.body!!.id}",
+                        "name": "$sampleCategoryName",
+                        "icon": null,
+                        "parentId": null
+                    },
+                    {
+                        "name": "$otherSampleCategoryName",
+                        "icon": null,
+                        "parentId": "${cat.body!!.id}"
+                    }
+                ]
+            }
+        """
+    }
+
+    should("get all categories as tree") {
+        // given
+        val token = authAbility.getTokenForNewAdmin(username = sampleAdminUsername, password = samplePassword)
+        val cat = domain.thereIsCategory(name = sampleCategoryName, token = token)
+        domain.thereIsCategory(name = otherSampleCategoryName, parentId = cat.body!!.id, token = token)
+
+        // when
+        val response = domain.getCategoriesTree()
+
+        // then
+        response.statusCode shouldBe HttpStatus.OK
+        response.body!! shouldEqualSpecifiedJson  """
+            {
+                "categories": [
+                    {
+                        "id": "${cat.body!!.id}",
+                        "name": "$sampleCategoryName",
+                        "icon": null,
+                        "parentId": null,
+                        "children": [
+                            {
+                                "name": "$otherSampleCategoryName",
+                                "icon": null,
+                                "parentId": "${cat.body!!.id}",
+                                "children": []
+                            }
+                        ]
+                    }
+                ]
+            }
+        """
+    }
+
+    should("should return 401 when trying to add new category without permission") {
+        // given
+        val requestBody = CreateCategoryRequest(
+            name = sampleCategoryName,
             parentId = null
-        ))
-        val categories = rest.getForEntity("/api/categories", Any::class.java)
+        )
 
-        println(categories)
+        // when
+        val response = domain.addCategory(requestBody)
+
+        // then
+        response.statusCode shouldBe HttpStatus.UNAUTHORIZED
+    }
+
+    should("return 401 when trying to add new category with insufficient permissions") {
+        // given
+        val token = authAbility.getTokenForNewUser()
+        val requestBody = CreateCategoryRequest(
+            name = sampleCategoryName,
+            parentId = null
+        )
+
+        // when
+        val response = domain.addCategory(requestBody)
+
+        // then
+        response.statusCode shouldBe HttpStatus.UNAUTHORIZED
+    }
+
+    should("add new category with admin privileges") {
+        // given
+        val token = authAbility.getTokenForNewAdmin(username = sampleAdminUsername, password = samplePassword)
+        val requestBody = CreateCategoryRequest(
+            name = sampleCategoryName,
+            parentId = null
+        )
+
+        val response = domain.addCategory(requestBody, token)
+
+        // then
+        response.statusCode shouldBe HttpStatus.OK
+        response.body!! shouldEqualSpecifiedJson  """
+            {
+                "name": "$sampleCategoryName",
+                "icon": null,
+                "parentId": null
+            }
+        """
+    }
+
+    should("get category") {
+        // given
+        val token = authAbility.getTokenForNewAdmin(username = sampleAdminUsername, password = samplePassword)
+        val categoryId = domain.thereIsCategory(name = sampleCategoryName, token = token).body!!.id
+
+        // when
+        val response = domain.getCategory(categoryId)
+
+        // then
+        response.statusCode shouldBe HttpStatus.OK
+        response.body!! shouldEqualSpecifiedJson  """
+            {
+                "id": "$categoryId",
+                "name": "$sampleCategoryName",
+                "icon": null,
+                "parentId": null
+            }
+        """
+    }
+
+    should("return 404 when category was not found") {
+        // when
+        val response = domain.getCategory(sampleCategoryId.raw)
+
+        // then
+        response.statusCode shouldBe HttpStatus.NOT_FOUND
     }
 })
-
-//internal class CategoryEndpointSpec: BaseFeatureE2ESpec() {
-
-//    @Test
-//    fun `should get all categories`() {
-//        // given
-//        thereIsCategory(aCategoryBuilder()
-//            .withId(CATEGORY_ID_1)
-//            .withName(CATEGORY_NAME_1)
-//            .withImage(Image(IMAGE_URL_1)))
-//
-//        thereIsCategory(aCategoryBuilder()
-//                .withId(CATEGORY_ID_2)
-//                .withName(CATEGORY_NAME_2)
-//                .withImage(Image(IMAGE_URL_2)))
-//
-//        thereIsCategory(aCategoryBuilder()
-//                .withId(CATEGORY_ID_3)
-//                .withName(CATEGORY_NAME_3)
-//                .withParentId(CATEGORY_ID_2)
-//                .withImage(Image(IMAGE_URL_3)))
-//
-//        // when
-//        val response = getAllCategories()
-//
-//        // then
-//        assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
-//
-//        // and
-//        assertThatCategories()
-//            .hasCategories(
-//                CategoryDto(CATEGORY_ID_1, CATEGORY_NAME_1, ImageDto(IMAGE_URL_1), null),
-//                CategoryDto(CATEGORY_ID_2, CATEGORY_NAME_2, ImageDto(IMAGE_URL_2), null),
-//                CategoryDto(CATEGORY_ID_3, CATEGORY_NAME_3, ImageDto(IMAGE_URL_3), CATEGORY_ID_2)
-//            )
-//    }
-//
-//    @Test
-//    fun `should return 401 when adding new category without permission`() {
-//        // given
-//        val newCategory = NewCategory(CATEGORY_NAME_1, null)
-//
-//        // when
-//        val response = addNewCategory(newCategory)
-//
-//        // then
-//        assertThat(response.statusCode).isEqualTo(HttpStatus.UNAUTHORIZED)
-//
-//        // and
-//            assertThatCategories()
-//                .hasNoCategories()
-//    }
-//
-//    @Test
-//    fun `should add new category with admin privileges`() {
-//        // given
-//        thereIsUser(aUserBuilder()
-//                .withLogin("ADMIN")
-//                .withPassword(BCryptPasswordEncoder().encode("ADMIN_PASSWORD"))
-//                .withAdminPrivileges()
-//                .withActiveAccount()
-//        )
-//        val credentials = LoginCredentials("ADMIN", "ADMIN_PASSWORD")
-//        val newCategory = NewCategory(CATEGORY_NAME_1, null)
-//
-//        // when
-//        val response = addNewCategoryWithCredentials(newCategory, credentials)
-//
-//        // then
-//        assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
-//    }
-//}

@@ -18,7 +18,7 @@ plugins {
 }
 
 group = "pl.exbook"
-version = "0.2.0-SNAPSHOT"
+version = "0.10.0-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_11
 
 configurations {
@@ -72,12 +72,12 @@ dependencies {
     integrationImplementation("org.springframework.security:spring-security-test")
     integrationImplementation("org.springframework.boot:spring-boot-starter-test")
     integrationImplementation("org.springframework:spring-test:5.3.15")
-    integrationImplementation("de.flapdoodle.embed:de.flapdoodle.embed.mongo")
 
     integrationImplementation("io.kotest.extensions:kotest-extensions-spring:${versions["kotest_spring"]}")
     integrationImplementation("io.kotest.extensions:kotest-extensions-testcontainers:${versions["kotest_testcontainers"]}")
     integrationImplementation("io.kotest.extensions:kotest-extensions-wiremock:${versions["kotest_wiremock"]}")
     integrationImplementation("org.testcontainers:mongodb:${versions["testcontainers_mongodb"]}")
+    integrationImplementation("io.kotest:kotest-assertions-json:${versions["kotest"]}")
 }
 
 tasks.wrapper {

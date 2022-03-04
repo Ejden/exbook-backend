@@ -26,8 +26,8 @@ class ImageEndpoint(val imageFacade: ImageFacade) {
         return ResponseEntity.created(location).build()
     }
 
-    @DeleteMapping(produces = [ContentType.V1])
-    fun deleteImage(imageId: ImageId) {
+    @DeleteMapping("{imageId}" ,produces = [ContentType.V1])
+    fun deleteImage(@PathVariable imageId: ImageId) {
         imageFacade.deleteImage(imageId)
     }
 

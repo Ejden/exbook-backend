@@ -2,6 +2,7 @@ package pl.exbook.exbook.config
 
 import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoClients
+import io.kotest.core.listeners.AfterEachListener
 import io.kotest.core.listeners.AfterProjectListener
 import io.kotest.core.listeners.AfterTestListener
 import io.kotest.core.listeners.BeforeProjectListener
@@ -30,7 +31,7 @@ class MongoListener : BeforeProjectListener, AfterProjectListener, AfterTestList
         container.close()
     }
 
-    override suspend fun afterTest(testCase: TestCase, result: TestResult) {
+    override suspend fun afterAny(testCase: TestCase, result: TestResult) {
         with(client.getDatabase(Constants.DATABASE_NAME)) {
             listCollectionNames().forEach {
                 getCollection(it).drop()

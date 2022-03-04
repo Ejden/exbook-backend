@@ -37,6 +37,7 @@ class OfferCreationSpec : ShouldSpec({
             domain.stockFacadeWillCreateStockForOffer(stockId = sampleStockId, initialStock = initialStock)
             domain.thereIsShippingMethod(shippingMethodId = sampleShippingMethodId)
             domain.thereIsUser(userId = sampleSellerId, username = sampleSellerUsername)
+            domain.thereIsCategory(categoryId = sampleCategoryId)
 
             val command = CreateOfferCommand(
                 book = CreateOfferCommand.Book(
@@ -82,6 +83,7 @@ class OfferCreationSpec : ShouldSpec({
         domain.stockFacadeWillCreateStockForOffer(stockId = sampleStockId, initialStock = 100)
         domain.thereIsShippingMethod(shippingMethodId = sampleShippingMethodId)
         domain.thereIsUser(userId = sampleSellerId, username = sampleSellerUsername)
+        domain.thereIsCategory(categoryId = sampleCategoryId)
 
         val command = CreateOfferCommand(
             book = CreateOfferCommand.Book(
@@ -188,6 +190,7 @@ class OfferCreationSpec : ShouldSpec({
         domain.stockFacadeWillCreateStockForOffer(stockId = sampleStockId)
         domain.thereIsNoUser(userId = sampleSellerId, username = sampleSellerUsername)
         domain.thereIsShippingMethod(shippingMethodId = sampleShippingMethodId)
+        domain.thereIsCategory(categoryId = sampleCategoryId)
 
         val command = CreateOfferCommand(
             book = CreateOfferCommand.Book(
@@ -207,6 +210,35 @@ class OfferCreationSpec : ShouldSpec({
 
         // expect
         shouldThrowExactly<UserNotFoundException> {
+            domain.facade.addOffer(command, sampleSellerUsername)
+        }
+    }
+
+    should("throw an exception when trying to add offer with non existing cateogory") {
+        // given
+        domain.stockFacadeWillCreateStockForOffer(stockId = sampleStockId)
+        domain.thereIsNoUser(userId = sampleSellerId, username = sampleSellerUsername)
+        domain.thereIsShippingMethod(shippingMethodId = sampleShippingMethodId)
+        domain.thereIsNoCategory(categoryId = sampleCategoryId)
+
+        val command = CreateOfferCommand(
+            book = CreateOfferCommand.Book(
+                author = "Tom",
+                title = "Riddle",
+                isbn = "1234567890",
+                condition = Offer.Condition.NEW
+            ),
+            description = "Offer description",
+            category = CreateOfferCommand.Category(sampleCategoryId),
+            type = Offer.Type.EXCHANGE_AND_BUY,
+            price = "10.00".pln(),
+            location = "Warsaw",
+            shippingMethods = listOf(CreateOfferCommand.ShippingMethod(sampleShippingMethodId, "10.00".pln())),
+            initialStock = 100
+        )
+
+        // expect
+        shouldThrowExactly<ValidationException> {
             domain.facade.addOffer(command, sampleSellerUsername)
         }
     }

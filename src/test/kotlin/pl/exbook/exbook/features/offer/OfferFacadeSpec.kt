@@ -4,9 +4,9 @@ import io.kotest.assertions.throwables.shouldThrowExactly
 import io.kotest.core.spec.style.ShouldSpec
 import io.kotest.matchers.shouldBe
 import pl.exbook.exbook.ability.OfferDomainAbility
-import pl.exbook.exbook.offer.adapter.mongodb.OfferNotFoundException
 import pl.exbook.exbook.offer.domain.CreateOfferCommand
 import pl.exbook.exbook.offer.domain.Offer
+import pl.exbook.exbook.offer.domain.OfferNotFoundException
 import pl.exbook.exbook.pln
 import pl.exbook.exbook.shared.TestData.sampleCategoryId
 import pl.exbook.exbook.shared.TestData.sampleOfferId
@@ -23,6 +23,7 @@ class OfferFacadeSpec : ShouldSpec({
         domain.thereIsShippingMethod(shippingMethodId = sampleShippingMethodId)
         domain.stockFacadeWillCreateStockForOffer(stockId = sampleStockId, initialStock = 100)
         domain.thereIsUser(userId = sampleSellerId, username = sampleSellerUsername)
+        domain.thereIsCategory(categoryId = sampleCategoryId)
         val offer = domain.createOffer(
             sellerUsername = sampleSellerUsername,
             bookAuthor = "standard",

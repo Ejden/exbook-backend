@@ -6,7 +6,7 @@ import org.springframework.test.context.DynamicPropertyRegistry
 import pl.exbook.exbook.config.Constants.DATABASE_NAME
 
 object ProjectConfig : AbstractProjectConfig() {
-    private val mongoListener = MongoListener()
+    val mongoListener = MongoListener()
 
     override fun extensions() = listOf(
         SpringExtension,

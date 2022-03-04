@@ -1,17 +1,18 @@
 package pl.exbook.exbook.shippingmethod.adapter.rest.dto
 
 import javax.validation.constraints.NotEmpty
-import pl.exbook.exbook.shared.dto.MoneyDocument
+import pl.exbook.exbook.shared.dto.MoneyDto
+import pl.exbook.exbook.shared.dto.toDomain
 import pl.exbook.exbook.shippingmethod.domain.NewShippingMethodCommand
 
-data class NewShippingMethodRequest(
+data class CreateShippingMethodRequest(
     @field:NotEmpty
     val name: String,
     val pickupPointMethod: Boolean,
     val cost: Cost
 ) {
     data class Cost(
-        val defaultCost: MoneyDocument,
+        val defaultCost: MoneyDto,
         val canBeOverridden: Boolean
     )
 

@@ -34,7 +34,7 @@ data class OfferDto(
 
     data class ImagesDto(
         val thumbnail: ImageDto?,
-        val otherImages: List<ImageDto>
+        val allImages: List<ImageDto>
     )
 
     data class ImageDto(val url: String)
@@ -86,7 +86,7 @@ data class OfferDto(
 
         private fun Offer.Images.toDto() = ImagesDto(
             thumbnail = this.thumbnail?.toDto(),
-            otherImages = this.allImages.map { it.toDto() }
+            allImages = this.allImages.map { it.toDto() }
         )
 
         private fun Offer.Image.toDto() = ImageDto(this.url)

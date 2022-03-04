@@ -45,7 +45,7 @@ class UserCreator(private val userRepository: UserRepository) {
                 logger.error { "User with email ${command.email} or login ${command.username} already exists" }
                 throw UserAlreadyExistsException()
             }
-        } catch (e : MongoWriteException) {
+        } catch (e: MongoWriteException) {
             logger.error { "User with email ${command.email} or login ${command.username} already exists" }
             throw UserAlreadyExistsException()
         }

@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServletResponse
 
 @Component
 class RestAuthenticationFailureHandler : SimpleUrlAuthenticationFailureHandler() {
-
     override fun onAuthenticationFailure(
         request: HttpServletRequest?,
         response: HttpServletResponse?,

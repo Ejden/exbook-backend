@@ -3,6 +3,7 @@ package pl.exbook.exbook.shared
 import java.math.BigDecimal
 import org.bson.BsonBinarySubType
 import org.bson.types.Binary
+import org.springframework.mock.web.MockMultipartFile
 
 object TestData {
     val sampleUserId = UserId("user-id")
@@ -10,6 +11,7 @@ object TestData {
     val otherSampleSellerId = UserId("other-seller-id")
     val sampleBuyerId = UserId("buyer-id")
     val otherSampleBuyerId = UserId("other-buyer-id")
+    val sampleAdminId = UserId("admin-id")
     val sampleOfferId = OfferId("offer-id")
     val otherSampleOfferId = OfferId("other-offer-id")
     val thirdSampleOfferId = OfferId("third-offer-id")
@@ -22,6 +24,7 @@ object TestData {
     val otherSampleShippingMethodId = ShippingMethodId("other-shipping-method-id")
     val tenPln = Money(BigDecimal("10.00"), Currency.PLN)
     val sampleImageBinary = Binary(BsonBinarySubType.BINARY, byteArrayOf(0x1, 0x2, 0x3, 0x4, 0x5, 0xf))
+    val sampleFile = MockMultipartFile("image", "image", "image/png", sampleImageBinary.data)
     val sampleImageId = ImageId("image-id")
 
     const val sampleCategoryName = "category-name"
@@ -29,16 +32,15 @@ object TestData {
     const val sampleBuyerUsername = "buyer-username"
     const val sampleSellerUsername = "seller-username"
     const val otherSampleSellerUsername = "other-seller-username"
+    const val sampleAdminUsername = "admin-username"
+    const val sampleSellerFirstName = "seller-first-name"
+    const val sampleSellerLastName = "seller-last-name"
+    const val samplePassword = "password"
+    const val sampleSellerPassword = "seller-password"
+    const val sampleSellerEmail = "seller-email@gmail.com"
+    const val otherSampleSellerEmail = "other-seller@gmail.com"
+    const val sampleAdminEmail = "admin@gmail.com"
+    const val sampleShippingMethodName = "shipping-method"
     const val sampleImageUrl = "http://localhost:8082/api/images/d327ft3278fg23f7g32c23"
     const val otherSampleImageUrl = "http://localhost:8082/api/images/f4343g34g45g45gs"
-    const val USER_ID = "user-id"
-    const val CATEGORY_ID_1 = "1"
-    const val CATEGORY_ID_2 = "2"
-    const val CATEGORY_ID_3 = "3"
-    const val CATEGORY_NAME_1 = "category-1"
-    const val CATEGORY_NAME_2 = "category-2"
-    const val CATEGORY_NAME_3 = "category-3"
-    const val IMAGE_URL_1 = "https://files.exbook.com/images/1"
-    const val IMAGE_URL_2 = "https://files.exbook.com/images/2"
-    const val IMAGE_URL_3 = "https://files.exbook.com/images/3"
 }

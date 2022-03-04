@@ -10,7 +10,7 @@ import pl.exbook.exbook.ability.BasketDomainAbility
 import pl.exbook.exbook.basket.domain.AddItemToBasketCommand
 import pl.exbook.exbook.basket.domain.BasketValidationException
 import pl.exbook.exbook.basket.domain.ChangeItemQuantityCommand
-import pl.exbook.exbook.offer.adapter.mongodb.OfferNotFoundException
+import pl.exbook.exbook.offer.domain.OfferNotFoundException
 import pl.exbook.exbook.order.domain.Order.OrderType
 import pl.exbook.exbook.shared.TestData.otherSampleOfferId
 import pl.exbook.exbook.shared.TestData.sampleBuyerId

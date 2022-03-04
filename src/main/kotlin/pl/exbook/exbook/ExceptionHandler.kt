@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseStatus
 import pl.exbook.exbook.image.domain.ContentTypeNotSupportedException
+import pl.exbook.exbook.security.domain.UnauthorizedException
 import pl.exbook.exbook.shared.IllegalParameterException
 import pl.exbook.exbook.shared.NotFoundException
 import pl.exbook.exbook.shared.ValidationException
@@ -19,6 +20,20 @@ class ExceptionHandler {
     @ExceptionHandler(TokenExpiredException::class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     fun handle(cause: TokenExpiredException) {}
+
+    @ExceptionHandler(UnauthorizedException::class)
+    fun handle(cause: UnauthorizedException): ResponseEntity<ErrorResponse> {
+        logger.warn(cause.message)
+
+        return ResponseEntity
+            .status(HttpStatus.FORBIDDEN)
+            .body(
+                ErrorResponse(
+                    message = cause.message.toString(),
+                    code = UnauthorizedException::class.simpleName
+                )
+            )
+    }
 
     @ExceptionHandler(NotFoundException::class)
     fun handle(cause: NotFoundException): ResponseEntity<ErrorResponse> {

@@ -6,12 +6,12 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
-import pl.exbook.exbook.offer.adapter.mongodb.OfferNotFoundException
 import pl.exbook.exbook.offer.domain.Offer
 import pl.exbook.exbook.offer.domain.OfferRepository
 import pl.exbook.exbook.shared.OfferId
 import pl.exbook.exbook.offer.domain.CreateOfferCommand
 import pl.exbook.exbook.offer.domain.OfferCreator
+import pl.exbook.exbook.offer.domain.OfferNotFoundException
 import pl.exbook.exbook.offer.domain.OfferVersionNotFoundException
 import pl.exbook.exbook.offer.domain.OfferVersioningRepository
 import pl.exbook.exbook.offer.domain.UpdateOfferCommand

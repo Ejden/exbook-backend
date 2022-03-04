@@ -16,7 +16,7 @@ interface MongoUserRepository : MongoRepository<UserDocument, String> {
 @Document(collection = "users")
 data class UserDocument(
     @Id
-    val id: String? = null,
+    val id: String,
     val firstName: String,
     val lastName: String,
     val username: String,

@@ -3,9 +3,11 @@ spring:
     allow-bean-definition-overriding: true
   data:
     mongodb:
-      port: 0
-      username:
-      password:
+      host: localhost
+      port: 111
+      database: exbookDB_int
+      username: root_int
+      password: password_int
 
 jwt:
   expirationTime: 604800000

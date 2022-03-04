@@ -9,8 +9,8 @@ import pl.exbook.exbook.basket.domain.BasketDetailsDecorator
 import pl.exbook.exbook.basket.domain.BasketFactory
 import pl.exbook.exbook.basket.domain.BasketValidator
 import pl.exbook.exbook.offer.OfferFacade
-import pl.exbook.exbook.offer.adapter.mongodb.OfferNotFoundException
 import pl.exbook.exbook.offer.domain.Offer
+import pl.exbook.exbook.offer.domain.OfferNotFoundException
 import pl.exbook.exbook.shared.Money
 import pl.exbook.exbook.shared.OfferId
 import pl.exbook.exbook.shared.OfferVersionId
