@@ -1,5 +1,6 @@
 package pl.exbook.exbook.basket.domain
 
+import pl.exbook.exbook.offer.domain.Offer.Condition
 import pl.exbook.exbook.order.domain.Order
 import pl.exbook.exbook.shared.BasketId
 import pl.exbook.exbook.shared.Money
@@ -13,13 +14,15 @@ data class Basket(
 ) {
     data class Item(
         val offer: Offer,
-        val quantity: Long
+        var quantity: Long
     ): Comparable<Item> {
         constructor(offerId: OfferId, quantity: Long): this(Offer(offerId), quantity)
 
         fun addQuantity(quantity: Long) = Item(offer, this.quantity + quantity)
 
-        fun changeQuantity(quantity: Long) = Item(offer, quantity)
+        fun changeQuantity(quantity: Long) {
+            this.quantity = quantity
+        }
 
         override fun compareTo(other: Item): Int {
             return offer.id.raw.compareTo(other.offer.id.raw)
@@ -31,6 +34,20 @@ data class Basket(
     data class ItemsGroupKey(
         val sellerId: UserId,
         val orderType: Order.OrderType
+    )
+
+    data class ItemsGroup(
+        val sellerId: UserId,
+        val orderType: Order.OrderType,
+        val exchangeBooks: List<ExchangeBook>,
+        val items: List<Item>
+    )
+
+    data class ExchangeBook(
+        val author: String,
+        val title: String,
+        val isbn: String?,
+        val condition: Condition
     )
 
     data class Seller(
@@ -74,12 +91,12 @@ data class Basket(
         if (itemGroup == null) {
             addToBasket(offerId, sellerId, orderType, newQuantity)
         } else {
-            val oldItem = itemGroup.value.find { it.offer.id == offerId }
+            val item = itemGroup.value.find { it.offer.id == offerId }
 
-            if (oldItem == null) {
+            if (item == null) {
                 addToBasket(offerId, sellerId, orderType, newQuantity)
             } else {
-                this.itemsGroups[itemGroup.key] = itemGroup.value.filterNot { it.offer.id == offerId } + oldItem.changeQuantity(newQuantity)
+                item.changeQuantity(newQuantity)
             }
         }
     }

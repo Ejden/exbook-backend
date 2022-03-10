@@ -2,7 +2,6 @@ package pl.exbook.exbook
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import pl.exbook.exbook.listing.ListingFacade
 import pl.exbook.exbook.offer.OfferFacade
 import pl.exbook.exbook.order.OrderFacade
 import pl.exbook.exbook.order.adapter.mongodb.DatabaseOrderRepository
@@ -22,13 +21,6 @@ import pl.exbook.exbook.user.UserFacade
 
 @Configuration
 class ServicesConfiguration {
-    @Bean
-    fun listingFacade(
-        offerFacade: OfferFacade,
-        userFacade: UserFacade,
-        shippingMethodFacade: ShippingMethodFacade,
-    ) = ListingFacade(offerFacade, userFacade, shippingMethodFacade)
-
     @Bean
     fun orderRepository(mongoOrderRepository: MongoOrderRepository) = DatabaseOrderRepository(mongoOrderRepository)
 

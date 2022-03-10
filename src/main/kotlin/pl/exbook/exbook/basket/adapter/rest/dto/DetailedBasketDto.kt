@@ -40,7 +40,7 @@ data class DetailedBasketDto(
 
     data class ImagesDto(
         val thumbnail: ImageDto?,
-        val otherImages: Collection<ImageDto>
+        val allImages: Collection<ImageDto>
     )
 
     data class ImageDto(val url: String)
@@ -91,7 +91,7 @@ private fun DetailedBasket.Book.toDto() = DetailedBasketDto.BookDto(
 
 private fun DetailedBasket.Images.toDto() = DetailedBasketDto.ImagesDto(
     thumbnail = this.thumbnail?.let { DetailedBasketDto.ImageDto(it.url) },
-    otherImages = this.allImages.map { DetailedBasketDto.ImageDto(it.url) }
+    allImages = this.allImages.map { DetailedBasketDto.ImageDto(it.url) }
 )
 
 private fun DetailedBasket.Seller.toDto() = DetailedBasketDto.SellerDto(

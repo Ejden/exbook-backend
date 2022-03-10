@@ -4,4 +4,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class DraftOrderCreator {
+    fun createDraftPurchase(): DraftPurchase {
+        throw NotImplementedError()
+    }
 }

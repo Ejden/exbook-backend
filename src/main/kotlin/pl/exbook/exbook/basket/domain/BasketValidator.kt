@@ -5,6 +5,7 @@ import java.lang.RuntimeException
 import pl.exbook.exbook.offer.domain.Offer
 import pl.exbook.exbook.order.domain.Order
 import pl.exbook.exbook.shared.UserId
+import pl.exbook.exbook.shared.ValidationException
 import pl.exbook.exbook.user.domain.User
 
 @Service
@@ -53,4 +54,4 @@ class BasketValidator {
     }
 }
 
-class BasketValidationException(errorMsg: String) : RuntimeException(errorMsg)
+class BasketValidationException(errorMsg: String) : ValidationException(errorMsg)

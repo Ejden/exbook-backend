@@ -62,7 +62,7 @@ private fun BookDocument.toDomain() = Offer.Book(
 
 private fun ImagesDocument.toDomain() = Offer.Images(
     thumbnail = this.thumbnail?.toDomain(),
-    allImages = this.otherImages.map { it.toDomain() }
+    allImages = this.allImages.map { it.toDomain() }
 )
 
 private fun ImageDocument.toDomain() = Offer.Image(this.url)
@@ -102,7 +102,7 @@ private fun Offer.Book.toDocument() = BookDocument(
 
 private fun Offer.Images.toDocument() = ImagesDocument(
     thumbnail = this.thumbnail?.toDocument(),
-    otherImages = this.allImages.map { it.toDocument() }
+    allImages = this.allImages.map { it.toDocument() }
 )
 
 private fun Offer.Image.toDocument() = ImageDocument(

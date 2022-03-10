@@ -80,7 +80,67 @@ class ChangeItemQuantityInBasketSpec : ShouldSpec({
         }
     }
 
+    context("change item quantity not changing items order in items group") {
+        withData(
+            sampleOfferId,
+            otherSampleOfferId
+        ) { offerId ->
+            // given
+            domain.thereIsUser(userId = sampleBuyerId, username = sampleBuyerUsername)
+            domain.thereIsUser(userId = sampleSellerId, username = sampleSellerUsername)
+            domain.thereIsOffer(offerId = sampleOfferId, sellerId = sampleSellerId)
+            domain.thereIsOffer(offerId = otherSampleOfferId, sellerId = sampleSellerId)
+            domain.facade.addItemToBasket(
+                AddItemToBasketCommand(
+                    username = sampleBuyerUsername,
+                    offerId = sampleOfferId,
+                    quantity = 2,
+                    orderType = OrderType.BUY
+                )
+            )
+            domain.facade.addItemToBasket(
+                AddItemToBasketCommand(
+                    username = sampleBuyerUsername,
+                    offerId = otherSampleOfferId,
+                    quantity = 3,
+                    orderType = OrderType.BUY
+                )
+            )
+
+            val command = ChangeItemQuantityCommand(
+                username = sampleBuyerUsername,
+                offerId = offerId,
+                orderType = OrderType.BUY,
+                newQuantity = 5
+            )
+
+            // when
+            var basket = domain.facade.getUserBasket(sampleBuyerId)
+
+            // then
+            basket.itemsGroups shouldHaveSize 1
+
+            var itemGroup = basket.itemsGroups.entries.toList()[0]
+            itemGroup.value shouldHaveSize 2
+            itemGroup.value[0].offer.id shouldBe sampleOfferId
+            itemGroup.value[1].offer.id shouldBe otherSampleOfferId
+
+            // when
+            domain.facade.changeItemQuantityInBasket(command)
+            basket = domain.facade.getUserBasket(sampleBuyerId)
+
+            // then
+            basket.itemsGroups shouldHaveSize 1
+
+            itemGroup = basket.itemsGroups.entries.toList()[0]
+            itemGroup.value shouldHaveSize 2
+            itemGroup.value[0].offer.id shouldBe sampleOfferId
+            itemGroup.value[1].offer.id shouldBe otherSampleOfferId
+        }
+    }
+
     should("remove item if new quantity to zero") {
+        // given
         domain.thereIsUser(userId = sampleBuyerId, username = sampleBuyerUsername)
         domain.thereIsUser(userId = sampleSellerId, username = sampleSellerUsername)
         domain.thereIsOffer(offerId = sampleOfferId, sellerId = sampleSellerId)

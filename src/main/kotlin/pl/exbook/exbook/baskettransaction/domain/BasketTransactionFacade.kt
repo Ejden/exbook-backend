@@ -7,7 +7,6 @@ import pl.exbook.exbook.basket.BasketFacade
 class BasketTransactionFacade(
     private val basketFacade: BasketFacade,
     private val draftOrderCreator: DraftOrderCreator,
-    private val draftPurchaseRepository: DraftPurchaseOrdersRepository
 ) {
     fun previewTransaction(command: PreviewBasketTransactionCommand) {
         val basket = basketFacade.getUserBasket(command.buyer.username)

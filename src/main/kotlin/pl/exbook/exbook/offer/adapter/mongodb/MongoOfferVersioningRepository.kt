@@ -53,7 +53,7 @@ data class OfferVersionDocument(
 
     data class ImagesDocument(
         val thumbnail: ImageDocument?,
-        val otherImages: Collection<ImageDocument>
+        val allImages: Collection<ImageDocument>
     )
 
     data class ImageDocument(val url: String)
