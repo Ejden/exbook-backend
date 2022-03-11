@@ -26,6 +26,7 @@ object TestData {
     val sampleImageBinary = Binary(BsonBinarySubType.BINARY, byteArrayOf(0x1, 0x2, 0x3, 0x4, 0x5, 0xf))
     val sampleFile = MockMultipartFile("image", "image", "image/png", sampleImageBinary.data)
     val sampleImageId = ImageId("image-id")
+    val sampleExchangeBookId = ExchangeBookId("exchange-book-id")
 
     const val sampleCategoryName = "category-name"
     const val otherSampleCategoryName = "other-category-name"
