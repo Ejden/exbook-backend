@@ -4,7 +4,7 @@ import pl.exbook.exbook.offer.OfferFacade
 import pl.exbook.exbook.offer.domain.Offer
 import pl.exbook.exbook.shared.OfferId
 import pl.exbook.exbook.shared.ShippingMethodId
-import pl.exbook.exbook.shipping.CalculateSelectedShippingRequest
+import pl.exbook.exbook.shipping.CalculateSelectedShippingCommand
 import pl.exbook.exbook.shippingmethod.domain.ShippingMethod
 import java.lang.RuntimeException
 
@@ -13,14 +13,14 @@ class ShippingCalculator(
     private val shippingFactory: ShippingFactory
 ) {
 
-    fun calculateSelectedShipping(selectedShippingMethod: ShippingMethod, request: CalculateSelectedShippingRequest): Shipping {
+    fun calculateSelectedShipping(selectedShippingMethod: ShippingMethod, request: CalculateSelectedShippingCommand): Shipping {
         validateSelectedShippingMethod(selectedShippingMethod.id, request.orderItems.map { it.offerId })
         val cost = calculateShippingCost(selectedShippingMethod.id, request)
         return shippingFactory.createShipping(selectedShippingMethod, request, cost)
     }
 
-    private fun calculateShippingCost(shippingMethodId: ShippingMethodId, request: CalculateSelectedShippingRequest): Shipping.Cost {
-        val maxOfferDeliveryCostInOrder = request.offersShippingMethods.flatMap { it.value }.maxOf { it.money }
+    private fun calculateShippingCost(shippingMethodId: ShippingMethodId, request: CalculateSelectedShippingCommand): Shipping.Cost {
+        val maxOfferDeliveryCostInOrder = request.offersShippingMethods.flatMap { it.value }.maxOf { it.price }
         return Shipping.Cost(maxOfferDeliveryCostInOrder)
     }
 

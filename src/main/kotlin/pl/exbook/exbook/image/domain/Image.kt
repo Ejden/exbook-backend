@@ -4,7 +4,7 @@ import org.bson.types.Binary
 import pl.exbook.exbook.shared.ImageId
 
 class Image (
-    var id: ImageId?,
+    var id: ImageId,
     val file: Binary,
     val contentType: ContentType
 )

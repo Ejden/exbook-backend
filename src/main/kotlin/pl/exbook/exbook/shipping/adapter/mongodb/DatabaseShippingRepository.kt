@@ -24,6 +24,8 @@ class DatabaseShippingRepository(
     override fun save(shipping: Shipping): Shipping {
         return mongoShippingRepository.save(shipping.toDocument()).toDomain()
     }
+
+    override fun remove(shippingId: ShippingId) = mongoShippingRepository.deleteById(shippingId.raw)
 }
 
 private fun ShippingDocument.toDomain(): Shipping {

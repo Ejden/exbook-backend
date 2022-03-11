@@ -7,4 +7,6 @@ interface ShippingRepository {
     fun findById(shippingId: ShippingId): Shipping
 
     fun save(shipping: Shipping): Shipping
+
+    fun remove(shippingId: ShippingId)
 }

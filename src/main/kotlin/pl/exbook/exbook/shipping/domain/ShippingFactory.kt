@@ -1,13 +1,13 @@
 package pl.exbook.exbook.shipping.domain
 
 import pl.exbook.exbook.shared.ShippingId
-import pl.exbook.exbook.shipping.CalculateSelectedShippingRequest
+import pl.exbook.exbook.shipping.CalculateSelectedShippingCommand
 import pl.exbook.exbook.shippingmethod.domain.ShippingMethod
 import java.util.UUID
 
 class ShippingFactory {
 
-    fun createShipping(selectedShippingMethod: ShippingMethod, request: CalculateSelectedShippingRequest, cost: Shipping.Cost): Shipping {
+    fun createShipping(selectedShippingMethod: ShippingMethod, request: CalculateSelectedShippingCommand, cost: Shipping.Cost): Shipping {
         return when {
             selectedShippingMethod.pickupPointMethod -> createShippingWithPickupPoint(selectedShippingMethod, request, cost)
             else -> createShippingOnAddress(selectedShippingMethod, request, cost)
@@ -16,7 +16,7 @@ class ShippingFactory {
 
     private fun createShippingWithPickupPoint(
         selectedShippingMethod: ShippingMethod,
-        request: CalculateSelectedShippingRequest,
+        request: CalculateSelectedShippingCommand,
         cost: Shipping.Cost
     ) = PickupPointShipping(
         id = ShippingId(UUID.randomUUID().toString()),
@@ -33,7 +33,7 @@ class ShippingFactory {
 
     private fun createShippingOnAddress(
         selectedShippingMethod: ShippingMethod,
-        request: CalculateSelectedShippingRequest,
+        request: CalculateSelectedShippingCommand,
         cost: Shipping.Cost
     ) = AddressShipping(
         id = ShippingId(UUID.randomUUID().toString()),

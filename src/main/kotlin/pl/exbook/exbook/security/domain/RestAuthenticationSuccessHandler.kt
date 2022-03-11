@@ -18,8 +18,6 @@ class RestAuthenticationSuccessHandler(
     @Value("\${jwt.expirationTime}") private val expirationTime: Long,
     @Value("\${jwt.secret}") private val secret: String
 ) : SimpleUrlAuthenticationSuccessHandler() {
-
-
     override fun onAuthenticationSuccess(
         request: HttpServletRequest?,
         response: HttpServletResponse?,

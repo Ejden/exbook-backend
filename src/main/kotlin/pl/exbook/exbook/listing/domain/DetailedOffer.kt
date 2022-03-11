@@ -11,15 +11,16 @@ class DetailedOffer(
     val description: String?,
     val type: Type,
     val seller: Seller,
-    val money: Money?,
+    val price: Money?,
     val location: String,
     val category: Category,
-    val shipping: Shipping
+    val shipping: Shipping,
+    val inStock: Int
 ) {
     data class Book(
         val author: String,
         val title: String,
-        val isbn: Long?,
+        val isbn: String?,
         val condition: Condition
     )
 
@@ -37,12 +38,12 @@ class DetailedOffer(
     data class ShippingMethod(
         val id: ShippingMethodId,
         val name: String,
-        val money: Money
+        val price: Money
     )
 
     data class Images(
         val thumbnail: Image?,
-        val otherImages: List<Image>
+        val allImages: List<Image>
     )
 
     data class Category(val id: CategoryId)

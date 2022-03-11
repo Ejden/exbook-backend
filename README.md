@@ -70,7 +70,7 @@ If you want to see frontend code go [here](https://github.com/Ejden/exbook-front
 * [Kotlin](https://kotlinlang.org/)
 * [Spring Boot](https://spring.io/)
 * [MongoDB](https://www.mongodb.com/)
-* [Junit 5](https://junit.org/junit5/)
+* [Kotest](https://kotest.io/)
 
 
 <!-- GETTING STARTED -->
@@ -99,15 +99,6 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: password
     volumes:
      - ./data/mongo/init_db_users.js:/docker-entrypoint-initdb.d/init_db_users.js:ro
-
-  mongo-express:
-    image: mongo-express
-    restart: always
-    ports:
-      - 8081:8081
-    environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: root
-      ME_CONFIG_MONGODB_ADMINPASSWORD: password
 ```
 In folder when you created stack.yml file create data folder, in data folder create mongo folder.
 In created mongo folder create init_db_users.js file with below structure. This will create basic user in exbook database with read and write privileges:
@@ -162,9 +153,13 @@ This will activate local profile of the application.
 ## Features (backend part)
 
 ### Implemented
-* Categories crud
-* Offers crud
-* Account crud
+* Categories
+* Offers
+* Account
+* Offer stock
+* Basket
+* Images
+* Shipping Methods
 * JWT Token Authorization
 * Swagger
 
@@ -174,8 +169,6 @@ This will activate local profile of the application.
 * Messaging users
 * Exchanging/Buying books
 * Recommendations
-* Unit/e2e tests
-* Continuous Integration
 
 
 See the [open issues](https://github.com/Ejden/exbook-backend/issues) for a list of proposed features (and known issues).

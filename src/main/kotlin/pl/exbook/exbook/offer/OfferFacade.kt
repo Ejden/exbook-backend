@@ -1,39 +1,62 @@
 package pl.exbook.exbook.offer
 
-import mu.KLogging
+import java.time.Instant
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import pl.exbook.exbook.offer.adapter.mongodb.OfferNotFoundException
-import pl.exbook.exbook.offer.adapter.rest.NewOfferRequest
+import org.springframework.stereotype.Service
 import pl.exbook.exbook.offer.domain.Offer
 import pl.exbook.exbook.offer.domain.OfferRepository
 import pl.exbook.exbook.shared.OfferId
+import pl.exbook.exbook.offer.domain.CreateOfferCommand
+import pl.exbook.exbook.offer.domain.OfferCreator
+import pl.exbook.exbook.offer.domain.OfferNotFoundException
+import pl.exbook.exbook.offer.domain.OfferVersionNotFoundException
+import pl.exbook.exbook.offer.domain.OfferVersioningRepository
+import pl.exbook.exbook.offer.domain.UpdateOfferCommand
+import pl.exbook.exbook.security.domain.UnauthorizedException
+import pl.exbook.exbook.shared.OfferVersionId
 import pl.exbook.exbook.user.UserFacade
-import pl.exbook.exbook.user.domain.User
-import pl.exbook.exbook.util.parseMoneyToInt
-import java.lang.IllegalArgumentException
-import java.util.stream.Collectors
 
+@Service
 class OfferFacade (
     private val offerRepository: OfferRepository,
+    private val offerVersioningRepository: OfferVersioningRepository,
+    private val offerCreator: OfferCreator,
     private val userFacade: UserFacade
 ){
-    companion object : KLogging()
-
     private val MAX_NUMBER_OF_OFFERS_PER_PAGE = 100
-
-    fun getAllOffers(): MutableList<Offer> {
-        return offerRepository.findAll()
-            .stream()
-            .collect(Collectors.toList())
-    }
 
     fun getOffers(offersPerPage: Int?, page: Int?, sorting: String?): Page<Offer> {
         val pageRequest = parsePageRequest(offersPerPage, page, sorting)
         return offerRepository.findAll(pageRequest)
+    }
+
+    fun getOffer(offerId: OfferId) = offerRepository.findById(offerId) ?: throw OfferNotFoundException(offerId)
+
+    fun getOfferVersion(
+        offerId: OfferId,
+        version: Instant
+    ): Offer = offerVersioningRepository.getOfferVersion(offerId, version) ?: throw OfferVersionNotFoundException(offerId, version)
+
+    fun getOfferVersion(
+        offerVersionId: OfferVersionId
+    ): Offer = offerVersioningRepository.getOfferVersion(offerVersionId) ?: throw OfferVersionNotFoundException(offerVersionId)
+
+    fun addOffer(
+        command: CreateOfferCommand,
+        username: String
+    ): Offer = offerCreator.addOffer(command, username)
+
+    fun updateOffer(command: UpdateOfferCommand): Offer {
+        val user = userFacade.getUserByUsername(command.username)
+        val offer = offerRepository.findById(command.offerId) ?: throw OfferNotFoundException(command.offerId)
+        if (user.id != offer.seller.id) {
+            throw UnauthorizedException()
+        }
+
+        return offerCreator.updateOffer(command, offer)
     }
 
     private fun parsePageRequest(_offersPerPage: Int?, _page: Int?, _sorting: String?): Pageable {
@@ -73,24 +96,5 @@ class OfferFacade (
         }
 
         return sort
-    }
-
-    fun getOffer(offerId: OfferId) = offerRepository.findById(offerId) ?: throw OfferNotFoundException(offerId)
-
-    fun addOffer(request: NewOfferRequest, token: UsernamePasswordAuthenticationToken): Offer {
-        // Getting user from database that sent
-        val user: User = userFacade.getUserByUsername(token.name)
-
-        if (request.cost != null) {
-            if (parseMoneyToInt(request.cost.value) < 0) {
-                throw IllegalArgumentException("Offer price cannot be below 0.00")
-            }
-        }
-
-        val offer =  offerRepository.save(request, user.id!!)
-
-        logger.debug { "User with id = ${user.id} added new offer with id = ${offer.id}" }
-
-        return offer
     }
 }

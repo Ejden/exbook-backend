@@ -1,9 +1,11 @@
 package pl.exbook.exbook.user.adapter.mongodb
 
+import org.springframework.stereotype.Component
 import pl.exbook.exbook.shared.UserId
 import pl.exbook.exbook.user.domain.User
 import pl.exbook.exbook.user.domain.UserRepository
 
+@Component
 class DatabaseUserRepository(private val mongoUserRepository: MongoUserRepository) : UserRepository {
 
     override fun findById(userId: UserId): User? {
@@ -12,23 +14,27 @@ class DatabaseUserRepository(private val mongoUserRepository: MongoUserRepositor
     }
 
     override fun findByLogin(login: String): User? {
-       return mongoUserRepository.findByLogin(login)?.toDomain()
+       return mongoUserRepository.findByUsername(login)?.toDomain()
     }
 
     override fun findByLoginOrEmail(login: String, email: String): User? {
-        return mongoUserRepository.findByLoginOrEmail(login, email)?.toDomain()
+        return mongoUserRepository.findByUsernameOrEmail(login, email)?.toDomain()
     }
 
     override fun insert(user: User): User {
         return mongoUserRepository.insert(user.toDocument()).toDomain()
     }
+
+    override fun save(user: User): User {
+        return mongoUserRepository.save(user.toDocument()).toDomain()
+    }
 }
 
 fun UserDocument.toDomain() = User(
-    id = UserId(this.id!!),
+    id = UserId(this.id),
     firstName = this.firstName,
     lastName = this.lastName,
-    login = this.login,
+    username = this.username,
     password = this.password,
     email = this.email,
     phoneNumber = this.phoneNumber,
@@ -42,9 +48,10 @@ fun UserDocument.toDomain() = User(
 )
 
 fun User.toDocument() = UserDocument(
+    id = this.id.raw,
     firstName = this.firstName,
     lastName = this.lastName,
-    login = this.login,
+    username = this.username,
     password = this.password,
     email = this.email,
     phoneNumber = this.phoneNumber,

@@ -1,13 +1,17 @@
 package pl.exbook.exbook.basket.adapter.mongodb
 
+import org.springframework.stereotype.Component
 import java.lang.RuntimeException
 import pl.exbook.exbook.basket.domain.Basket
 import pl.exbook.exbook.basket.domain.BasketRepository
+import pl.exbook.exbook.offer.domain.Offer
+import pl.exbook.exbook.order.domain.Order
 import pl.exbook.exbook.shared.BasketId
+import pl.exbook.exbook.shared.ExchangeBookId
 import pl.exbook.exbook.shared.OfferId
 import pl.exbook.exbook.shared.UserId
-import pl.exbook.exbook.shared.dto.toDocument
 
+@Component
 class DatabaseBasketRepository(
     private val mongoBasketRepository: MongoBasketRepository
 ) : BasketRepository {
@@ -24,26 +28,59 @@ class DatabaseBasketRepository(
 private fun Basket.toDocument() = BasketDocument(
     id = this.id.raw,
     userId = this.userId.raw,
-    items = this.items.map { it.toDocument() },
-    totalOffersCost = this.totalOffersCost().toDocument()
+    itemsGroups = this.itemsGroups.entries.map { (key, group) ->
+        ItemsGroupDocument(
+            sellerId = key.sellerId.raw,
+            orderType = key.orderType.name,
+            items = group.items.map { it.toDocument() },
+            exchangeBooks = group.exchangeBooks.map { it.toDocument() }
+        )
+    }
 )
 
 private fun Basket.Item.toDocument() = ItemDocument(
-    offerId = this.offerId.raw,
+    offerId = this.offer.id.raw,
     quantity = this.quantity,
-    offerPrice = this.offerPrice.toDocument()
+)
+
+private fun Basket.ExchangeBook.toDocument() = ExchangeBookDocument(
+    id = this.id.raw,
+    author = this.author,
+    title = this.title,
+    isbn = this.isbn,
+    condition = this.condition.name,
+    quantity = this.quantity
 )
 
 private fun BasketDocument.toDomain() = Basket(
     id = BasketId(this.id),
     userId = UserId(this.userId),
-    items = this.items.map { it.toDomain() }.toMutableList()
+    itemsGroups = this.itemsGroups.associate {
+        Basket.ItemsGroupKey(
+            sellerId = UserId(it.sellerId),
+            orderType = Order.OrderType.valueOf(it.orderType)
+        ) to Basket.ItemsGroup(
+            sellerId = UserId(it.sellerId),
+            orderType = Order.OrderType.valueOf(it.orderType),
+            items = it.items.map { item -> item.toDomain() },
+            exchangeBooks = it.exchangeBooks.map { book -> book.toDomain() }.toMutableList()
+        )
+    }.toMutableMap()
+
 )
 
 private fun ItemDocument.toDomain() = Basket.Item(
     offerId = OfferId(this.offerId),
     quantity = this.quantity,
-    offerPrice = this.offerPrice.toDomain()
 )
 
-class BasketNotFoundException() : RuntimeException()
+private fun ExchangeBookDocument.toDomain() = Basket.ExchangeBook(
+    id = ExchangeBookId(this.id),
+    author = this.author,
+    title = this.title,
+    isbn = this.isbn,
+    condition = Offer.Condition.valueOf(this.condition),
+    quantity = this.quantity
+)
+
+class BasketNotFoundException : RuntimeException()

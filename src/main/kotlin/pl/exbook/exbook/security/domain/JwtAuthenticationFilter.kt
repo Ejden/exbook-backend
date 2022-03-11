@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 class JwtAuthenticationFilter(private val objectMapper: ObjectMapper) : UsernamePasswordAuthenticationFilter() {
-
     override fun attemptAuthentication(request: HttpServletRequest?, response: HttpServletResponse?): Authentication {
         val reader: BufferedReader? = request?.reader
         val sb: StringBuilder = StringBuilder()
@@ -26,7 +25,7 @@ class JwtAuthenticationFilter(private val objectMapper: ObjectMapper) : Username
         }
 
         val cred = objectMapper.readValue(sb.toString(), LoginCredentials::class.java)
-        val token = UsernamePasswordAuthenticationToken(cred.login, cred.password)
+        val token = UsernamePasswordAuthenticationToken(cred.username, cred.password)
         setDetails(request, token)
 
         return this.authenticationManager.authenticate(token)

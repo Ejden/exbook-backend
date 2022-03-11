@@ -8,59 +8,112 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseStatus
-import pl.exbook.exbook.image.ImageNotFoundException
-import pl.exbook.exbook.offer.adapter.mongodb.OfferNotFoundException
+import pl.exbook.exbook.image.domain.ContentTypeNotSupportedException
+import pl.exbook.exbook.security.domain.UnauthorizedException
+import pl.exbook.exbook.shared.IllegalParameterException
+import pl.exbook.exbook.shared.NotFoundException
+import pl.exbook.exbook.shared.ValidationException
 
 @ControllerAdvice
 class ExceptionHandler {
-
-    companion object : KLogging()
 
     @ExceptionHandler(TokenExpiredException::class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     fun handle(cause: TokenExpiredException) {}
 
-    @ExceptionHandler(ImageNotFoundException::class)
-    fun handle(cause: ImageNotFoundException): ResponseEntity<ErrorResponse> {
-        logger.error(cause.message)
+    @ExceptionHandler(UnauthorizedException::class)
+    fun handle(cause: UnauthorizedException): ResponseEntity<ErrorResponse> {
+        logger.warn(cause.message)
+
+        return ResponseEntity
+            .status(HttpStatus.FORBIDDEN)
+            .body(
+                ErrorResponse(
+                    message = cause.message.toString(),
+                    code = UnauthorizedException::class.simpleName
+                )
+            )
+    }
+
+    @ExceptionHandler(NotFoundException::class)
+    fun handle(cause: NotFoundException): ResponseEntity<ErrorResponse> {
+        logger.warn(cause.message)
 
         return ResponseEntity
             .status(HttpStatus.NOT_FOUND)
             .body(
                 ErrorResponse(
                     message = cause.message.toString(),
-                    code = ImageNotFoundException::class.simpleName,
-                    details = null,
-                    path = "id",
-                    userMessage = null
+                    code = NotFoundException::class.simpleName,
+                    userMessage = cause.userMessage
                 )
             )
     }
 
-    @ExceptionHandler(OfferNotFoundException::class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    fun handle(cause: OfferNotFoundException) {}
+    @ExceptionHandler(ContentTypeNotSupportedException::class)
+    fun handle(cause: ContentTypeNotSupportedException): ResponseEntity<ErrorResponse> {
+        logger.warn(cause.message)
+
+        return ResponseEntity
+            .status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+            .body(
+                ErrorResponse(
+                    message = cause.message.toString(),
+                    code = NotFoundException::class.simpleName,
+                    userMessage = cause.userMessage
+                )
+            )
+    }
 
     @ExceptionHandler(MismatchedInputException::class)
     fun handle(cause: MismatchedInputException): ResponseEntity<ErrorResponse> {
+        logger.warn(cause.message)
+
         return ResponseEntity
             .status(HttpStatus.BAD_REQUEST)
             .body(
                 ErrorResponse(
                     message = cause.message.toString(),
                     code = MismatchedInputException::class.simpleName,
-                    details = null,
-                    path = "",
-                    userMessage = null
                 )
             )
     }
+
+    @ExceptionHandler(ValidationException::class)
+    fun handle(cause: ValidationException): ResponseEntity<ErrorResponse> {
+        logger.warn(cause.message)
+
+        return ResponseEntity
+            .status(HttpStatus.UNPROCESSABLE_ENTITY)
+            .body(
+                ErrorResponse(
+                    message = cause.message.toString(),
+                    code = ValidationException::class.simpleName
+                )
+            )
+    }
+
+    @ExceptionHandler(IllegalParameterException::class)
+    fun handle(cause: IllegalParameterException): ResponseEntity<ErrorResponse> {
+        logger.warn(cause.message)
+
+        return ResponseEntity
+            .status(HttpStatus.UNPROCESSABLE_ENTITY)
+            .body(
+                ErrorResponse(
+                    message = cause.message.toString(),
+                    code = IllegalParameterException::class.simpleName
+                )
+            )
+    }
+
+    companion object : KLogging()
 }
 
 data class ErrorResponse(
     val message: String,
-    val code: String?,
-    val details: String?,
-    val path: String,
-    val userMessage: String?
+    val code: String? = null,
+    val details: String? = null,
+    val path: String? = null,
+    val userMessage: String? = null
 )

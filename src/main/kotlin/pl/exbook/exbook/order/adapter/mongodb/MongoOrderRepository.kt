@@ -14,24 +14,27 @@ interface MongoOrderRepository : PagingAndSortingRepository<OrderDocument, Strin
     fun findAllByBuyerId(buyerId: String, pageable: Pageable): Page<OrderDocument>
 
     fun findAllBySellerId(sellerId: String, pageable: Pageable): Page<OrderDocument>
+
+    fun removeById(orderId: String)
 }
 
 @Document(collection = "orders")
 data class OrderDocument(
-    val id: String?,
+    val id: String,
     val buyerId: String,
     val sellerId: String,
     val shippingId: String,
     val items: List<OrderItemDocument>,
+    val orderType: String,
+    val exchangeBooks: List<ExchangeBookDocument>,
     val orderDate: Instant,
     val status: String,
-    val totalCost: MoneyDocument
+    val totalCost: MoneyDocument,
+    val note: String
 )
 
 data class OrderItemDocument(
     val offerId: String,
-    val orderType: String,
-    val exchangeBook: ExchangeBookDocument?,
     val quantity: Int,
     val cost: MoneyDto?
 )
