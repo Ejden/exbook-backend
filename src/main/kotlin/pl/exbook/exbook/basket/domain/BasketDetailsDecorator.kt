@@ -16,7 +16,7 @@ class BasketDetailsDecorator(
 
         basket.itemsGroups.forEach {
             val seller = userFacade.getUserById(it.key.sellerId)
-            val items = it.value.map { item ->
+            val items = it.value.items.map { item ->
                 val offer = offerFacade.getOffer(item.offer.id)
                 DetailedBasket.Item(
                     offer = DetailedBasket.Offer(
@@ -42,6 +42,16 @@ class BasketDetailsDecorator(
                     quantity = item.quantity
                 )
             }
+            val exchangeBooks = it.value.exchangeBooks.map { book ->
+                DetailedBasket.ExchangeBook(
+                    id = book.id,
+                    author = book.author,
+                    title = book.title,
+                    isbn = book.isbn,
+                    condition = book.condition,
+                    quantity = book.quantity
+                )
+            }
 
             detailedItemsGroups.add(DetailedBasket.ItemGroup(
                 seller = DetailedBasket.Seller(
@@ -50,7 +60,8 @@ class BasketDetailsDecorator(
                     lastName = seller.lastName
                 ),
                 orderType = it.key.orderType,
-                items = items
+                items = items,
+                exchangeBooks = exchangeBooks
             ))
         }
 

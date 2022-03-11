@@ -66,17 +66,17 @@ class ChangeItemQuantityInBasketSpec : ShouldSpec({
             val firstGroup = basket.itemsGroups.entries.toList()[0]
 
             firstGroup.key.orderType shouldBe OrderType.BUY
-            firstGroup.value shouldHaveSize 1
-            firstGroup.value[0].offer.id shouldBe sampleOfferId
-            firstGroup.value[0].quantity shouldBe buyOrderNewSize
+            firstGroup.value.items shouldHaveSize 1
+            firstGroup.value.items[0].offer.id shouldBe sampleOfferId
+            firstGroup.value.items[0].quantity shouldBe buyOrderNewSize
 
             // and
             val secondGroup = basket.itemsGroups.entries.toList()[1]
 
             secondGroup.key.orderType shouldBe OrderType.EXCHANGE
-            secondGroup.value shouldHaveSize 1
-            secondGroup.value[0].offer.id shouldBe sampleOfferId
-            secondGroup.value[0].quantity shouldBe exchangeOrderNewSize
+            secondGroup.value.items shouldHaveSize 1
+            secondGroup.value.items[0].offer.id shouldBe sampleOfferId
+            secondGroup.value.items[0].quantity shouldBe exchangeOrderNewSize
         }
     }
 
@@ -121,9 +121,9 @@ class ChangeItemQuantityInBasketSpec : ShouldSpec({
             basket.itemsGroups shouldHaveSize 1
 
             var itemGroup = basket.itemsGroups.entries.toList()[0]
-            itemGroup.value shouldHaveSize 2
-            itemGroup.value[0].offer.id shouldBe sampleOfferId
-            itemGroup.value[1].offer.id shouldBe otherSampleOfferId
+            itemGroup.value.items shouldHaveSize 2
+            itemGroup.value.items[0].offer.id shouldBe sampleOfferId
+            itemGroup.value.items[1].offer.id shouldBe otherSampleOfferId
 
             // when
             domain.facade.changeItemQuantityInBasket(command)
@@ -133,9 +133,9 @@ class ChangeItemQuantityInBasketSpec : ShouldSpec({
             basket.itemsGroups shouldHaveSize 1
 
             itemGroup = basket.itemsGroups.entries.toList()[0]
-            itemGroup.value shouldHaveSize 2
-            itemGroup.value[0].offer.id shouldBe sampleOfferId
-            itemGroup.value[1].offer.id shouldBe otherSampleOfferId
+            itemGroup.value.items shouldHaveSize 2
+            itemGroup.value.items[0].offer.id shouldBe sampleOfferId
+            itemGroup.value.items[1].offer.id shouldBe otherSampleOfferId
         }
     }
 
@@ -178,9 +178,9 @@ class ChangeItemQuantityInBasketSpec : ShouldSpec({
 
         // and
         val itemGroup = basket.itemsGroups.entries.toList()[0]
-        itemGroup.value shouldHaveSize 1
-        itemGroup.value[0].offer.id shouldBe otherSampleOfferId
-        itemGroup.value[0].quantity shouldBe 1
+        itemGroup.value.items shouldHaveSize 1
+        itemGroup.value.items[0].offer.id shouldBe otherSampleOfferId
+        itemGroup.value.items[0].quantity shouldBe 1
     }
 
     should("remove whole items group if new quantity is zero and it's the only item in group") {
@@ -222,9 +222,9 @@ class ChangeItemQuantityInBasketSpec : ShouldSpec({
         val itemGroup = basket.itemsGroups.entries.toList()[0]
 
         itemGroup.key.orderType shouldBe OrderType.EXCHANGE
-        itemGroup.value shouldHaveSize 1
-        itemGroup.value[0].offer.id shouldBe sampleOfferId
-        itemGroup.value[0].quantity shouldBe 1
+        itemGroup.value.items shouldHaveSize 1
+        itemGroup.value.items[0].offer.id shouldBe sampleOfferId
+        itemGroup.value.items[0].quantity shouldBe 1
     }
 
     should("create new item group with new item when changing item quantity and item is not in the basket") {
@@ -252,9 +252,9 @@ class ChangeItemQuantityInBasketSpec : ShouldSpec({
 
         itemGroup.key.sellerId shouldBe sampleSellerId
         itemGroup.key.orderType shouldBe OrderType.BUY
-        itemGroup.value shouldHaveSize 1
-        itemGroup.value[0].offer.id shouldBe sampleOfferId
-        itemGroup.value[0].quantity shouldBe 10
+        itemGroup.value.items shouldHaveSize 1
+        itemGroup.value.items[0].offer.id shouldBe sampleOfferId
+        itemGroup.value.items[0].quantity shouldBe 10
     }
 
     should("add to existing item group new item when changing item quantity that is not in the basket yet") {
@@ -291,11 +291,11 @@ class ChangeItemQuantityInBasketSpec : ShouldSpec({
 
         itemGroup.key.sellerId shouldBe sampleSellerId
         itemGroup.key.orderType shouldBe OrderType.BUY
-        itemGroup.value shouldHaveSize 2
-        itemGroup.value[0].offer.id shouldBe sampleOfferId
-        itemGroup.value[0].quantity shouldBe 5
-        itemGroup.value[1].offer.id shouldBe otherSampleOfferId
-        itemGroup.value[1].quantity shouldBe 10
+        itemGroup.value.items shouldHaveSize 2
+        itemGroup.value.items[0].offer.id shouldBe sampleOfferId
+        itemGroup.value.items[0].quantity shouldBe 5
+        itemGroup.value.items[1].offer.id shouldBe otherSampleOfferId
+        itemGroup.value.items[1].quantity shouldBe 10
     }
 
     context("throw error when trying to change quantity to incorrect value") {

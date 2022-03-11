@@ -3,6 +3,7 @@ package pl.exbook.exbook.basket.domain
 import pl.exbook.exbook.offer.domain.Offer.Condition
 import pl.exbook.exbook.order.domain.Order
 import pl.exbook.exbook.shared.BasketId
+import pl.exbook.exbook.shared.ExchangeBookId
 import pl.exbook.exbook.shared.Money
 import pl.exbook.exbook.shared.OfferId
 import pl.exbook.exbook.shared.UserId
@@ -10,15 +11,13 @@ import pl.exbook.exbook.shared.UserId
 data class Basket(
     val id: BasketId,
     val userId: UserId,
-    val itemsGroups: MutableMap<ItemsGroupKey, List<Item>>
+    val itemsGroups: MutableMap<ItemsGroupKey, ItemsGroup>
 ) {
     data class Item(
         val offer: Offer,
         var quantity: Long
     ): Comparable<Item> {
         constructor(offerId: OfferId, quantity: Long): this(Offer(offerId), quantity)
-
-        fun addQuantity(quantity: Long) = Item(offer, this.quantity + quantity)
 
         fun changeQuantity(quantity: Long) {
             this.quantity = quantity
@@ -39,15 +38,21 @@ data class Basket(
     data class ItemsGroup(
         val sellerId: UserId,
         val orderType: Order.OrderType,
-        val exchangeBooks: List<ExchangeBook>,
+        val exchangeBooks: MutableList<ExchangeBook>,
         val items: List<Item>
-    )
+    ) {
+        fun addItem(item: Item): ItemsGroup = this.copy(items = this.items + item)
+
+        fun removeItem(offerId: OfferId) = this.copy(items = this.items.filterNot { it.offer.id == offerId })
+    }
 
     data class ExchangeBook(
+        val id: ExchangeBookId,
         val author: String,
         val title: String,
         val isbn: String?,
-        val condition: Condition
+        val condition: Condition,
+        val quantity: Int
     )
 
     data class Seller(
@@ -56,25 +61,25 @@ data class Basket(
 
     fun addToBasket(offerId: OfferId, sellerId: UserId, orderType: Order.OrderType, quantity: Long) {
         val key = ItemsGroupKey(sellerId, orderType)
-        val groupItems = itemsGroups[key] ?: emptyList()
-        val item = groupItems.find { it.offer.id == offerId }
+        val itemsGroup = itemsGroups[key] ?: ItemsGroup(sellerId, orderType, mutableListOf(), emptyList())
+        val item = itemsGroup.items.find { it.offer.id == offerId }
 
         if (item == null) {
-            this.itemsGroups[key] = groupItems + Item(offerId, quantity)
+            this.itemsGroups[key] = itemsGroup.addItem(Item(offerId, quantity))
         } else {
-            this.itemsGroups[key] = groupItems.filterNot { it.offer.id == offerId } + item.addQuantity(quantity)
+           item.changeQuantity(item.quantity + quantity)
         }
     }
 
     fun removeFromBasket(offerId: OfferId, orderType: Order.OrderType) {
         itemsGroups.entries
-            .firstOrNull { it.key.orderType == orderType && it.value.any { item -> item.offer.id == offerId } }
+            .firstOrNull { it.key.orderType == orderType && it.value.items.any { item -> item.offer.id == offerId } }
             ?.let {
-                val newItemGroup = it.value.filterNot { item -> item.offer.id == offerId }
+                val newItemGroup = it.value.items.filterNot { item -> item.offer.id == offerId }
                 if (newItemGroup.isEmpty()) {
                     this.itemsGroups.remove(it.key)
                 } else {
-                    this.itemsGroups[it.key] = newItemGroup
+                    this.itemsGroups[it.key] = it.value.removeItem(offerId)
                 }
             }
     }
@@ -86,12 +91,12 @@ data class Basket(
         }
 
         val itemGroup = itemsGroups.entries
-            .firstOrNull { it.key.orderType == orderType && it.value.any { item -> item.offer.id == offerId} }
+            .firstOrNull { it.key.orderType == orderType && it.value.items.any { item -> item.offer.id == offerId} }
 
         if (itemGroup == null) {
             addToBasket(offerId, sellerId, orderType, newQuantity)
         } else {
-            val item = itemGroup.value.find { it.offer.id == offerId }
+            val item = itemGroup.value.items.find { it.offer.id == offerId }
 
             if (item == null) {
                 addToBasket(offerId, sellerId, orderType, newQuantity)
@@ -99,6 +104,21 @@ data class Basket(
                 item.changeQuantity(newQuantity)
             }
         }
+    }
+
+    fun addExchangeBook(sellerId: UserId, book: ExchangeBook) {
+        val key = ItemsGroupKey(sellerId, Order.OrderType.EXCHANGE)
+        val itemGroup = itemsGroups[key]
+            ?: throw BasketValidationException(
+                "Cannot find matching group for exchange book. seller: ${sellerId.raw}, basket: ${this.id.raw}"
+            )
+
+        itemGroup.exchangeBooks.add(book)
+    }
+
+    fun removeExchangeBook(sellerId: UserId, exchangeBookId: ExchangeBookId) {
+        val key = ItemsGroupKey(sellerId, Order.OrderType.EXCHANGE)
+        itemsGroups[key]?.exchangeBooks?.removeIf { it.id == exchangeBookId }
     }
 }
 
@@ -113,6 +133,7 @@ data class DetailedBasket(
         val seller: Seller,
         val orderType: Order.OrderType,
         val items: List<Item>,
+        val exchangeBooks: List<ExchangeBook>
     ) {
         val groupTotalOffersPrice: Money = this.items.foldRight(Money.zeroPln()) { item, acc ->
             item.totalPrice + acc
@@ -125,6 +146,15 @@ data class DetailedBasket(
     ) {
         val totalPrice: Money = this.offer.price?.times(this.quantity) ?: Money.zeroPln()
     }
+
+    data class ExchangeBook(
+        val id: ExchangeBookId,
+        val author: String,
+        val title: String,
+        val isbn: String?,
+        val condition: Condition,
+        val quantity: Int
+    )
 
     data class Offer(
         val id: OfferId,

@@ -1,7 +1,6 @@
 package pl.exbook.exbook.basket.domain
 
 import org.springframework.stereotype.Service
-import java.lang.RuntimeException
 import pl.exbook.exbook.offer.domain.Offer
 import pl.exbook.exbook.order.domain.Order
 import pl.exbook.exbook.shared.UserId
@@ -18,6 +17,10 @@ class BasketValidator {
 
     fun validateItemQuantityChange(buyerId: UserId, command: ChangeItemQuantityCommand) {
         checkPositiveQuantity(buyerId, command)
+    }
+
+    fun validateAddingBook(command: AddExchangeBookToBasketCommand, basket: Basket) {
+        checkIfBasketContainsSellerGroup(command, basket)
     }
 
     private fun checkOfferType(offer: Offer, orderType: Order.OrderType) {
@@ -49,6 +52,14 @@ class BasketValidator {
         if (command.newQuantity < 0) {
             throw BasketValidationException(
                 "Buyer ${buyerId.raw} Tried to change item quantity for offer ${command.offerId.raw} with non positive quantity"
+            )
+        }
+    }
+
+    private fun checkIfBasketContainsSellerGroup(command: AddExchangeBookToBasketCommand, basket: Basket) {
+        if (!basket.itemsGroups.entries.any { it.key.sellerId == command.sellerId && it.key.orderType == Order.OrderType.EXCHANGE }) {
+            throw BasketValidationException(
+                "Can't find appropriate items groups to add book. Seller: ${command.sellerId.raw}, basket: ${basket.id.raw}"
             )
         }
     }

@@ -50,8 +50,8 @@ class RemoveItemsFromBasketSpec : ShouldSpec({
             itemGroup.key.orderType shouldBe shouldLeftOrderType
             itemGroup.key.sellerId shouldBe sampleSellerId
 
-            itemGroup.value[0].offer.id shouldBe sampleOfferId
-            itemGroup.value[0].quantity shouldBeExactly 2
+            itemGroup.value.items[0].offer.id shouldBe sampleOfferId
+            itemGroup.value.items[0].quantity shouldBeExactly 2
         }
     }
 
@@ -84,8 +84,8 @@ class RemoveItemsFromBasketSpec : ShouldSpec({
         itemGroup.key.orderType shouldBe Order.OrderType.BUY
         itemGroup.key.sellerId shouldBe sampleSellerId
 
-        itemGroup.value[0].offer.id shouldBe otherSampleOfferId
-        itemGroup.value[0].quantity shouldBeExactly 2
+        itemGroup.value.items[0].offer.id shouldBe otherSampleOfferId
+        itemGroup.value.items[0].quantity shouldBeExactly 2
     }
 
     should("remove only item from basket") {

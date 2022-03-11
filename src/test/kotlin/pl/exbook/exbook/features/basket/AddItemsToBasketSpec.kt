@@ -58,10 +58,10 @@ class AddItemsToBasketSpec : ShouldSpec({
 
             itemGroup.key.orderType shouldBe orderType
             itemGroup.key.sellerId shouldBe sampleSellerId
-            itemGroup.value shouldHaveSize 1
+            itemGroup.value.items shouldHaveSize 1
 
             // and
-            val offer = itemGroup.value[0]
+            val offer = itemGroup.value.items[0]
 
             offer.quantity shouldBeExactly 1
             offer.offer.id shouldBe sampleOfferId
@@ -104,12 +104,12 @@ class AddItemsToBasketSpec : ShouldSpec({
 
         itemGroup.key.sellerId shouldBe sampleSellerId
         itemGroup.key.orderType shouldBe OrderType.BUY
-        itemGroup.value shouldHaveSize 2
+        itemGroup.value.items shouldHaveSize 2
 
-        itemGroup.value[0].offer.id shouldBe sampleOfferId
-        itemGroup.value[0].quantity shouldBeExactly 2
-        itemGroup.value[1].offer.id shouldBe otherSampleOfferId
-        itemGroup.value[1].quantity shouldBeExactly 1
+        itemGroup.value.items[0].offer.id shouldBe sampleOfferId
+        itemGroup.value.items[0].quantity shouldBeExactly 2
+        itemGroup.value.items[1].offer.id shouldBe otherSampleOfferId
+        itemGroup.value.items[1].quantity shouldBeExactly 1
     }
 
     should("create two itemsGroups when adding two times one offer to basket with different order type") {
@@ -147,20 +147,20 @@ class AddItemsToBasketSpec : ShouldSpec({
 
         itemGroup1.key.sellerId shouldBe sampleSellerId
         itemGroup1.key.orderType shouldBe OrderType.BUY
-        itemGroup1.value shouldHaveSize 1
+        itemGroup1.value.items shouldHaveSize 1
 
-        itemGroup1.value[0].offer.id shouldBe sampleOfferId
-        itemGroup1.value[0].quantity shouldBeExactly 1
+        itemGroup1.value.items[0].offer.id shouldBe sampleOfferId
+        itemGroup1.value.items[0].quantity shouldBeExactly 1
 
         // and
         val itemGroup2 = basket.itemsGroups.entries.toList()[1]
 
         itemGroup2.key.sellerId shouldBe sampleSellerId
         itemGroup2.key.orderType shouldBe OrderType.EXCHANGE
-        itemGroup2.value shouldHaveSize 1
+        itemGroup2.value.items shouldHaveSize 1
 
-        itemGroup2.value[0].offer.id shouldBe sampleOfferId
-        itemGroup2.value[0].quantity shouldBeExactly 1
+        itemGroup2.value.items[0].offer.id shouldBe sampleOfferId
+        itemGroup2.value.items[0].quantity shouldBeExactly 1
     }
 
     context("create two itemsGroups when adding two offers to basket from other sellers") {
@@ -206,20 +206,20 @@ class AddItemsToBasketSpec : ShouldSpec({
 
             itemGroup1.key.sellerId shouldBe sampleSellerId
             itemGroup1.key.orderType shouldBe orderType.first
-            itemGroup1.value shouldHaveSize 1
+            itemGroup1.value.items shouldHaveSize 1
 
-            itemGroup1.value[0].offer.id shouldBe sampleOfferId
-            itemGroup1.value[0].quantity shouldBeExactly 1
+            itemGroup1.value.items[0].offer.id shouldBe sampleOfferId
+            itemGroup1.value.items[0].quantity shouldBeExactly 1
 
             // and
             val itemGroup2 = basket.itemsGroups.entries.toList()[1]
 
             itemGroup2.key.sellerId shouldBe otherSampleSellerId
             itemGroup2.key.orderType shouldBe orderType.second
-            itemGroup2.value shouldHaveSize 1
+            itemGroup2.value.items shouldHaveSize 1
 
-            itemGroup2.value[0].offer.id shouldBe otherSampleOfferId
-            itemGroup2.value[0].quantity shouldBeExactly 1
+            itemGroup2.value.items[0].offer.id shouldBe otherSampleOfferId
+            itemGroup2.value.items[0].quantity shouldBeExactly 1
         }
     }
 
@@ -276,40 +276,40 @@ class AddItemsToBasketSpec : ShouldSpec({
 
         itemGroup1.key.sellerId shouldBe sampleSellerId
         itemGroup1.key.orderType shouldBe OrderType.BUY
-        itemGroup1.value shouldHaveSize 1
+        itemGroup1.value.items shouldHaveSize 1
 
-        itemGroup1.value[0].offer.id shouldBe sampleOfferId
-        itemGroup1.value[0].quantity shouldBeExactly 1
+        itemGroup1.value.items[0].offer.id shouldBe sampleOfferId
+        itemGroup1.value.items[0].quantity shouldBeExactly 1
 
         // and
         val itemGroup2 = basket.itemsGroups.entries.toList()[1]
 
         itemGroup2.key.sellerId shouldBe sampleSellerId
         itemGroup2.key.orderType shouldBe OrderType.EXCHANGE
-        itemGroup2.value shouldHaveSize 1
+        itemGroup2.value.items shouldHaveSize 1
 
-        itemGroup2.value[0].offer.id shouldBe sampleOfferId
-        itemGroup2.value[0].quantity shouldBeExactly 1
+        itemGroup2.value.items[0].offer.id shouldBe sampleOfferId
+        itemGroup2.value.items[0].quantity shouldBeExactly 1
 
         // and
         val itemGroup3 = basket.itemsGroups.entries.toList()[2]
 
         itemGroup3.key.sellerId shouldBe otherSampleSellerId
         itemGroup3.key.orderType shouldBe OrderType.BUY
-        itemGroup3.value shouldHaveSize 1
+        itemGroup3.value.items shouldHaveSize 1
 
-        itemGroup3.value[0].offer.id shouldBe otherSampleOfferId
-        itemGroup3.value[0].quantity shouldBeExactly 1
+        itemGroup3.value.items[0].offer.id shouldBe otherSampleOfferId
+        itemGroup3.value.items[0].quantity shouldBeExactly 1
 
         // and
         val itemGroup4 = basket.itemsGroups.entries.toList()[3]
 
         itemGroup4.key.sellerId shouldBe otherSampleSellerId
         itemGroup4.key.orderType shouldBe OrderType.EXCHANGE
-        itemGroup4.value shouldHaveSize 1
+        itemGroup4.value.items shouldHaveSize 1
 
-        itemGroup4.value[0].offer.id shouldBe otherSampleOfferId
-        itemGroup4.value[0].quantity shouldBeExactly 1
+        itemGroup4.value.items[0].offer.id shouldBe otherSampleOfferId
+        itemGroup4.value.items[0].quantity shouldBeExactly 1
     }
 
     should("increment item quantity when trying to add item that already exist in basket") {
@@ -348,20 +348,20 @@ class AddItemsToBasketSpec : ShouldSpec({
 
         itemGroup1.key.sellerId shouldBe sampleSellerId
         itemGroup1.key.orderType shouldBe OrderType.BUY
-        itemGroup1.value shouldHaveSize 1
+        itemGroup1.value.items shouldHaveSize 1
 
-        itemGroup1.value[0].offer.id shouldBe sampleOfferId
-        itemGroup1.value[0].quantity shouldBeExactly 2
+        itemGroup1.value.items[0].offer.id shouldBe sampleOfferId
+        itemGroup1.value.items[0].quantity shouldBeExactly 2
 
         // and
         val itemGroup2 = basket.itemsGroups.entries.toList()[1]
 
         itemGroup2.key.sellerId shouldBe sampleSellerId
         itemGroup2.key.orderType shouldBe OrderType.EXCHANGE
-        itemGroup2.value shouldHaveSize 1
+        itemGroup2.value.items shouldHaveSize 1
 
-        itemGroup2.value[0].offer.id shouldBe sampleOfferId
-        itemGroup2.value[0].quantity shouldBeExactly 1
+        itemGroup2.value.items[0].offer.id shouldBe sampleOfferId
+        itemGroup2.value.items[0].quantity shouldBeExactly 1
     }
 
     should("throw exception when tried to add to basket non existing offer") {
@@ -439,10 +439,10 @@ class AddItemsToBasketSpec : ShouldSpec({
 
             itemGroup.key.orderType shouldBe orderType
             itemGroup.key.sellerId shouldBe sampleSellerId
-            itemGroup.value shouldHaveSize 1
+            itemGroup.value.items shouldHaveSize 1
 
             // and
-            val offer = itemGroup.value[0]
+            val offer = itemGroup.value.items[0]
 
             offer.quantity shouldBeExactly 1
             offer.offer.id shouldBe sampleOfferId

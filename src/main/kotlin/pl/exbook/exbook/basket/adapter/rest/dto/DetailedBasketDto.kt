@@ -16,6 +16,7 @@ data class DetailedBasketDto(
         val seller: SellerDto,
         val orderType: String,
         val items: List<ItemDto>,
+        val exchangeBooks: List<ExchangeBook>,
         val groupTotalOffersPrice: MoneyDto
     )
 
@@ -51,6 +52,15 @@ data class DetailedBasketDto(
         val lastName: String
     )
 
+    data class ExchangeBook(
+        val id: String,
+        val author: String,
+        val title: String,
+        val isbn: String?,
+        val condition: String,
+        val quantity: Int
+    )
+
     companion object {
         fun fromDomain(detailedBasket: DetailedBasket) = DetailedBasketDto(
             id = detailedBasket.id.raw,
@@ -69,6 +79,7 @@ private fun DetailedBasket.ItemGroup.toDto() = DetailedBasketDto.ItemsGroupDto(
     ),
     orderType = this.orderType.name,
     items = this.items.map { it.toDto() },
+    exchangeBooks = this.exchangeBooks.map { it.toDto() },
     groupTotalOffersPrice = this.groupTotalOffersPrice.toDto()
 )
 
@@ -82,6 +93,15 @@ private fun DetailedBasket.Item.toDto() = DetailedBasketDto.ItemDto(
     ),
     quantity = this.quantity,
     totalPrice = this.totalPrice.toDto()
+)
+
+private fun DetailedBasket.ExchangeBook.toDto() = DetailedBasketDto.ExchangeBook(
+    id = this.id.raw,
+    author = this.author,
+    title = this.title,
+    isbn = this.isbn,
+    condition = this.condition.name,
+    quantity = this.quantity
 )
 
 private fun DetailedBasket.Book.toDto() = DetailedBasketDto.BookDto(

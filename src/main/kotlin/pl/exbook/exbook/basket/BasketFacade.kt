@@ -1,7 +1,9 @@
 package pl.exbook.exbook.basket
 
+import java.util.UUID
 import org.springframework.stereotype.Service
 import pl.exbook.exbook.basket.adapter.mongodb.BasketNotFoundException
+import pl.exbook.exbook.basket.domain.AddExchangeBookToBasketCommand
 import pl.exbook.exbook.basket.domain.AddItemToBasketCommand
 import pl.exbook.exbook.basket.domain.Basket
 import pl.exbook.exbook.basket.domain.BasketDetailsDecorator
@@ -13,6 +15,7 @@ import pl.exbook.exbook.basket.domain.DetailedBasket
 import pl.exbook.exbook.offer.OfferFacade
 import pl.exbook.exbook.offer.domain.Offer
 import pl.exbook.exbook.order.domain.Order
+import pl.exbook.exbook.shared.ExchangeBookId
 import pl.exbook.exbook.shared.OfferId
 import pl.exbook.exbook.shared.UserId
 import pl.exbook.exbook.user.UserFacade
@@ -78,6 +81,32 @@ class BasketFacade(
         return basketRepository.save(basket)
     }
 
+    fun addExchangeBookToBasket(command: AddExchangeBookToBasketCommand): Basket {
+        val basket = getUserBasket(command.username)
+        command.validate(basket)
+
+        basket.addExchangeBook(
+            command.sellerId,
+            Basket.ExchangeBook(
+                id = ExchangeBookId(UUID.randomUUID().toString()),
+                author = command.book.author,
+                title = command.book.title,
+                isbn = command.book.isbn,
+                condition = command.book.condition,
+                quantity = command.book.quantity
+            )
+        )
+
+        return basketRepository.save(basket)
+    }
+
+    fun removeExchangeBookFromBasket(username: String, sellerId: UserId, exchangeBookId: ExchangeBookId): Basket {
+        val basket = getUserBasket(username)
+        basket.removeExchangeBook(sellerId, exchangeBookId)
+
+        return basketRepository.save(basket)
+    }
+
     private fun AddItemToBasketCommand.validate(offer: Offer, buyer: User): AddItemToBasketCommand {
         validator.validateAddingItem(offer, buyer, this)
         return this
@@ -85,6 +114,11 @@ class BasketFacade(
 
     private fun ChangeItemQuantityCommand.validate(buyerId: UserId): ChangeItemQuantityCommand {
         validator.validateItemQuantityChange(buyerId, this)
+        return this
+    }
+
+    private fun AddExchangeBookToBasketCommand.validate(basket: Basket): AddExchangeBookToBasketCommand {
+        validator.validateAddingBook(this, basket)
         return this
     }
 }

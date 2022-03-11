@@ -35,3 +35,6 @@ value class PurchaseId(val raw: String)
 
 @JvmInline
 value class OfferVersionId(val raw: String)
+
+@JvmInline
+value class ExchangeBookId(val raw: String)
