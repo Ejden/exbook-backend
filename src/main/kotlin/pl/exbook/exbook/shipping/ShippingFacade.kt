@@ -1,7 +1,6 @@
 package pl.exbook.exbook.shipping
 
 import pl.exbook.exbook.offer.domain.Offer
-import pl.exbook.exbook.order.domain.Order
 import pl.exbook.exbook.shared.OfferId
 import pl.exbook.exbook.shared.PickupPointId
 import pl.exbook.exbook.shared.ShippingId
@@ -18,11 +17,10 @@ class ShippingFacade(
     private val shippingCalculator: ShippingCalculator,
     private val shippingRepository: ShippingRepository
 ) {
-
-    fun calculateSelectedShipping(request: CalculateSelectedShippingCommand): Shipping {
-        val shippingMethod = shippingMethodFacade.getShippingMethodById(request.shippingMethodId)
-        shippingValidator.validate(shippingMethod, request)
-        return shippingCalculator.calculateSelectedShipping(shippingMethod, request)
+    fun calculateSelectedShipping(command: CalculateSelectedShippingCommand): Shipping {
+        val shippingMethod = shippingMethodFacade.getShippingMethodById(command.shippingMethodId)
+        shippingValidator.validate(shippingMethod, command)
+        return shippingCalculator.calculateSelectedShipping(shippingMethod, command)
     }
 
     fun save(shipping: Shipping): Shipping {
@@ -41,11 +39,11 @@ data class CalculateSelectedShippingCommand(
     val orderItems: List<OrderItem>,
     val shippingAddress: ShippingAddress?,
     val pickupPoint: PickupPoint?,
-    val offersShippingMethods: Map<OfferId, Collection<Offer.ShippingMethod>>
+    val offersShippingMethods: Map<OfferId, List<Offer.ShippingMethod>>
 ) {
     data class OrderItem(
         val offerId: OfferId,
-        val quantity: Int
+        val quantity: Long
     )
 
     data class ShippingAddress(

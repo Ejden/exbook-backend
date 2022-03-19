@@ -27,7 +27,7 @@ class StockService(
     ): StockReservation = stockReservationRepository.getReservation(reservationId)
         ?: throw StockReservationNotFoundException(reservationId)
 
-    fun reserve(stockId: StockId, amount: Int): StockReservation {
+    fun reserve(stockId: StockId, amount: Long): StockReservation {
         val semaphore = lock(stockId)
 
         try {
@@ -71,7 +71,7 @@ class StockService(
         }
     }
 
-    fun getFromStock(stockId: StockId, amount: Int): Stock {
+    fun getFromStock(stockId: StockId, amount: Long): Stock {
         val semaphore = lock(stockId)
 
         try {
@@ -83,7 +83,7 @@ class StockService(
         }
     }
 
-    fun addToStock(stockId: StockId, amount: Int): Stock {
+    fun addToStock(stockId: StockId, amount: Long): Stock {
         val semaphore = lock(stockId)
 
         try {
@@ -95,14 +95,14 @@ class StockService(
         }
     }
 
-    fun createStockForOffer(startQuantity: Int): Stock = Stock(
+    fun createStockForOffer(startQuantity: Long): Stock = Stock(
             id = StockId(UUID.randomUUID().toString()),
             inStock = startQuantity,
             reserved = 0
         ).also { stockValidator.validateCreationOfStock(it.inStock) }
         .let { stockRepository.saveStock(it) }
 
-    private fun createReservation(stockId: StockId, amount: Int): StockReservation = StockReservation(
+    private fun createReservation(stockId: StockId, amount: Long): StockReservation = StockReservation(
         reservationId = StockReservationId(UUID.randomUUID().toString()),
         stockId = stockId,
         amount = amount

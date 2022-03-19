@@ -4,19 +4,19 @@ import pl.exbook.exbook.shared.StockId
 
 data class Stock(
     val id: StockId,
-    val inStock: Int,
-    val reserved: Int
+    val inStock: Long,
+    val reserved: Long
 ) {
-    fun decreaseStock(amount: Int): Stock = this
+    fun decreaseStock(amount: Long): Stock = this
         .validatePositiveNumber(amount)
         .validateDecreaseAmount(amount)
         .copy(inStock = this.inStock - amount)
 
-    fun increaseStock(amount: Int): Stock = this
+    fun increaseStock(amount: Long): Stock = this
         .validatePositiveNumber(amount)
         .copy(inStock = this.inStock + amount)
 
-    fun reserve(amount: Int): Stock = this
+    fun reserve(amount: Long): Stock = this
         .validatePositiveNumber(amount)
         .validateDecreaseAmount(amount)
         .copy(inStock = this.inStock - amount, reserved = this.reserved + amount)
@@ -31,7 +31,7 @@ data class Stock(
         .validateReservationDecreaseAmount(reservation.amount)
         .copy(reserved = this.reserved - reservation.amount, inStock = this.inStock + reservation.amount)
 
-    private fun validatePositiveNumber(amount: Int): Stock {
+    private fun validatePositiveNumber(amount: Long): Stock {
         if (amount < 0) {
             throw NonPositiveAmountException(this.id, amount)
         }
@@ -39,7 +39,7 @@ data class Stock(
         return this
     }
 
-    private fun validateDecreaseAmount(amount: Int): Stock {
+    private fun validateDecreaseAmount(amount: Long): Stock {
         if (this.inStock < amount) {
             throw InsufficientStockException(this.id, amount, this.inStock)
         }
@@ -47,7 +47,7 @@ data class Stock(
         return this
     }
 
-    private fun validateReservationDecreaseAmount(amount: Int): Stock {
+    private fun validateReservationDecreaseAmount(amount: Long): Stock {
         if (this.reserved < amount) {
             throw RuntimeException("Tried to decrease reserve by amount bigger than actual reserved")
         }

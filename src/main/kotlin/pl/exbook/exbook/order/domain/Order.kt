@@ -19,7 +19,7 @@ data class Order(
 ) {
     data class OrderItem(
         val offerId: OfferId,
-        val quantity: Int,
+        val quantity: Long,
         val cost: Money?
     )
 

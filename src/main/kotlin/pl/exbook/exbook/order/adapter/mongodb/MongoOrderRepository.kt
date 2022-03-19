@@ -35,7 +35,7 @@ data class OrderDocument(
 
 data class OrderItemDocument(
     val offerId: String,
-    val quantity: Int,
+    val quantity: Long,
     val cost: MoneyDto?
 )
 

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import pl.exbook.exbook.basket.BasketFacade
+import pl.exbook.exbook.basket.adapter.rest.dto.AddExchangeBookToBasketRequest
 import pl.exbook.exbook.basket.adapter.rest.dto.AddItemToBasketRequest
 import pl.exbook.exbook.basket.adapter.rest.dto.BasketDto
 import pl.exbook.exbook.basket.adapter.rest.dto.ChangeItemQuantityRequest
@@ -19,7 +20,9 @@ import pl.exbook.exbook.basket.domain.Basket
 import pl.exbook.exbook.basket.domain.DetailedBasket
 import pl.exbook.exbook.order.domain.Order
 import pl.exbook.exbook.shared.ContentType
+import pl.exbook.exbook.shared.ExchangeBookId
 import pl.exbook.exbook.shared.OfferId
+import pl.exbook.exbook.shared.UserId
 
 @RestController
 @RequestMapping("api/basket")
@@ -59,6 +62,22 @@ class BasketEndpoint(private val basketFacade: BasketFacade) {
     ): BasketDto {
         return basketFacade.changeItemQuantityInBasket(request.toCommand(offerId, user.name)).toDto()
     }
+
+    @PreAuthorize("isFullyAuthenticated()")
+    @PostMapping("/sellers/{sellerId}/books", consumes = [ContentType.V1], produces = [ContentType.V1])
+    fun addExchangeBookToBasket(
+        @PathVariable sellerId: UserId,
+        @RequestBody request: AddExchangeBookToBasketRequest,
+        user: UsernamePasswordAuthenticationToken
+    ): BasketDto = basketFacade.addExchangeBookToBasket(request.toCommand(user.name, sellerId)).toDto()
+
+    @PreAuthorize("isFullyAuthenticated()")
+    @DeleteMapping("/sellers/{sellerId}/books/{bookId}", produces = [ContentType.V1])
+    fun removeExchangeBookToBasket(
+        @PathVariable sellerId: UserId,
+        @PathVariable bookId: ExchangeBookId,
+        user: UsernamePasswordAuthenticationToken
+    ): BasketDto = basketFacade.removeExchangeBookFromBasket(user.name, sellerId, bookId).toDto()
 }
 
 private fun Basket.toDto() = BasketDto.fromDomain(this)

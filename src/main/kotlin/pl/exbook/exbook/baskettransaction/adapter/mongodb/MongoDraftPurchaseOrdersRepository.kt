@@ -8,7 +8,9 @@ import org.springframework.stereotype.Repository
 import pl.exbook.exbook.shared.dto.MoneyDocument
 
 @Repository
-interface MongoDraftPurchaseOrdersRepository : MongoRepository<DraftPurchaseDocument, String>
+interface MongoDraftPurchaseOrdersRepository : MongoRepository<DraftPurchaseDocument, String> {
+    fun findByBuyer_Id(userId: String): DraftPurchaseDocument?
+}
 
 @Document(collection = "draftPurchase")
 data class DraftPurchaseDocument(
@@ -24,7 +26,8 @@ data class DraftPurchaseDocument(
         val orderType: String,
         val seller: Seller,
         val items: List<Item>,
-        val shipping: Shipping?
+        val shipping: Shipping?,
+        val exchangeBooks: List<ExchangeBook>
     )
 
     data class Buyer(
@@ -37,14 +40,15 @@ data class DraftPurchaseDocument(
 
     data class Item(
         val offerId: String,
-        val quantity: Int,
-        val price: MoneyDocument
+        val quantity: Long,
+        val price: MoneyDocument?
     )
 
     data class Shipping(
         val shippingMethodId: String,
         val pickupPoint: PickupPoint?,
-        val shippingAddress: ShippingAddress?
+        val shippingAddress: ShippingAddress?,
+        val cost: ShippingCostDocument
     )
 
     data class ShippingAddress(
@@ -62,5 +66,18 @@ data class DraftPurchaseDocument(
         val phoneNumber: String,
         val email: String,
         val pickupPointId: String
+    )
+
+    data class ExchangeBook(
+        val id: String,
+        val author: String,
+        val title: String,
+        val isbn: String?,
+        val condition: String,
+        val quantity: Int
+    )
+
+    data class ShippingCostDocument(
+        val finalCost: MoneyDocument
     )
 }

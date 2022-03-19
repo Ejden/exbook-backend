@@ -95,7 +95,7 @@ data class PlaceOrdersRequest(
     data class Item(
         val offerId: String,
         @field:Min(value = 1)
-        val quantity: Int
+        val quantity: Long
     )
 
     data class Seller(
@@ -155,7 +155,7 @@ data class OrderDto(
 
     data class OrderItemDto(
         val offerId: String,
-        val quantity: Int,
+        val quantity: Long,
         val cost: MoneyDto?
     )
 
@@ -203,7 +203,7 @@ data class OrderSnippetDto(
         val offerId: String,
         val book: BookDto,
         val images: ImagesDto,
-        val quantity: Int,
+        val quantity: Long,
         val cost: MoneyDto?
     )
 

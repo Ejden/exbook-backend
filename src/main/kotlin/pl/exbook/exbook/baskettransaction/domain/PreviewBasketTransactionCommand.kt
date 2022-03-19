@@ -1,28 +1,43 @@
 package pl.exbook.exbook.baskettransaction.domain
 
 import java.time.Instant
-import pl.exbook.exbook.order.domain.Order.OrderType
-import pl.exbook.exbook.shared.OfferId
+import pl.exbook.exbook.basket.domain.Basket
+import pl.exbook.exbook.offer.domain.Offer
+import pl.exbook.exbook.order.domain.Order
+import pl.exbook.exbook.shared.PickupPointId
 import pl.exbook.exbook.shared.ShippingMethodId
+import pl.exbook.exbook.shared.UserId
+import pl.exbook.exbook.user.domain.User
 
 data class PreviewBasketTransactionCommand(
-    val buyer: Buyer,
-    val orders: List<Order>
+    val buyer: User,
+    val basket: Basket,
+    val offers: List<Offer>,
+    val shipping: List<Shipping>,
+    val timestamp: Instant
 ) {
-    val timestamp = Instant.now()
-
-    data class Buyer(
-        val username: String
-    )
-
-    data class Order(
-        val offerId: OfferId,
-        val quantity: Int,
-        val orderType: OrderType,
-        val shipping: Shipping
-    )
-
     data class Shipping(
-        val shippingMethodId: ShippingMethodId
+        val sellerId: UserId,
+        val orderType: Order.OrderType,
+        val shippingMethodId: ShippingMethodId,
+        val shippingAddress: ShippingAddress?,
+        val pickupPoint: PickupPoint?
+    )
+
+    data class ShippingAddress(
+        val firstAndLastName: String,
+        val phoneNumber: String,
+        val email: String,
+        val address: String,
+        val postalCode: String,
+        val city: String,
+        val country: String
+    )
+
+    data class PickupPoint(
+        val firstAndLastName: String,
+        val phoneNumber: String,
+        val email: String,
+        val pickupPointId: PickupPointId
     )
 }

@@ -15,6 +15,6 @@ interface MongoStockRepository : Repository<StockDocument, String> {
 data class StockDocument(
     @Id
     val id: String,
-    val inStock: Int,
-    val reserved: Int
+    val inStock: Long,
+    val reserved: Long
 )

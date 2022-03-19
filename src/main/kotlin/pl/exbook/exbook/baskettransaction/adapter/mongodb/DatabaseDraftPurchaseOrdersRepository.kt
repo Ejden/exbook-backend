@@ -1,10 +1,12 @@
 package pl.exbook.exbook.baskettransaction.adapter.mongodb
 
 import org.springframework.data.repository.findByIdOrNull
-import org.springframework.stereotype.Service
+import org.springframework.stereotype.Component
 import pl.exbook.exbook.baskettransaction.domain.DraftPurchase
 import pl.exbook.exbook.baskettransaction.domain.DraftPurchaseOrdersRepository
+import pl.exbook.exbook.offer.domain.Offer
 import pl.exbook.exbook.order.domain.Order.OrderType
+import pl.exbook.exbook.shared.ExchangeBookId
 import pl.exbook.exbook.shared.OfferId
 import pl.exbook.exbook.shared.OrderId
 import pl.exbook.exbook.shared.PickupPointId
@@ -13,13 +15,17 @@ import pl.exbook.exbook.shared.ShippingMethodId
 import pl.exbook.exbook.shared.UserId
 import pl.exbook.exbook.shared.dto.toDocument
 
-@Service
+@Component
 class DatabaseDraftPurchaseOrdersRepository(
     private val repository: MongoDraftPurchaseOrdersRepository
 ) : DraftPurchaseOrdersRepository {
     override fun getDraftPurchase(
         purchaseId: PurchaseId
     ): DraftPurchase? = repository.findByIdOrNull(purchaseId.raw)?.toDomain()
+
+    override fun getDraftPurchaseForUser(
+        userId: UserId
+    ): DraftPurchase? = repository.findByBuyer_Id(userId.raw)?.toDomain()
 
     override fun saveDraftPurchase(
         purchase: DraftPurchase
@@ -39,13 +45,14 @@ private fun DraftPurchaseDocument.DraftOrder.toDomain() = DraftPurchase.DraftOrd
     orderType = OrderType.valueOf(this.orderType),
     seller = DraftPurchase.Seller(UserId(this.seller.id)),
     items = this.items.map { it.toDomain() },
-    shipping = this.shipping?.toDomain()
+    shipping = this.shipping?.toDomain(),
+    exchangeBooks = this.exchangeBooks.map { it.toDomain() }
 )
 
 private fun DraftPurchaseDocument.Item.toDomain() = DraftPurchase.Item(
     offerId = OfferId(this.offerId),
     quantity = this.quantity,
-    price = this.price.toDomain()
+    price = this.price?.toDomain()
 )
 
 private fun DraftPurchaseDocument.Shipping.toDomain() = DraftPurchase.Shipping(
@@ -68,7 +75,17 @@ private fun DraftPurchaseDocument.Shipping.toDomain() = DraftPurchase.Shipping(
             city = it.city,
             country = it.country
         )
-    }
+    },
+    cost = DraftPurchase.ShippingCost(this.cost.finalCost.toDomain())
+)
+
+private fun DraftPurchaseDocument.ExchangeBook.toDomain() = DraftPurchase.ExchangeBook(
+    id = ExchangeBookId(this.id),
+    author = this.author,
+    title = this.title,
+    isbn = this.isbn,
+    condition = Offer.Condition.valueOf(this.condition),
+    quantity = this.quantity
 )
 
 private fun DraftPurchase.toDocument() = DraftPurchaseDocument(
@@ -84,13 +101,14 @@ private fun DraftPurchase.DraftOrder.toDocument() = DraftPurchaseDocument.DraftO
     orderType = this.orderType.name,
     seller = DraftPurchaseDocument.Seller(this.seller.id.raw),
     items = this.items.map { it.toDocument() },
-    shipping = this.shipping?.toDocument()
+    shipping = this.shipping?.toDocument(),
+    exchangeBooks = this.exchangeBooks.map { it.toDocument() }
 )
 
 private fun DraftPurchase.Item.toDocument() = DraftPurchaseDocument.Item(
     offerId = this.offerId.raw,
     quantity = this.quantity,
-    price = this.price.toDocument()
+    price = this.price?.toDocument()
 )
 
 private fun DraftPurchase.Shipping.toDocument() = DraftPurchaseDocument.Shipping(
@@ -113,5 +131,15 @@ private fun DraftPurchase.Shipping.toDocument() = DraftPurchaseDocument.Shipping
             city = it.city,
             country = it.country
         )
-    }
+    },
+    cost = DraftPurchaseDocument.ShippingCostDocument(this.cost.finalCost.toDocument())
+)
+
+private fun DraftPurchase.ExchangeBook.toDocument() = DraftPurchaseDocument.ExchangeBook(
+    id = this.id.raw,
+    author = this.author,
+    title = this.title,
+    isbn = this.isbn,
+    condition = this.condition.name,
+    quantity = this.quantity
 )
