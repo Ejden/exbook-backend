@@ -6,7 +6,6 @@ import pl.exbook.exbook.basket.BasketFacade
 import pl.exbook.exbook.baskettransaction.domain.DetailedDraftPurchase
 import pl.exbook.exbook.baskettransaction.domain.DraftPurchaseCreator
 import pl.exbook.exbook.baskettransaction.domain.DraftPurchaseDecorator
-import pl.exbook.exbook.baskettransaction.domain.DraftPurchase
 import pl.exbook.exbook.baskettransaction.domain.PreviewBasketTransactionCommand
 import pl.exbook.exbook.offer.OfferFacade
 import pl.exbook.exbook.user.UserFacade
