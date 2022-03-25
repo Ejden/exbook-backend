@@ -3,7 +3,7 @@ package pl.exbook.exbook.features.stock
 import io.kotest.assertions.throwables.shouldThrowExactly
 import io.kotest.core.spec.style.ShouldSpec
 import io.kotest.datatest.withData
-import io.kotest.matchers.ints.shouldBeExactly
+import io.kotest.matchers.longs.shouldBeExactly
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import pl.exbook.exbook.ability.StockDomainAbility
@@ -14,7 +14,7 @@ class StockFacadeSpec : ShouldSpec({
     val domain = StockDomainAbility()
 
     context("create stock for offer") {
-        withData(0, 1, 2, 3) { startQuantity ->
+        withData(0L, 1L, 2L, 3L) { startQuantity ->
             // when
             val result = domain.facade.createStock(startQuantity)
 
@@ -23,7 +23,7 @@ class StockFacadeSpec : ShouldSpec({
             // then
             stock.shouldNotBeNull()
             stock.inStock shouldBeExactly startQuantity
-            stock.reserved shouldBeExactly 0
+            stock.reserved shouldBeExactly 0L
         }
     }
 

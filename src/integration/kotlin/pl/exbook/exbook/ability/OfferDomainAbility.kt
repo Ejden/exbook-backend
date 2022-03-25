@@ -28,7 +28,7 @@ class OfferDomainAbility(private val restTemplate: TestRestTemplate) {
                 id = sampleShippingMethodId.raw,
                 price = "10.00".plnDto()
             )),
-        initialStock: Int,
+        initialStock: Long = 100,
         token: String? = null
     ): ResponseEntity<OfferDto> {
         val requestBody = CreateOfferRequest(

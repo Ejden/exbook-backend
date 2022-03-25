@@ -75,4 +75,13 @@ class UserDomainAbility(private val restTemplate: TestRestTemplate) {
             String::class.java
         )
     }
+
+    fun getUserFromToken(token: String? = null): ResponseEntity<DetailedUserDto> {
+        return restTemplate.exchange(
+            "/api/me",
+            HttpMethod.GET,
+            createHttpEntity(body = null, withAcceptHeader = true, token = token),
+            DetailedUserDto::class.java
+        )
+    }
 }

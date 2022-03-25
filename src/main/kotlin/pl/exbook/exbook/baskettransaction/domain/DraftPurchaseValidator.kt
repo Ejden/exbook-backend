@@ -12,7 +12,6 @@ class DraftPurchaseValidator {
         validateSeller(command)
         validateExchangeBooks(command)
         validateItemsQuantity(command)
-        validateShipping(command)
     }
 
     private fun validateNumberOfItemGroups(itemsGroups: MutableMap<Basket.ItemsGroupKey, Basket.ItemsGroup>) {
@@ -67,18 +66,6 @@ class DraftPurchaseValidator {
         val hasEmptyGroup = command.basket.itemsGroups.any { it.value.items.isEmpty() }
         if (hasEmptyGroup) {
             throw DraftPurchaseValidationException("Cannot create draft order with empty group")
-        }
-    }
-
-    private fun validateShipping(command: PreviewBasketTransactionCommand) {
-        if (command.shipping.size != command.basket.itemsGroups.size) {
-            throw DraftPurchaseValidationException("shipping items size is different than itemsGroups size")
-        }
-        command.basket.itemsGroups.forEach { itemsGroup ->
-            command.shipping.firstOrNull { shipping -> shipping.sellerId == itemsGroup.key.sellerId && shipping.orderType == itemsGroup.key.orderType }
-                ?: throw DraftPurchaseValidationException(
-                    "Can't find shipping for seller ${itemsGroup.key.sellerId.raw} with order type ${itemsGroup.key.orderType}"
-                )
         }
     }
 }

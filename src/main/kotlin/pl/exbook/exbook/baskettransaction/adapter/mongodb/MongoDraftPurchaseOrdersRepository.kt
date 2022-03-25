@@ -19,7 +19,9 @@ data class DraftPurchaseDocument(
     val buyer: Buyer,
     val orders: List<DraftOrder>,
     val creationDate: Instant,
-    val lastUpdated: Instant
+    val lastUpdated: Instant,
+    val totalOffersPrice: MoneyDocument,
+    val totalPrice: MoneyDocument
 ) {
     data class DraftOrder(
         val orderId: String,
@@ -27,7 +29,9 @@ data class DraftPurchaseDocument(
         val seller: Seller,
         val items: List<Item>,
         val shipping: Shipping?,
-        val exchangeBooks: List<ExchangeBook>
+        val exchangeBooks: List<ExchangeBook>,
+        val totalOffersPrice: MoneyDocument,
+        val totalPrice: MoneyDocument
     )
 
     data class Buyer(
@@ -39,8 +43,13 @@ data class DraftPurchaseDocument(
     )
 
     data class Item(
-        val offerId: String,
+        val offer: OfferDocument,
         val quantity: Long,
+        val totalPrice: MoneyDocument
+    )
+
+    data class OfferDocument(
+        val id: String,
         val price: MoneyDocument?
     )
 

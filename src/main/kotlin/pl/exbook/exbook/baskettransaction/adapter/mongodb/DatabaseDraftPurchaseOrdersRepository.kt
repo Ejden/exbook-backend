@@ -37,7 +37,9 @@ private fun DraftPurchaseDocument.toDomain() = DraftPurchase(
     buyer = DraftPurchase.Buyer(UserId(this.buyer.id)),
     orders = this.orders.map { it.toDomain() },
     creationDate = this.creationDate,
-    lastUpdated = this.lastUpdated
+    lastUpdated = this.lastUpdated,
+    totalOffersPrice = this.totalOffersPrice.toDomain(),
+    totalPrice = this.totalPrice.toDomain()
 )
 
 private fun DraftPurchaseDocument.DraftOrder.toDomain() = DraftPurchase.DraftOrder(
@@ -46,13 +48,18 @@ private fun DraftPurchaseDocument.DraftOrder.toDomain() = DraftPurchase.DraftOrd
     seller = DraftPurchase.Seller(UserId(this.seller.id)),
     items = this.items.map { it.toDomain() },
     shipping = this.shipping?.toDomain(),
-    exchangeBooks = this.exchangeBooks.map { it.toDomain() }
+    exchangeBooks = this.exchangeBooks.map { it.toDomain() },
+    totalOffersPrice = this.totalOffersPrice.toDomain(),
+    totalPrice = this.totalPrice.toDomain()
 )
 
 private fun DraftPurchaseDocument.Item.toDomain() = DraftPurchase.Item(
-    offerId = OfferId(this.offerId),
+    offer = DraftPurchase.Offer(
+        id = OfferId(this.offer.id),
+        price = this.offer.price?.toDomain()
+    ),
     quantity = this.quantity,
-    price = this.price?.toDomain()
+    totalPrice = this.totalPrice.toDomain()
 )
 
 private fun DraftPurchaseDocument.Shipping.toDomain() = DraftPurchase.Shipping(
@@ -93,7 +100,9 @@ private fun DraftPurchase.toDocument() = DraftPurchaseDocument(
     buyer = DraftPurchaseDocument.Buyer(this.buyer.id.raw),
     orders = this.orders.map { it.toDocument() },
     creationDate = this.creationDate,
-    lastUpdated = this.lastUpdated
+    lastUpdated = this.lastUpdated,
+    totalOffersPrice = this.totalOffersPrice.toDocument(),
+    totalPrice = this.totalPrice.toDocument()
 )
 
 private fun DraftPurchase.DraftOrder.toDocument() = DraftPurchaseDocument.DraftOrder(
@@ -102,13 +111,18 @@ private fun DraftPurchase.DraftOrder.toDocument() = DraftPurchaseDocument.DraftO
     seller = DraftPurchaseDocument.Seller(this.seller.id.raw),
     items = this.items.map { it.toDocument() },
     shipping = this.shipping?.toDocument(),
-    exchangeBooks = this.exchangeBooks.map { it.toDocument() }
+    exchangeBooks = this.exchangeBooks.map { it.toDocument() },
+    totalOffersPrice = this.totalOffersPrice.toDocument(),
+    totalPrice = this.totalPrice.toDocument()
 )
 
 private fun DraftPurchase.Item.toDocument() = DraftPurchaseDocument.Item(
-    offerId = this.offerId.raw,
+    offer = DraftPurchaseDocument.OfferDocument(
+        id = this.offer.id.raw,
+        price = this.offer.price?.toDocument()
+    ),
     quantity = this.quantity,
-    price = this.price?.toDocument()
+    totalPrice = this.totalPrice.toDocument()
 )
 
 private fun DraftPurchase.Shipping.toDocument() = DraftPurchaseDocument.Shipping(

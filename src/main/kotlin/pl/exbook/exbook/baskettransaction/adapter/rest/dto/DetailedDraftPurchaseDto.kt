@@ -1,40 +1,31 @@
-package pl.exbook.exbook.baskettransaction.domain
+package pl.exbook.exbook.baskettransaction.adapter.rest.dto
 
-import pl.exbook.exbook.offer.domain.Offer.Condition
-import pl.exbook.exbook.order.domain.Order.OrderType
-import pl.exbook.exbook.shared.ExchangeBookId
-import pl.exbook.exbook.shared.Money
-import pl.exbook.exbook.shared.OfferId
-import pl.exbook.exbook.shared.OrderId
-import pl.exbook.exbook.shared.PickupPointId
-import pl.exbook.exbook.shared.PurchaseId
-import pl.exbook.exbook.shared.ShippingMethodId
-import pl.exbook.exbook.shared.UserId
+import pl.exbook.exbook.shared.dto.MoneyDto
 
-data class DetailedDraftPurchase(
-    val purchaseId: PurchaseId,
+data class DetailedDraftPurchaseDto(
+    val purchaseId: String,
     val buyer: Buyer,
     val orders: List<DraftOrder>,
-    val totalOffersPrice: Money,
-    val totalPrice: Money
+    val totalOffersPrice: MoneyDto,
+    val totalPrice: MoneyDto
 ) {
     data class Buyer(
-        val id: UserId
+        val id: String
     )
 
     data class DraftOrder(
-        val orderId: OrderId,
-        val orderType: OrderType,
+        val orderId: String,
+        val orderType: String,
         val seller: Seller,
         val items: List<Item>,
         val exchangeBooks: List<ExchangeBook>,
         val shipping: Shipping?,
-        val totalOffersPrice: Money,
-        val totalPrice: Money
+        val totalOffersPrice: MoneyDto,
+        val totalPrice: MoneyDto
     )
 
     data class Seller(
-        val id: UserId,
+        val id: String,
         val firstName: String,
         val lastName: String,
         val username: String
@@ -43,7 +34,7 @@ data class DetailedDraftPurchase(
     data class Item(
         val offer: Offer,
         val quantity: Long,
-        val totalPrice: Money
+        val totalPrice: MoneyDto
     )
 
     data class Shipping(
@@ -53,14 +44,14 @@ data class DetailedDraftPurchase(
     )
 
     data class ShippingMethod(
-        val id: ShippingMethodId,
+        val id: String,
         val methodName: String,
         val price: ShippingCost
     )
 
     data class Offer(
-        val id: OfferId,
-        val price: Money?,
+        val id: String,
+        val price: MoneyDto,
         val book: Book,
         val images: Images
     )
@@ -68,7 +59,7 @@ data class DetailedDraftPurchase(
     data class Book(
         val author: String,
         val title: String,
-        val condition: Condition,
+        val condition: String,
         val isbn: String?
     )
 
@@ -93,19 +84,19 @@ data class DetailedDraftPurchase(
         val firstAndLastName: String,
         val phoneNumber: String,
         val email: String,
-        val pickupPointId: PickupPointId
+        val pickupPointId: String
     )
 
     data class ShippingCost(
-        val finalPrice: Money
+        val finalPrice: MoneyDto
     )
 
     data class ExchangeBook(
-        val id: ExchangeBookId,
+        val id: String,
         val author: String,
         val title: String,
         val isbn: String?,
-        val condition: Condition,
+        val condition: String,
         val quantity: Int
     )
 }

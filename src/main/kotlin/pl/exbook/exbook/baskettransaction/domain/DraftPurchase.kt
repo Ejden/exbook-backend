@@ -1,7 +1,7 @@
 package pl.exbook.exbook.baskettransaction.domain
 
 import java.time.Instant
-import pl.exbook.exbook.offer.domain.Offer
+import pl.exbook.exbook.offer.domain.Offer.Condition
 import pl.exbook.exbook.order.domain.Order
 import pl.exbook.exbook.shared.ExchangeBookId
 import pl.exbook.exbook.shared.Money
@@ -17,7 +17,9 @@ data class DraftPurchase(
     val buyer: Buyer,
     val orders: List<DraftOrder>,
     val creationDate: Instant,
-    val lastUpdated: Instant
+    val lastUpdated: Instant,
+    val totalOffersPrice: Money,
+    val totalPrice: Money
 ) {
     data class DraftOrder(
         val orderId: OrderId,
@@ -25,7 +27,9 @@ data class DraftPurchase(
         val seller: Seller,
         val items: List<Item>,
         val exchangeBooks: List<ExchangeBook>,
-        val shipping: Shipping?
+        val shipping: Shipping?,
+        val totalOffersPrice: Money,
+        val totalPrice: Money
     )
 
     data class Buyer(
@@ -37,8 +41,13 @@ data class DraftPurchase(
     )
 
     data class Item(
-        val offerId: OfferId,
+        val offer: Offer,
         val quantity: Long,
+        val totalPrice: Money
+    )
+
+    data class Offer(
+        val id: OfferId,
         val price: Money?
     )
 
@@ -58,7 +67,7 @@ data class DraftPurchase(
         val author: String,
         val title: String,
         val isbn: String?,
-        val condition: Offer.Condition,
+        val condition: Condition,
         val quantity: Int
     )
 

@@ -6,7 +6,6 @@ import io.kotest.datatest.withData
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.comparables.shouldBeEqualComparingTo
 import io.kotest.matchers.nulls.shouldBeNull
-import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import pl.exbook.exbook.ability.OfferDomainAbility
 import pl.exbook.exbook.offer.domain.CreateOfferCommand
@@ -248,11 +247,11 @@ private data class CreateOfferTestCase(
     val isbn: String?,
     val type: Offer.Type,
     val price: Money?,
-    val initialStock: Int
+    val initialStock: Long
 )
 
 private data class CreateOfferCmdTestCase(
-    val initialStock: Int = 1,
+    val initialStock: Long = 1,
     val bookAuthor: String = "Tom",
     val bookTitle: String = "Riddle",
     val isbn: String = "1234567890123",

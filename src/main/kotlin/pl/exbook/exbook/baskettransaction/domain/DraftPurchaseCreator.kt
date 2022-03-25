@@ -2,6 +2,8 @@ package pl.exbook.exbook.baskettransaction.domain
 
 import java.util.UUID
 import org.springframework.stereotype.Service
+import pl.exbook.exbook.order.domain.Order.OrderType
+import pl.exbook.exbook.shared.Money
 import pl.exbook.exbook.shared.OrderId
 import pl.exbook.exbook.shared.PurchaseId
 import pl.exbook.exbook.shipping.CalculateSelectedShippingCommand
@@ -28,78 +30,110 @@ class DraftPurchaseCreator(
 
     private fun createNewDraftPurchase(
         command: PreviewBasketTransactionCommand
-    ): DraftPurchase = DraftPurchase(
-        purchaseId = PurchaseId(UUID.randomUUID().toString()),
-        buyer = DraftPurchase.Buyer(command.buyer.id),
-        orders = groupOrders(command),
-        creationDate = command.timestamp,
-        lastUpdated = command.timestamp
-    )
+    ): DraftPurchase {
+        val orders = groupOrders(command)
+
+        return DraftPurchase(
+            purchaseId = PurchaseId(UUID.randomUUID().toString()),
+            buyer = DraftPurchase.Buyer(command.buyer.id),
+            orders = orders,
+            creationDate = command.timestamp,
+            lastUpdated = command.timestamp,
+            totalOffersPrice = orders.fold(Money.zeroPln()) { acc, x -> acc + x.totalOffersPrice },
+            totalPrice = orders.fold(Money.zeroPln()) { acc, x -> acc + x.totalPrice }
+        )
+    }
 
     private fun updateDraftPurchase(
         command: PreviewBasketTransactionCommand,
         oldDraftPurchase: DraftPurchase
-    ) = DraftPurchase(
-        purchaseId = oldDraftPurchase.purchaseId,
-        buyer = DraftPurchase.Buyer(command.buyer.id),
-        orders = groupOrders(command),
-        creationDate = oldDraftPurchase.creationDate,
-        lastUpdated = command.timestamp
-    )
+    ): DraftPurchase {
+        val orders = groupOrders(command)
 
-    private fun groupOrders(command: PreviewBasketTransactionCommand) = groupItems(command).entries.map {
-        DraftPurchase.DraftOrder(
-            orderId = OrderId(UUID.randomUUID().toString()),
-            orderType = it.key.orderType,
-            seller = DraftPurchase.Seller(it.key.sellerId),
-            items = it.key.items.map { item ->
-                val offer = command.offers.first { offer -> offer.id == item.offer.id }
-                DraftPurchase.Item(item.offer.id, item.quantity, offer.price)
-            },
-            exchangeBooks = it.key.exchangeBooks.map { book ->
-                DraftPurchase.ExchangeBook(
-                    id = book.id,
-                    author = book.author,
-                    title = book.title,
-                    isbn = book.isbn,
-                    condition = book.condition,
-                    quantity = book.quantity
-                )
-            },
-            shipping = DraftPurchase.Shipping(
-                shippingMethodId = it.value.first.shippingMethodId,
-                pickupPoint = it.value.second.pickupPoint?.let { point ->
-                    DraftPurchase.PickupPoint(
-                        firstAndLastName = point.firstAndLastName,
-                        phoneNumber = point.phoneNumber,
-                        email = point.email,
-                        pickupPointId = point.pickupPointId
-                    )
-                },
-                shippingAddress = it.value.second.shippingAddress?.let { address ->
-                    DraftPurchase.ShippingAddress(
-                        firstAndLastName = address.firstAndLastName,
-                        phoneNumber = address.phoneNumber,
-                        email = address.email,
-                        address = address.address,
-                        postalCode = address.postalCode,
-                        city = address.city,
-                        country = address.country
-                    )
-                },
-                cost = DraftPurchase.ShippingCost(
-                    finalCost = it.value.first.cost.finalCost
-                )
-            )
+        return DraftPurchase(
+            purchaseId = oldDraftPurchase.purchaseId,
+            buyer = DraftPurchase.Buyer(command.buyer.id),
+            orders = orders,
+            creationDate = oldDraftPurchase.creationDate,
+            lastUpdated = command.timestamp,
+            totalOffersPrice = orders.fold(Money.zeroPln()) { acc, x -> acc + x.totalOffersPrice },
+            totalPrice = orders.fold(Money.zeroPln()) { acc, x -> acc + x.totalPrice }
         )
+    }
+
+    private fun groupOrders(command: PreviewBasketTransactionCommand): List<DraftPurchase.DraftOrder> {
+        return groupItems(command).entries.map {
+            val items = it.key.items.map { item ->
+                val offer = command.offers.first { offer -> offer.id == item.offer.id }
+                val offerPrice = if (it.key.orderType == OrderType.BUY) offer.price!! else Money.zeroPln()
+
+                DraftPurchase.Item(
+                    offer = DraftPurchase.Offer(
+                        id = item.offer.id,
+                        price = offerPrice
+                    ),
+                    quantity = item.quantity,
+                    totalPrice = offerPrice * item.quantity
+                )
+            }
+            val totalOffersPrice = items.fold(Money.zeroPln()) { acc, x -> acc + x.totalPrice }
+            val totalPrice = totalOffersPrice + (it.value?.first?.cost?.finalCost ?: Money.zeroPln())
+
+            DraftPurchase.DraftOrder(
+                orderId = OrderId(UUID.randomUUID().toString()),
+                orderType = it.key.orderType,
+                seller = DraftPurchase.Seller(it.key.sellerId),
+                items = items,
+                exchangeBooks = it.key.exchangeBooks.map { book ->
+                    DraftPurchase.ExchangeBook(
+                        id = book.id,
+                        author = book.author,
+                        title = book.title,
+                        isbn = book.isbn,
+                        condition = book.condition,
+                        quantity = book.quantity
+                    )
+                },
+                shipping = it.value?.let { shipping ->
+                    DraftPurchase.Shipping(
+                        shippingMethodId = shipping.first.shippingMethodId,
+                        pickupPoint = shipping.second.pickupPoint?.let { point ->
+                            DraftPurchase.PickupPoint(
+                                firstAndLastName = point.firstAndLastName,
+                                phoneNumber = point.phoneNumber,
+                                email = point.email,
+                                pickupPointId = point.pickupPointId
+                            )
+                        },
+                        shippingAddress = shipping.second.shippingAddress?.let { address ->
+                            DraftPurchase.ShippingAddress(
+                                firstAndLastName = address.firstAndLastName,
+                                phoneNumber = address.phoneNumber,
+                                email = address.email,
+                                address = address.address,
+                                postalCode = address.postalCode,
+                                city = address.city,
+                                country = address.country
+                            )
+                        },
+                        cost = DraftPurchase.ShippingCost(
+                            finalCost = shipping.first.cost.finalCost
+                        )
+                    )
+                },
+                totalOffersPrice = totalOffersPrice,
+                totalPrice = totalPrice
+            )
+        }
     }
 
     private fun groupItems(
         command: PreviewBasketTransactionCommand
     ) = command.basket.itemsGroups.values.associateWith { itemsGroup ->
-        val shippingCommand = command.shipping.first { shipping ->
+        val shippingCommand = command.shipping.firstOrNull { shipping ->
             shipping.sellerId == itemsGroup.sellerId && shipping.orderType == itemsGroup.orderType
-        }
+        } ?: return@associateWith null
+
         val offersToShipping = itemsGroup.items.associateWith { item ->
             command.offers.first { offer -> offer.id == item.offer.id }.shippingMethods
         }.mapKeys { it.key.offer.id }
