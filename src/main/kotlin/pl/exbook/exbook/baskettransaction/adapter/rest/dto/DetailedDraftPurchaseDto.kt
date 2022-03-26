@@ -20,6 +20,7 @@ data class DetailedDraftPurchaseDto(
         val items: List<Item>,
         val exchangeBooks: List<ExchangeBook>,
         val shipping: Shipping?,
+        val availableShippingMethods: List<ShippingOption>,
         val totalOffersPrice: MoneyDto,
         val totalPrice: MoneyDto
     )
@@ -41,6 +42,13 @@ data class DetailedDraftPurchaseDto(
         val shippingMethod: ShippingMethod,
         val pickupPoint: PickupPoint?,
         val shippingAddress: ShippingAddress?,
+    )
+
+    data class ShippingOption(
+        val shippingMethodId: String,
+        val shippingMethodName: String,
+        val pickupPointMethod: Boolean,
+        val price: MoneyDto
     )
 
     data class ShippingMethod(

@@ -6,8 +6,11 @@ import pl.exbook.exbook.order.domain.Order.OrderType
 import pl.exbook.exbook.shared.Money
 import pl.exbook.exbook.shared.OrderId
 import pl.exbook.exbook.shared.PurchaseId
+import pl.exbook.exbook.shared.UserId
 import pl.exbook.exbook.shipping.CalculateSelectedShippingCommand
 import pl.exbook.exbook.shipping.ShippingFacade
+import pl.exbook.exbook.shipping.domain.AvailableShipping
+import pl.exbook.exbook.shipping.domain.PreviewAvailableShippingCommand
 
 @Service
 class DraftPurchaseCreator(
@@ -18,20 +21,24 @@ class DraftPurchaseCreator(
     fun createDraftPurchase(command: PreviewBasketTransactionCommand): DraftPurchase {
         draftPurchaseValidator.validatePreview(command)
         val oldDraftPurchase = draftPurchaseOrdersRepository.getDraftPurchaseForUser(command.buyer.id)
+        val availableShipping = shippingFacade.previewAvailableShipping(
+            PreviewAvailableShippingCommand(command.timestamp, command.toPreviewOrdersShippingCommand())
+        )
 
         if (oldDraftPurchase == null) {
-            val newDraft = createNewDraftPurchase(command)
+            val newDraft = createNewDraftPurchase(command, availableShipping)
             return draftPurchaseOrdersRepository.saveDraftPurchase(newDraft)
         }
 
-        val updatedDraft = updateDraftPurchase(command, oldDraftPurchase)
+        val updatedDraft = updateDraftPurchase(command, oldDraftPurchase, availableShipping)
         return draftPurchaseOrdersRepository.saveDraftPurchase(updatedDraft)
     }
 
     private fun createNewDraftPurchase(
-        command: PreviewBasketTransactionCommand
+        command: PreviewBasketTransactionCommand,
+        availableShipping: AvailableShipping
     ): DraftPurchase {
-        val orders = groupOrders(command)
+        val orders = groupOrders(command, availableShipping)
 
         return DraftPurchase(
             purchaseId = PurchaseId(UUID.randomUUID().toString()),
@@ -46,9 +53,10 @@ class DraftPurchaseCreator(
 
     private fun updateDraftPurchase(
         command: PreviewBasketTransactionCommand,
-        oldDraftPurchase: DraftPurchase
+        oldDraftPurchase: DraftPurchase,
+        availableShipping: AvailableShipping
     ): DraftPurchase {
-        val orders = groupOrders(command)
+        val orders = groupOrders(command, availableShipping)
 
         return DraftPurchase(
             purchaseId = oldDraftPurchase.purchaseId,
@@ -61,7 +69,10 @@ class DraftPurchaseCreator(
         )
     }
 
-    private fun groupOrders(command: PreviewBasketTransactionCommand): List<DraftPurchase.DraftOrder> {
+    private fun groupOrders(
+        command: PreviewBasketTransactionCommand,
+        availableShipping: AvailableShipping
+    ): List<DraftPurchase.DraftOrder> {
         return groupItems(command).entries.map {
             val items = it.key.items.map { item ->
                 val offer = command.offers.first { offer -> offer.id == item.offer.id }
@@ -121,6 +132,7 @@ class DraftPurchaseCreator(
                         )
                     )
                 },
+                availableShippingMethods = availableShipping.getOptionsFor(it.key.sellerId, it.key.orderType),
                 totalOffersPrice = totalOffersPrice,
                 totalPrice = totalPrice
             )
@@ -169,4 +181,17 @@ class DraftPurchaseCreator(
             ), shippingCommand
         )
     }
+
+    private fun PreviewBasketTransactionCommand.toPreviewOrdersShippingCommand() = this.basket.itemsGroups
+        .mapKeys { PreviewAvailableShippingCommand.OrderKey(it.key.sellerId, it.key.orderType) }
+        .mapValues { PreviewAvailableShippingCommand.Order(
+            it.value.items.map { item -> this.offers.first { offer -> offer.id == item.offer.id } })
+        }
+
+    private fun AvailableShipping.getOptionsFor(sellerId: UserId, orderType: OrderType) = this.shippingByOrders
+        .filter { it.key.sellerId == sellerId && it.key.orderType == orderType }
+        .values
+        .firstOrNull()
+        .orEmpty()
+        .map { DraftPurchase.ShippingOption(it.methodId, it.methodName, it.pickupPoint, it.price) }
 }

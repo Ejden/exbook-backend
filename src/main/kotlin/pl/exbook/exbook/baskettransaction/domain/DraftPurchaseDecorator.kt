@@ -40,6 +40,7 @@ class DraftPurchaseDecorator {
             items = items.map { it.toDetailed(offers) },
             exchangeBooks = exchangeBooks.map { it.toDetailed() },
             shipping = shipping?.toDetailed(shippingMethods),
+            availableShippingMethods = availableShippingMethods.map { it.toDetailed() },
             totalOffersPrice = totalOffersPrice,
             totalPrice = totalPrice
         )
@@ -101,6 +102,13 @@ class DraftPurchaseDecorator {
             shippingAddress = shippingAddress?.toDetailed()
         )
     }
+
+    private fun DraftPurchase.ShippingOption.toDetailed() = DetailedDraftPurchase.ShippingOption(
+        shippingMethodId = this.shippingMethodId,
+        shippingMethodName = this.shippingMethodName,
+        pickupPointMethod = this.pickupPointMethod,
+        price = this.price
+    )
 
     private fun DraftPurchase.PickupPoint.toDetailed() = DetailedDraftPurchase.PickupPoint(
         firstAndLastName = firstAndLastName,

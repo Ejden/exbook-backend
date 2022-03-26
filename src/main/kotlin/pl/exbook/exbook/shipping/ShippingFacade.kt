@@ -5,6 +5,8 @@ import pl.exbook.exbook.shared.OfferId
 import pl.exbook.exbook.shared.PickupPointId
 import pl.exbook.exbook.shared.ShippingId
 import pl.exbook.exbook.shared.ShippingMethodId
+import pl.exbook.exbook.shipping.domain.AvailableShipping
+import pl.exbook.exbook.shipping.domain.PreviewAvailableShippingCommand
 import pl.exbook.exbook.shipping.domain.Shipping
 import pl.exbook.exbook.shipping.domain.ShippingCalculator
 import pl.exbook.exbook.shipping.domain.ShippingRepository
@@ -23,6 +25,11 @@ class ShippingFacade(
         return shippingCalculator.calculateSelectedShipping(shippingMethod, command)
     }
 
+    fun previewAvailableShipping(command: PreviewAvailableShippingCommand): AvailableShipping {
+        val shippingMethods = command.shippingMethods()
+        return shippingCalculator.previewShippingMethodForPurchase(command, shippingMethods)
+    }
+
     fun save(shipping: Shipping): Shipping {
         return shippingRepository.save(shipping)
     }
@@ -32,6 +39,15 @@ class ShippingFacade(
     }
 
     fun remove(shippingId: ShippingId) = shippingRepository.remove(shippingId)
+
+    private fun PreviewAvailableShippingCommand.shippingMethods() = this.orders.values
+        .asSequence()
+        .flatMap { it.offers }
+        .flatMap { it.shippingMethods }
+        .distinctBy { it.id }
+        .map { shippingMethodFacade.getShippingMethod(it.id) }
+        .filterNotNull()
+        .toList()
 }
 
 data class CalculateSelectedShippingCommand(

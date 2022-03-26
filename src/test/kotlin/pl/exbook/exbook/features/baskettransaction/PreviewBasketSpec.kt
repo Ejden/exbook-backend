@@ -66,6 +66,8 @@ class PreviewBasketSpec : ShouldSpec({
                 }
             }
         }
+        domain.willPreviewAvailableShipping { }
+
 
         val command = PreviewPurchaseCommand(
             orders = listOf()
@@ -132,6 +134,7 @@ class PreviewBasketSpec : ShouldSpec({
             finalCost = "6.00".pln()
             pickupPoint { }
         }
+        domain.willPreviewAvailableShipping { }
 
         val command = PreviewPurchaseCommand(
             orders = listOf(
@@ -228,6 +231,7 @@ class PreviewBasketSpec : ShouldSpec({
             finalCost = "6.00".pln()
             address { }
         }
+        domain.willPreviewAvailableShipping { }
 
         val command = PreviewPurchaseCommand(
             orders = listOf(
@@ -335,6 +339,7 @@ class PreviewBasketSpec : ShouldSpec({
             finalCost = "5.00".pln()
             address { }
         }
+        domain.willPreviewAvailableShipping { }
 
         val command = PreviewPurchaseCommand(
             orders = listOf(
@@ -480,6 +485,7 @@ class PreviewBasketSpec : ShouldSpec({
             address { }
             pickupPoint { }
         }
+        domain.willPreviewAvailableShipping { }
 
         val command = PreviewPurchaseCommand(
             orders = listOf(
@@ -621,6 +627,7 @@ class PreviewBasketSpec : ShouldSpec({
             finalCost = "5.00".pln()
             pickupPoint { }
         }
+        domain.willPreviewAvailableShipping { }
 
         val command = PreviewPurchaseCommand(
             orders = listOf(

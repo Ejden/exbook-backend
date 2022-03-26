@@ -7,6 +7,7 @@ import pl.exbook.exbook.baskettransaction.BasketTransactionFacade
 import pl.exbook.exbook.baskettransaction.domain.DraftPurchaseCreator
 import pl.exbook.exbook.baskettransaction.domain.DraftPurchaseDecorator
 import pl.exbook.exbook.baskettransaction.domain.DraftPurchaseValidator
+import pl.exbook.exbook.mock.AvailableShippingBuilder
 import pl.exbook.exbook.mock.BasketBuilder
 import pl.exbook.exbook.mock.BasketFacadeMocks
 import pl.exbook.exbook.mock.IdGenerationStrategy
@@ -62,5 +63,8 @@ class BasketTransactionAbility {
     fun thereIsNoOffer(offerId: OfferId) = offerFacadeMocks.thereIsNoOfferFor(offerId)
     fun willCreateShipping(idCreationStrategy: IdGenerationStrategy, init: ShippingBuilder.() -> Unit) =
         shippingFacadeMocks.willCreateShipping(idCreationStrategy, init)
-    fun thereIsShippingMethod(init: ShippingMethodBuilder.() -> Unit) = shippingMethodFacadeMocks.thereIsShippingMethod(init)
+    fun thereIsShippingMethod(init: ShippingMethodBuilder.() -> Unit) =
+        shippingMethodFacadeMocks.thereIsShippingMethod(init)
+    fun willPreviewAvailableShipping(init: AvailableShippingBuilder.() -> Unit) =
+        shippingFacadeMocks.willPreviewAvailableShipping(init)
 }

@@ -28,6 +28,7 @@ data class DraftPurchase(
         val items: List<Item>,
         val exchangeBooks: List<ExchangeBook>,
         val shipping: Shipping?,
+        val availableShippingMethods: List<ShippingOption>,
         val totalOffersPrice: Money,
         val totalPrice: Money
     )
@@ -56,6 +57,13 @@ data class DraftPurchase(
         val pickupPoint: PickupPoint?,
         val shippingAddress: ShippingAddress?,
         val cost: ShippingCost
+    )
+
+    data class ShippingOption(
+        val shippingMethodId: ShippingMethodId,
+        val shippingMethodName: String,
+        val pickupPointMethod: Boolean,
+        val price: Money
     )
 
     data class ShippingCost(

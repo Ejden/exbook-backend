@@ -48,6 +48,7 @@ private fun DraftPurchaseDocument.DraftOrder.toDomain() = DraftPurchase.DraftOrd
     seller = DraftPurchase.Seller(UserId(this.seller.id)),
     items = this.items.map { it.toDomain() },
     shipping = this.shipping?.toDomain(),
+    availableShippingMethods = this.availableShippingMethods.map { it.toDomain() },
     exchangeBooks = this.exchangeBooks.map { it.toDomain() },
     totalOffersPrice = this.totalOffersPrice.toDomain(),
     totalPrice = this.totalPrice.toDomain()
@@ -86,6 +87,13 @@ private fun DraftPurchaseDocument.Shipping.toDomain() = DraftPurchase.Shipping(
     cost = DraftPurchase.ShippingCost(this.cost.finalCost.toDomain())
 )
 
+private fun DraftPurchaseDocument.ShippingOption.toDomain() = DraftPurchase.ShippingOption(
+    shippingMethodId = ShippingMethodId(this.shippingMethodId),
+    shippingMethodName = this.shippingMethodName,
+    pickupPointMethod = this.pickupPointMethod,
+    price = this.price.toDomain()
+)
+
 private fun DraftPurchaseDocument.ExchangeBook.toDomain() = DraftPurchase.ExchangeBook(
     id = ExchangeBookId(this.id),
     author = this.author,
@@ -111,6 +119,7 @@ private fun DraftPurchase.DraftOrder.toDocument() = DraftPurchaseDocument.DraftO
     seller = DraftPurchaseDocument.Seller(this.seller.id.raw),
     items = this.items.map { it.toDocument() },
     shipping = this.shipping?.toDocument(),
+    availableShippingMethods = this.availableShippingMethods.map { it.toDocument() },
     exchangeBooks = this.exchangeBooks.map { it.toDocument() },
     totalOffersPrice = this.totalOffersPrice.toDocument(),
     totalPrice = this.totalPrice.toDocument()
@@ -147,6 +156,13 @@ private fun DraftPurchase.Shipping.toDocument() = DraftPurchaseDocument.Shipping
         )
     },
     cost = DraftPurchaseDocument.ShippingCostDocument(this.cost.finalCost.toDocument())
+)
+
+private fun DraftPurchase.ShippingOption.toDocument() = DraftPurchaseDocument.ShippingOption(
+    shippingMethodId = this.shippingMethodId.raw,
+    shippingMethodName = this.shippingMethodName,
+    pickupPointMethod = this.pickupPointMethod,
+    price = this.price.toDocument()
 )
 
 private fun DraftPurchase.ExchangeBook.toDocument() = DraftPurchaseDocument.ExchangeBook(

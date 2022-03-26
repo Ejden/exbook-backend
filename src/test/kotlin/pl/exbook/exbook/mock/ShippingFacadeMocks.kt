@@ -2,6 +2,7 @@ package pl.exbook.exbook.mock
 
 import io.mockk.every
 import io.mockk.slot
+import pl.exbook.exbook.order.domain.Order.OrderType
 import pl.exbook.exbook.shared.Money
 import pl.exbook.exbook.shared.PickupPointId
 import pl.exbook.exbook.shared.ShippingId
@@ -15,12 +16,16 @@ import pl.exbook.exbook.shared.TestData.sampleCity
 import pl.exbook.exbook.shared.TestData.sampleCountry
 import pl.exbook.exbook.shared.TestData.samplePickupPointId
 import pl.exbook.exbook.shared.TestData.samplePostalCost
+import pl.exbook.exbook.shared.TestData.sampleSellerId
 import pl.exbook.exbook.shared.TestData.sampleShippingId
 import pl.exbook.exbook.shared.TestData.sampleShippingMethodId
 import pl.exbook.exbook.shared.TestData.sampleShippingMethodName
+import pl.exbook.exbook.shared.TestData.tenPln
+import pl.exbook.exbook.shared.UserId
 import pl.exbook.exbook.shipping.CalculateSelectedShippingCommand
 import pl.exbook.exbook.shipping.ShippingFacade
 import pl.exbook.exbook.shipping.domain.AddressShipping
+import pl.exbook.exbook.shipping.domain.AvailableShipping
 import pl.exbook.exbook.shipping.domain.PickupPointShipping
 import pl.exbook.exbook.shipping.domain.Shipping
 import java.util.UUID
@@ -65,6 +70,11 @@ class ShippingFacadeMocks(private val shippingFacade: ShippingFacade) {
             println(answer)
             answer
         }
+    }
+
+    fun willPreviewAvailableShipping(init: AvailableShippingBuilder.() -> Unit) {
+        val mockOptions = AvailableShippingBuilder().apply(init).build()
+        every { shippingFacade.previewAvailableShipping(any()) } returns mockOptions
     }
 }
 
@@ -129,6 +139,31 @@ class ShippingBuilder {
         var pickupPointId: PickupPointId = samplePickupPointId
 
         fun build() = Shipping.PickupPoint(firstAndLastName, phoneNumber, email, pickupPointId)
+    }
+}
+
+class AvailableShippingBuilder {
+    var shippingByOrders: MutableMap<AvailableShipping.OrderKey, List<AvailableShipping.ShippingOption>> = mutableMapOf()
+
+    fun build() = AvailableShipping(shippingByOrders)
+
+    class ShippingOptionBuilder {
+        var methodId: ShippingMethodId = sampleShippingMethodId
+        var methodName: String = sampleShippingMethodName
+        var pickupPoint: Boolean = true
+        var price: Money = tenPln
+
+        fun build() = AvailableShipping.ShippingOption(methodId, methodName, pickupPoint, price)
+    }
+
+    fun shippingOption(
+        sellerId: UserId,
+        orderType: OrderType,
+        init: ShippingOptionBuilder.() -> Unit
+    ) {
+        val key = AvailableShipping.OrderKey(sellerId, orderType)
+        val options = shippingByOrders[key] ?: emptyList()
+        shippingByOrders[key] = options + ShippingOptionBuilder().apply(init).build()
     }
 }
 
