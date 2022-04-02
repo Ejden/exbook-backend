@@ -25,15 +25,29 @@ class ShippingCalculator(
         command: PreviewAvailableShippingCommand, shippingMethods: List<ShippingMethod>
     ): AvailableShipping {
         return AvailableShipping(command.orders.mapValues {
-                it.value.commonShippingMethods().mapNotNull { option ->
-                    shippingMethods.firstOrNull { shippingMethod -> shippingMethod.id == option.id }
-                        ?.toOption(option.price)
-                }.toList()
-            }.mapKeys { AvailableShipping.OrderKey(it.key.sellerId, it.key.orderType) })
+            it.value.commonShippingMethods().mapNotNull { option ->
+                shippingMethods.firstOrNull { shippingMethod -> shippingMethod.id == option.id }
+                    ?.toOption(option.price)
+            }.toList()
+        }.mapKeys { AvailableShipping.OrderKey(it.key.sellerId, it.key.orderType) })
     }
 
-    private fun PreviewAvailableShippingCommand.Order.commonShippingMethods() =
-        this.offers.fold(emptySet<Offer.ShippingMethod>()) { acc, x -> acc.intersect(x.shippingMethods.toSet()) }
+    private fun PreviewAvailableShippingCommand.Order.commonShippingMethods(): List<Offer.ShippingMethod> {
+        val shippingMethods = this.offers.flatMap { it.shippingMethods }
+        val commonShippingMethods = this.offers
+            .fold(offers.getOrNull(0)?.shippingMethods?.map { it.id } ?: emptySet()) { acc, x ->
+                acc.intersect(x.shippingMethods.map { it.id }.toSet())
+            }
+
+        return commonShippingMethods.map {
+            Offer.ShippingMethod(
+                it,
+                shippingMethods
+                    .filter { shippingMethod -> shippingMethod.id == it }
+                    .maxOf { shippingMethod -> shippingMethod.price }
+            )
+        }
+    }
 
     private fun ShippingMethod.toOption(cost: Money) = AvailableShipping.ShippingOption(
         methodId = this.id,

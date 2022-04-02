@@ -15,6 +15,7 @@ object TestData {
     val sampleOfferId = OfferId("offer-id")
     val otherSampleOfferId = OfferId("other-offer-id")
     val thirdSampleOfferId = OfferId("third-offer-id")
+    val fourthSampleOfferId = OfferId("fourth-offer-id")
     val sampleStockId = StockId("stock-id")
     val otherStockId = StockId("other-stock-id")
     val sampleStockReservationId = StockReservationId("stock-reservation-id")

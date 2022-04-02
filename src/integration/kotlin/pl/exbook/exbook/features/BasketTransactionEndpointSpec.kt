@@ -106,6 +106,17 @@ class BasketTransactionEndpointSpec(private val rest: TestRestTemplate) : BaseIn
                   ],
                   "exchangeBooks": [],
                   "shipping": null,
+                  "availableShippingMethods": [
+                    {
+                      "shippingMethodId": "${shippingMethod.id}",
+                      "shippingMethodName": "shipping-method",
+                      "pickupPointMethod": false,
+                      "price": {
+                        "amount": 10.00,
+                        "currency": "PLN"
+                      }
+                    }
+                  ],
                   "totalOffersPrice": {
                     "amount": 10.00,
                     "currency": "PLN"
@@ -208,8 +219,8 @@ class BasketTransactionEndpointSpec(private val rest: TestRestTemplate) : BaseIn
                       },
                       "quantity": 2,
                       "totalPrice": {
-                        "amount": 20.00,
-                        "currency": "PLN"
+                        "amount":20.00,
+                        "currency":"PLN"
                       }
                     }
                   ],
@@ -217,7 +228,7 @@ class BasketTransactionEndpointSpec(private val rest: TestRestTemplate) : BaseIn
                   "shipping": {
                     "shippingMethod": {
                       "id": "${shippingMethod.id}",
-                      "methodName": "shipping-method",
+                      "methodName":"shipping-method",
                       "price": {
                         "finalPrice": {
                           "amount": 5.00,
@@ -227,12 +238,23 @@ class BasketTransactionEndpointSpec(private val rest: TestRestTemplate) : BaseIn
                     },
                     "pickupPoint": {
                       "firstAndLastName": "buyer-first-name buyer-last-name",
-                      "phoneNumber": "123412123",
+                      "phoneNumber":"123412123",
                       "email": "ad@gmai.com",
                       "pickupPointId": "WAW1112"
                     },
                     "shippingAddress": null
                   },
+                  "availableShippingMethods": [
+                    {
+                      "shippingMethodId": "${shippingMethod.id}",
+                      "shippingMethodName": "shipping-method",
+                      "pickupPointMethod": true,
+                      "price": {
+                        "amount": 5.00,
+                        "currency": "PLN"
+                      }
+                    }
+                  ],
                   "totalOffersPrice": {
                     "amount": 20.00,
                     "currency": "PLN"
@@ -249,7 +271,7 @@ class BasketTransactionEndpointSpec(private val rest: TestRestTemplate) : BaseIn
               },
               "totalPrice": {
                 "amount": 25.00,
-                "currency": "PLN"
+                "currency":"PLN"
               }
             }
         """

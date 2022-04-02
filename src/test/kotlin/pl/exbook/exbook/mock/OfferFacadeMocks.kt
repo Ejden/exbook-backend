@@ -31,8 +31,12 @@ class OfferFacadeMocks(private val offerFacade: OfferFacade) {
 
     fun thereIsOffer(init: OfferBuilder.() -> Unit) {
         val mockOffer = OfferBuilder().apply(init).build()
-        every { offerFacade.getOffer(mockOffer.id) } returns mockOffer
-        every { offerFacade.getOfferVersion(mockOffer.id, any()) } returns mockOffer
+        thereIsOffer(mockOffer)
+    }
+
+    fun thereIsOffer(offer: Offer) {
+        every { offerFacade.getOffer(offer.id) } returns offer
+        every { offerFacade.getOfferVersion(offer.id, any()) } returns offer
     }
 }
 
@@ -107,3 +111,5 @@ class OfferBuilder {
         )
     }
 }
+
+fun offer(init: OfferBuilder.() -> Unit) = OfferBuilder().apply(init).build()

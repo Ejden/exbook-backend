@@ -21,6 +21,14 @@ class Money(
         return amount.compareTo(other.amount)
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (other !is Money) {
+            return false
+        }
+
+        return this.amount == other.amount && this.currency == other.currency
+    }
+
     operator fun plus(other: Money): Money {
         if (this.currency != other.currency) throw InconsistentCurrencyException()
         return Money(this.amount.plus(other.amount).setScale(2), this.currency)
@@ -33,6 +41,12 @@ class Money(
 
     operator fun times(value: Long): Money {
         return Money(this.amount.times(BigDecimal.valueOf(value)), this.currency)
+    }
+
+    override fun hashCode(): Int {
+        var result = amount.hashCode()
+        result = 31 * result + currency.hashCode()
+        return result
     }
 }
 
