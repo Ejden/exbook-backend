@@ -30,6 +30,7 @@ object PreviewPurchaseMapper :
             buyer = from.buyer.toDto(),
             orders = from.orders.map { it.toDto() },
             totalOffersPrice = from.totalOffersPrice.toDto(),
+            totalShippingPrice = from.totalShippingPrice.toDto(),
             totalPrice = from.totalPrice.toDto()
         )
     }

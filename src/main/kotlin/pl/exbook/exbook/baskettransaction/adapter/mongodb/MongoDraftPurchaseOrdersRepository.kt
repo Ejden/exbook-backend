@@ -21,6 +21,7 @@ data class DraftPurchaseDocument(
     val creationDate: Instant,
     val lastUpdated: Instant,
     val totalOffersPrice: MoneyDocument,
+    val totalShippingPrice: MoneyDocument,
     val totalPrice: MoneyDocument
 ) {
     data class DraftOrder(

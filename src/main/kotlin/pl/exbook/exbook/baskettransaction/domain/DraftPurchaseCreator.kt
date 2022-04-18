@@ -47,6 +47,9 @@ class DraftPurchaseCreator(
             creationDate = command.timestamp,
             lastUpdated = command.timestamp,
             totalOffersPrice = orders.fold(Money.zeroPln()) { acc, x -> acc + x.totalOffersPrice },
+            totalShippingPrice = orders.fold(Money.zeroPln()) { acc, x ->
+                acc + (x.shipping?.cost?.finalCost ?: Money.zeroPln())
+            },
             totalPrice = orders.fold(Money.zeroPln()) { acc, x -> acc + x.totalPrice }
         )
     }
@@ -65,6 +68,9 @@ class DraftPurchaseCreator(
             creationDate = oldDraftPurchase.creationDate,
             lastUpdated = command.timestamp,
             totalOffersPrice = orders.fold(Money.zeroPln()) { acc, x -> acc + x.totalOffersPrice },
+            totalShippingPrice = orders.fold(Money.zeroPln()) { acc, x ->
+                acc + (x.shipping?.cost?.finalCost ?: Money.zeroPln())
+            },
             totalPrice = orders.fold(Money.zeroPln()) { acc, x -> acc + x.totalPrice }
         )
     }
@@ -184,8 +190,9 @@ class DraftPurchaseCreator(
 
     private fun PreviewBasketTransactionCommand.toPreviewOrdersShippingCommand() = this.basket.itemsGroups
         .mapKeys { PreviewAvailableShippingCommand.OrderKey(it.key.sellerId, it.key.orderType) }
-        .mapValues { PreviewAvailableShippingCommand.Order(
-            it.value.items.map { item -> this.offers.first { offer -> offer.id == item.offer.id } })
+        .mapValues {
+            PreviewAvailableShippingCommand.Order(
+                it.value.items.map { item -> this.offers.first { offer -> offer.id == item.offer.id } })
         }
 
     private fun AvailableShipping.getOptionsFor(sellerId: UserId, orderType: OrderType) = this.shippingByOrders

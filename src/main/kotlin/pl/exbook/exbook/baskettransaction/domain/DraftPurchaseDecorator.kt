@@ -21,6 +21,7 @@ class DraftPurchaseDecorator {
                 ),
                 orders = orders.map { it.toDetailed(offers, sellers, shippingMethods) },
                 totalOffersPrice = totalOffersPrice,
+                totalShippingPrice = totalShippingPrice,
                 totalPrice = totalPrice
             )
         }

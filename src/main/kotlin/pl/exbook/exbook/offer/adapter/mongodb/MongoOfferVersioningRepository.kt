@@ -13,7 +13,7 @@ interface MongoOfferVersioningRepository : MongoRepository<OfferVersionDocument,
     @Query("{ offerId : ?0, versionExpireDate : null }")
     fun findActiveOfferVersion(offerId: String): OfferVersionDocument?
 
-    @Query("{ offerId : ?0, versionCreationDate: { \$lte: ?1 }, \$or: [ { versionExpireDate: { \$lt: ?1 } }, { versionExpireDate: null } ] }")
+    @Query("{ offerId : ?0, versionCreationDate: { \$lte: ?1 }, \$or: [ { versionExpireDate: { \$gt: ?1 } }, { versionExpireDate: null } ] }")
     fun findOfferVersion(offerId: String, versionFrom: Instant): OfferVersionDocument?
 }
 

@@ -39,6 +39,7 @@ private fun DraftPurchaseDocument.toDomain() = DraftPurchase(
     creationDate = this.creationDate,
     lastUpdated = this.lastUpdated,
     totalOffersPrice = this.totalOffersPrice.toDomain(),
+    totalShippingPrice = this.totalShippingPrice.toDomain(),
     totalPrice = this.totalPrice.toDomain()
 )
 
@@ -110,6 +111,7 @@ private fun DraftPurchase.toDocument() = DraftPurchaseDocument(
     creationDate = this.creationDate,
     lastUpdated = this.lastUpdated,
     totalOffersPrice = this.totalOffersPrice.toDocument(),
+    totalShippingPrice = this.totalShippingPrice.toDocument(),
     totalPrice = this.totalPrice.toDocument()
 )
 

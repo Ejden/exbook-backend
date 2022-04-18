@@ -7,6 +7,7 @@ data class DetailedDraftPurchaseDto(
     val buyer: Buyer,
     val orders: List<DraftOrder>,
     val totalOffersPrice: MoneyDto,
+    val totalShippingPrice: MoneyDto,
     val totalPrice: MoneyDto
 ) {
     data class Buyer(
