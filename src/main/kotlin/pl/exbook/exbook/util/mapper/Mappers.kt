@@ -1,10 +1,14 @@
 package pl.exbook.exbook.util.mapper
 
-interface OneWayMapper<X, Y> {
-    fun map(from: X): Y
+interface ToDomainMapper<X, Y> {
+    fun toDomain(from: X): Y
 }
 
-interface TwoWayMapper<X, Y, Z, W> {
-    fun toDomain(from: X): Y
-    fun fromDomain(from: Z): W
+interface FromDomainMapper<X, Y> {
+    fun fromDomain(from: X): Y
+}
+
+interface TwoWayMapper<X, Y, Z, W> : ToDomainMapper<X, Y>, FromDomainMapper<Z, W> {
+    override fun toDomain(from: X): Y
+    override fun fromDomain(from: Z): W
 }
