@@ -14,7 +14,7 @@ class ShippingMethodCreator(private val shippingMethodRepository: ShippingMethod
         val shippingMethod = ShippingMethod(
             id = ShippingMethodId(UUID.randomUUID().toString()),
             methodName = command.name,
-            pickupPointMethod = command.pickupPointMethod,
+            type = command.shippingMethodType,
             defaultCost = Cost(
                 cost = command.cost.defaultCost,
                 canBeOverridden = command.cost.canBeOverridden

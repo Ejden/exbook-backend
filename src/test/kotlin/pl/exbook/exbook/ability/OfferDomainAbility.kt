@@ -16,17 +16,10 @@ import pl.exbook.exbook.offer.domain.OfferVersioningService
 import pl.exbook.exbook.pln
 import pl.exbook.exbook.shared.CategoryId
 import pl.exbook.exbook.shared.Money
-import pl.exbook.exbook.shared.OfferId
-import pl.exbook.exbook.shared.OfferVersionId
 import pl.exbook.exbook.shared.ShippingMethodId
 import pl.exbook.exbook.shared.StockId
-import pl.exbook.exbook.shared.TestData
 import pl.exbook.exbook.shared.TestData.sampleCategoryId
 import pl.exbook.exbook.shared.TestData.sampleCategoryName
-import pl.exbook.exbook.shared.TestData.sampleImageUrl
-import pl.exbook.exbook.shared.TestData.sampleOfferId
-import pl.exbook.exbook.shared.TestData.sampleOfferVersionId
-import pl.exbook.exbook.shared.TestData.sampleSellerId
 import pl.exbook.exbook.shared.TestData.sampleSellerUsername
 import pl.exbook.exbook.shared.TestData.sampleShippingMethodId
 import pl.exbook.exbook.shared.TestData.sampleStockId
@@ -41,6 +34,7 @@ import pl.exbook.exbook.user.UserFacade
 import pl.exbook.exbook.user.domain.User
 import pl.exbook.exbook.user.domain.UserNotFoundException
 import java.time.Instant
+import pl.exbook.exbook.shippingmethod.domain.ShippingMethodType
 
 class OfferDomainAbility {
     private val offerRepository: InMemoryOfferRepository = InMemoryOfferRepository()
@@ -107,7 +101,7 @@ class OfferDomainAbility {
 
     fun stockFacadeWillCreateStockForOffer(
         stockId: StockId = sampleStockId,
-        initialStock: Int = 100
+        initialStock: Long = 100L
     ) {
         every { stockFacade.createStock(startQuantity = initialStock) } returns Stock(stockId, initialStock, 0)
         every { stockFacade.getStock(sampleStockId) } returns Stock(stockId, initialStock, 0)
@@ -116,14 +110,14 @@ class OfferDomainAbility {
     fun thereIsShippingMethod(
         shippingMethodId: ShippingMethodId = sampleShippingMethodId,
         methodName: String = "Shipping method",
-        pickupPointMethod: Boolean = true,
+        type: ShippingMethodType = ShippingMethodType.PICKUP_DELIVERY,
         cost: Money = "8.99".pln(),
         costCanBeOverridden: Boolean = true
     ) {
         val mockShippingMethod = ShippingMethod(
             id = shippingMethodId,
             methodName = methodName,
-            pickupPointMethod = pickupPointMethod,
+            type = type,
             defaultCost = Cost(
                 cost = cost,
                 canBeOverridden = costCanBeOverridden
@@ -167,7 +161,7 @@ class OfferDomainAbility {
                 id = sampleShippingMethodId,
                 price = "10.00".pln()
             )),
-        initialStock: Int
+        initialStock: Long
     ): Offer {
         val command = CreateOfferCommand(
             book = CreateOfferCommand.Book(

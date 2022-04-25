@@ -21,7 +21,7 @@ data class PlaceOrdersCommand(
 
     data class Item(
         val offerId: OfferId,
-        val quantity: Int
+        val quantity: Long
     )
 
     data class Seller(

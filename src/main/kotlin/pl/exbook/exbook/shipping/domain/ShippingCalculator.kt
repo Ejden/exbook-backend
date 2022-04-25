@@ -2,6 +2,7 @@ package pl.exbook.exbook.shipping.domain
 
 import pl.exbook.exbook.offer.OfferFacade
 import pl.exbook.exbook.offer.domain.Offer
+import pl.exbook.exbook.shared.Money
 import pl.exbook.exbook.shared.OfferId
 import pl.exbook.exbook.shared.ShippingMethodId
 import pl.exbook.exbook.shipping.CalculateSelectedShippingCommand
@@ -12,15 +13,56 @@ class ShippingCalculator(
     private val offerFacade: OfferFacade,
     private val shippingFactory: ShippingFactory
 ) {
-
-    fun calculateSelectedShipping(selectedShippingMethod: ShippingMethod, request: CalculateSelectedShippingCommand): Shipping {
+    fun calculateSelectedShipping(
+        selectedShippingMethod: ShippingMethod, request: CalculateSelectedShippingCommand
+    ): Shipping {
         validateSelectedShippingMethod(selectedShippingMethod.id, request.orderItems.map { it.offerId })
         val cost = calculateShippingCost(selectedShippingMethod.id, request)
         return shippingFactory.createShipping(selectedShippingMethod, request, cost)
     }
 
-    private fun calculateShippingCost(shippingMethodId: ShippingMethodId, request: CalculateSelectedShippingCommand): Shipping.Cost {
-        val maxOfferDeliveryCostInOrder = request.offersShippingMethods.flatMap { it.value }.maxOf { it.price }
+    fun previewShippingMethodForPurchase(
+        command: PreviewAvailableShippingCommand, shippingMethods: List<ShippingMethod>
+    ): AvailableShipping {
+        return AvailableShipping(command.orders.mapValues {
+            it.value.commonShippingMethods().mapNotNull { option ->
+                shippingMethods.firstOrNull { shippingMethod -> shippingMethod.id == option.id }
+                    ?.toOption(option.price)
+            }.toList()
+        }.mapKeys { AvailableShipping.OrderKey(it.key.sellerId, it.key.orderType) })
+    }
+
+    private fun PreviewAvailableShippingCommand.Order.commonShippingMethods(): List<Offer.ShippingMethod> {
+        val shippingMethods = this.offers.flatMap { it.shippingMethods }
+        val commonShippingMethods = this.offers
+            .fold(offers.getOrNull(0)?.shippingMethods?.map { it.id } ?: emptySet()) { acc, x ->
+                acc.intersect(x.shippingMethods.map { it.id }.toSet())
+            }
+
+        return commonShippingMethods.map {
+            Offer.ShippingMethod(
+                it,
+                shippingMethods
+                    .filter { shippingMethod -> shippingMethod.id == it }
+                    .maxOf { shippingMethod -> shippingMethod.price }
+            )
+        }
+    }
+
+    private fun ShippingMethod.toOption(cost: Money) = AvailableShipping.ShippingOption(
+        methodId = this.id,
+        methodName = this.methodName,
+        type = this.type,
+        price = cost
+    )
+
+    private fun calculateShippingCost(
+        shippingMethodId: ShippingMethodId, request: CalculateSelectedShippingCommand
+    ): Shipping.Cost {
+        val maxOfferDeliveryCostInOrder = request.offersShippingMethods
+            .flatMap { it.value }
+            .filter { it.id == shippingMethodId }
+            .maxOf { it.price }
         return Shipping.Cost(maxOfferDeliveryCostInOrder)
     }
 

@@ -8,7 +8,7 @@ import pl.exbook.exbook.shippingmethod.domain.ShippingMethod
 data class ShippingMethodDto(
     val id: String,
     val name: String,
-    val pickupPointMethod: Boolean,
+    val type: String,
     val defaultCost: CostDto
 ) {
     data class CostDto(
@@ -20,7 +20,7 @@ data class ShippingMethodDto(
         fun fromDomain(shippingMethod: ShippingMethod) = ShippingMethodDto(
             id = shippingMethod.id.raw,
             name = shippingMethod.methodName,
-            pickupPointMethod = shippingMethod.pickupPointMethod,
+            type = shippingMethod.type.name,
             defaultCost = shippingMethod.defaultCost.toDto()
         )
     }

@@ -12,15 +12,15 @@ import pl.exbook.exbook.stock.domain.StockService
 class StockFacade(private val stockService: StockService) {
     fun getStock(stockId: StockId): Stock = stockService.getStock(stockId)
 
-    fun getFromStock(stockId: StockId, amount: Int): Stock = stockService.getFromStock(stockId, amount)
+    fun getFromStock(stockId: StockId, amount: Long): Stock = stockService.getFromStock(stockId, amount)
 
-    fun addToStock(stockId: StockId, amount: Int): Stock = stockService.addToStock(stockId, amount)
+    fun addToStock(stockId: StockId, amount: Long): Stock = stockService.addToStock(stockId, amount)
 
-    fun reserve(stockId: StockId, amount: Int): StockReservation = stockService.reserve(stockId, amount)
+    fun reserve(stockId: StockId, amount: Long): StockReservation = stockService.reserve(stockId, amount)
 
     fun confirmReservation(reservationId: StockReservationId) = stockService.confirmReservation(reservationId)
 
     fun cancelReservation(reservationId: StockReservationId) = stockService.cancelReservation(reservationId)
 
-    fun createStock(startQuantity: Int): Stock = stockService.createStockForOffer(startQuantity)
+    fun createStock(startQuantity: Long): Stock = stockService.createStockForOffer(startQuantity)
 }

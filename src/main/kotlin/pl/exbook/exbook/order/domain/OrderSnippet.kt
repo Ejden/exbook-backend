@@ -39,7 +39,7 @@ data class OrderSnippet(
         val offerId: OfferId,
         val book: Book,
         val images: Images,
-        val quantity: Int,
+        val quantity: Long,
         val cost: Money?
     )
 

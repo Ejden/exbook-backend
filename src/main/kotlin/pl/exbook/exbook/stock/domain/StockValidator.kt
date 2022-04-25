@@ -5,7 +5,7 @@ import pl.exbook.exbook.shared.ValidationException
 
 @Service
 class StockValidator {
-    fun validateCreationOfStock(createdQuantity: Int) {
+    fun validateCreationOfStock(createdQuantity: Long) {
         if (createdQuantity < 0) {
             throw StockValidationException("Cannot create stock with negative value = $createdQuantity")
         }

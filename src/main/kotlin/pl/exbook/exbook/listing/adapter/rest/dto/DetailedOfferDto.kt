@@ -15,7 +15,7 @@ data class DetailedOfferDto(
     val location: String,
     val category: CategoryDto,
     val shipping: ShippingDto,
-    val inStock: Int
+    val inStock: Long
 ) {
     companion object {
         fun fromDomain(offer: DetailedOffer) = DetailedOfferDto(

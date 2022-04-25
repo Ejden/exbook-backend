@@ -57,7 +57,7 @@ private fun Offer.toDetailedOffer(
     seller: User,
     shippingMethods: List<DetailedOffer.ShippingMethod>,
     cheapestMethod: DetailedOffer.ShippingMethod,
-    inStock: Int
+    inStock: Long
 ) = DetailedOffer(
     id = this.id,
     book = this.book.toDetailed(),

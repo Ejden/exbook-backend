@@ -5,5 +5,5 @@ import pl.exbook.exbook.shared.StockId
 
 class NonPositiveAmountException(
     stockId: StockId,
-    amount: Int
+    amount: Long
 ) : IllegalParameterException("Tried to modify stock ${stockId.raw} amount with negative amount: $amount")

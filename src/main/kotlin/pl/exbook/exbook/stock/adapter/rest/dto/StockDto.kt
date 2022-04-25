@@ -4,7 +4,7 @@ import pl.exbook.exbook.stock.domain.Stock
 
 data class StockDto(
     val id: String,
-    val inStock: Int
+    val inStock: Long
 ) {
     companion object {
         fun fromDomain(stock: Stock) = StockDto(

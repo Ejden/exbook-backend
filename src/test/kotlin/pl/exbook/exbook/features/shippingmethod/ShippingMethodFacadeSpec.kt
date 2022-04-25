@@ -15,6 +15,7 @@ import pl.exbook.exbook.shared.TestData.sampleShippingMethodId
 import pl.exbook.exbook.shippingmethod.domain.NewShippingMethodCommand
 import pl.exbook.exbook.shippingmethod.domain.ShippingMethodAlreadyExistException
 import pl.exbook.exbook.shippingmethod.domain.ShippingMethodNotFoundException
+import pl.exbook.exbook.shippingmethod.domain.ShippingMethodType
 
 class ShippingMethodFacadeSpec : ShouldSpec({
     val domain = ShippingMethodDomainAbility()
@@ -27,7 +28,7 @@ class ShippingMethodFacadeSpec : ShouldSpec({
             // given
             val command = NewShippingMethodCommand(
                 name = "DPD",
-                pickupPointMethod = false,
+                shippingMethodType = ShippingMethodType.ADDRESS_DELIVERY,
                 cost = NewShippingMethodCommand.Cost(
                     defaultCost = defaultCost,
                     canBeOverridden = true
@@ -41,7 +42,7 @@ class ShippingMethodFacadeSpec : ShouldSpec({
             // then
             shippingMethod.shouldNotBeNull()
             shippingMethod.methodName shouldBe "DPD"
-            shippingMethod.pickupPointMethod shouldBe false
+            shippingMethod.type shouldBe ShippingMethodType.ADDRESS_DELIVERY
             shippingMethod.defaultCost.cost shouldBeEqualComparingTo defaultCost
             shippingMethod.defaultCost.canBeOverridden shouldBe true
         }
@@ -56,7 +57,7 @@ class ShippingMethodFacadeSpec : ShouldSpec({
             domain.facade.addShippingMethod(
                 NewShippingMethodCommand(
                     name = "DPD",
-                    pickupPointMethod = false,
+                    shippingMethodType = ShippingMethodType.ADDRESS_DELIVERY,
                     cost = NewShippingMethodCommand.Cost(
                         defaultCost = "8.99".pln(),
                         canBeOverridden = true
@@ -72,7 +73,7 @@ class ShippingMethodFacadeSpec : ShouldSpec({
             domain.facade.addShippingMethod(
                 NewShippingMethodCommand(
                     name = "",
-                    pickupPointMethod = false,
+                    shippingMethodType = ShippingMethodType.ADDRESS_DELIVERY,
                     cost = NewShippingMethodCommand.Cost(
                         defaultCost = "8.99".pln(),
                         canBeOverridden = true
@@ -88,7 +89,7 @@ class ShippingMethodFacadeSpec : ShouldSpec({
             domain.facade.addShippingMethod(
                 NewShippingMethodCommand(
                     name = "DPD",
-                    pickupPointMethod = false,
+                    shippingMethodType = ShippingMethodType.ADDRESS_DELIVERY,
                     cost = NewShippingMethodCommand.Cost(
                         defaultCost = "-0.01".pln(),
                         canBeOverridden = true

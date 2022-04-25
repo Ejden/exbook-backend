@@ -10,7 +10,7 @@ data class CreateOfferRequest(
     val price: MoneyDto?,
     val location: String,
     val shippingMethods: Collection<ShippingMethod>,
-    val initialStock: Int
+    val initialStock: Long
 ) {
     data class Book(
         val author: String,

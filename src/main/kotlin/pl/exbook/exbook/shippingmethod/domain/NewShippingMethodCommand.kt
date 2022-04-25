@@ -5,7 +5,7 @@ import pl.exbook.exbook.shared.Money
 
 data class NewShippingMethodCommand(
     val name: String,
-    val pickupPointMethod: Boolean,
+    val shippingMethodType: ShippingMethodType,
     val cost: Cost
 ) {
     init {

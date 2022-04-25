@@ -1,11 +1,12 @@
 package pl.exbook.exbook.shipping
 
 import pl.exbook.exbook.offer.domain.Offer
-import pl.exbook.exbook.order.domain.Order
 import pl.exbook.exbook.shared.OfferId
 import pl.exbook.exbook.shared.PickupPointId
 import pl.exbook.exbook.shared.ShippingId
 import pl.exbook.exbook.shared.ShippingMethodId
+import pl.exbook.exbook.shipping.domain.AvailableShipping
+import pl.exbook.exbook.shipping.domain.PreviewAvailableShippingCommand
 import pl.exbook.exbook.shipping.domain.Shipping
 import pl.exbook.exbook.shipping.domain.ShippingCalculator
 import pl.exbook.exbook.shipping.domain.ShippingRepository
@@ -18,11 +19,15 @@ class ShippingFacade(
     private val shippingCalculator: ShippingCalculator,
     private val shippingRepository: ShippingRepository
 ) {
+    fun calculateSelectedShipping(command: CalculateSelectedShippingCommand): Shipping {
+        val shippingMethod = shippingMethodFacade.getShippingMethodById(command.shippingMethodId)
+        shippingValidator.validate(shippingMethod, command)
+        return shippingCalculator.calculateSelectedShipping(shippingMethod, command)
+    }
 
-    fun calculateSelectedShipping(request: CalculateSelectedShippingCommand): Shipping {
-        val shippingMethod = shippingMethodFacade.getShippingMethodById(request.shippingMethodId)
-        shippingValidator.validate(shippingMethod, request)
-        return shippingCalculator.calculateSelectedShipping(shippingMethod, request)
+    fun previewAvailableShipping(command: PreviewAvailableShippingCommand): AvailableShipping {
+        val shippingMethods = command.shippingMethods()
+        return shippingCalculator.previewShippingMethodForPurchase(command, shippingMethods)
     }
 
     fun save(shipping: Shipping): Shipping {
@@ -34,6 +39,15 @@ class ShippingFacade(
     }
 
     fun remove(shippingId: ShippingId) = shippingRepository.remove(shippingId)
+
+    private fun PreviewAvailableShippingCommand.shippingMethods() = this.orders.values
+        .asSequence()
+        .flatMap { it.offers }
+        .flatMap { it.shippingMethods }
+        .distinctBy { it.id }
+        .map { shippingMethodFacade.getShippingMethod(it.id) }
+        .filterNotNull()
+        .toList()
 }
 
 data class CalculateSelectedShippingCommand(
@@ -41,11 +55,11 @@ data class CalculateSelectedShippingCommand(
     val orderItems: List<OrderItem>,
     val shippingAddress: ShippingAddress?,
     val pickupPoint: PickupPoint?,
-    val offersShippingMethods: Map<OfferId, Collection<Offer.ShippingMethod>>
+    val offersShippingMethods: Map<OfferId, List<Offer.ShippingMethod>>
 ) {
     data class OrderItem(
         val offerId: OfferId,
-        val quantity: Int
+        val quantity: Long
     )
 
     data class ShippingAddress(

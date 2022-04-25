@@ -16,5 +16,5 @@ interface MongoStockReservationRepository : Repository<StockReservationDocument,
 data class StockReservationDocument(
     val id: String,
     val stockId: String,
-    val amount: Int
+    val amount: Long
 )

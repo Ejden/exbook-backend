@@ -20,7 +20,7 @@ class ShippingMethodSpec(private val rest: TestRestTemplate) : BaseIntegrationSp
         // given
         val requestBody = CreateShippingMethodRequest(
             name = sampleShippingMethodName,
-            pickupPointMethod = true,
+            shippingMethodType = "PICKUP_DELIVERY",
             cost = CreateShippingMethodRequest.Cost(
                 defaultCost = "10.00".plnDto(),
                 canBeOverridden = true
@@ -35,7 +35,7 @@ class ShippingMethodSpec(private val rest: TestRestTemplate) : BaseIntegrationSp
         response.body!! shouldEqualSpecifiedJson """
             {
                 "name": "$sampleShippingMethodName",
-                "pickupPointMethod": true,
+                "type": "PICKUP_DELIVERY",
                 "defaultCost": {
                     "cost": {
                         "amount": 10.00,
@@ -52,7 +52,7 @@ class ShippingMethodSpec(private val rest: TestRestTemplate) : BaseIntegrationSp
         // given
         val requestBody = CreateShippingMethodRequest(
             name = sampleShippingMethodName,
-            pickupPointMethod = true,
+            shippingMethodType = "PICKUP_DELIVERY",
             cost = CreateShippingMethodRequest.Cost(
                 defaultCost = "-10.00".plnDto(),
                 canBeOverridden = true
@@ -71,7 +71,7 @@ class ShippingMethodSpec(private val rest: TestRestTemplate) : BaseIntegrationSp
         domain.thereIsShippingMethod(name = sampleShippingMethodName)
         val requestBody = CreateShippingMethodRequest(
             name = sampleShippingMethodName,
-            pickupPointMethod = true,
+            shippingMethodType = "PICKUP_DELIVERY",
             cost = CreateShippingMethodRequest.Cost(
                 defaultCost = "-10.00".plnDto(),
                 canBeOverridden = true
@@ -89,14 +89,14 @@ class ShippingMethodSpec(private val rest: TestRestTemplate) : BaseIntegrationSp
         // given
         val shipping1 = domain.thereIsShippingMethod(
             name = sampleShippingMethodName,
-            pickupMethod = true,
+            type = "PICKUP_DELIVERY",
             defaultCost = BigDecimal("11.50"),
             costCurrency = "PLN",
             costCanBeOverridden = false
         )
         val shipping2 = domain.thereIsShippingMethod(
             name = "other-shipping-method",
-            pickupMethod = false,
+            type = "ADDRESS_DELIVERY",
             defaultCost = BigDecimal("11.00"),
             costCurrency = "PLN",
             costCanBeOverridden = true
@@ -113,7 +113,7 @@ class ShippingMethodSpec(private val rest: TestRestTemplate) : BaseIntegrationSp
                     {
                         "id": "${shipping1.body!!.id}",
                         "name": "$sampleShippingMethodName",
-                        "pickupPointMethod": true,
+                        "type": "PICKUP_DELIVERY",
                         "defaultCost": {
                             "cost": {
                                 "amount": 11.50,
@@ -125,7 +125,7 @@ class ShippingMethodSpec(private val rest: TestRestTemplate) : BaseIntegrationSp
                     {
                         "id": "${shipping2.body!!.id}",
                         "name": "other-shipping-method",
-                        "pickupPointMethod": false,
+                        "type": "ADDRESS_DELIVERY",
                         "defaultCost": {
                             "cost": {
                                 "amount": 11.00,

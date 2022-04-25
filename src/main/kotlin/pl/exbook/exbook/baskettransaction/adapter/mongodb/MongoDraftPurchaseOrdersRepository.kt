@@ -8,7 +8,9 @@ import org.springframework.stereotype.Repository
 import pl.exbook.exbook.shared.dto.MoneyDocument
 
 @Repository
-interface MongoDraftPurchaseOrdersRepository : MongoRepository<DraftPurchaseDocument, String>
+interface MongoDraftPurchaseOrdersRepository : MongoRepository<DraftPurchaseDocument, String> {
+    fun findByBuyer_Id(userId: String): DraftPurchaseDocument?
+}
 
 @Document(collection = "draftPurchase")
 data class DraftPurchaseDocument(
@@ -17,14 +19,21 @@ data class DraftPurchaseDocument(
     val buyer: Buyer,
     val orders: List<DraftOrder>,
     val creationDate: Instant,
-    val lastUpdated: Instant
+    val lastUpdated: Instant,
+    val totalOffersPrice: MoneyDocument,
+    val totalShippingPrice: MoneyDocument,
+    val totalPrice: MoneyDocument
 ) {
     data class DraftOrder(
         val orderId: String,
         val orderType: String,
         val seller: Seller,
         val items: List<Item>,
-        val shipping: Shipping?
+        val shipping: Shipping?,
+        val availableShippingMethods: List<ShippingOption>,
+        val exchangeBooks: List<ExchangeBook>,
+        val totalOffersPrice: MoneyDocument,
+        val totalPrice: MoneyDocument
     )
 
     data class Buyer(
@@ -36,15 +45,28 @@ data class DraftPurchaseDocument(
     )
 
     data class Item(
-        val offerId: String,
-        val quantity: Int,
-        val price: MoneyDocument
+        val offer: OfferDocument,
+        val quantity: Long,
+        val totalPrice: MoneyDocument
+    )
+
+    data class OfferDocument(
+        val id: String,
+        val price: MoneyDocument?
     )
 
     data class Shipping(
         val shippingMethodId: String,
         val pickupPoint: PickupPoint?,
-        val shippingAddress: ShippingAddress?
+        val shippingAddress: ShippingAddress?,
+        val cost: ShippingCostDocument
+    )
+
+    data class ShippingOption(
+        val shippingMethodId: String,
+        val shippingMethodName: String,
+        val shippingMethodType: String,
+        val price: MoneyDocument
     )
 
     data class ShippingAddress(
@@ -62,5 +84,18 @@ data class DraftPurchaseDocument(
         val phoneNumber: String,
         val email: String,
         val pickupPointId: String
+    )
+
+    data class ExchangeBook(
+        val id: String,
+        val author: String,
+        val title: String,
+        val isbn: String?,
+        val condition: String,
+        val quantity: Int
+    )
+
+    data class ShippingCostDocument(
+        val finalCost: MoneyDocument
     )
 }

@@ -10,7 +10,7 @@ import pl.exbook.exbook.stock.adapter.rest.dto.StockDto
 import pl.exbook.exbook.utils.createHttpEntity
 
 class StockDomainAbility(private val restTemplate: TestRestTemplate) {
-    fun thereIsStock(startQuantity: Int = 100): ResponseEntity<StockDto> {
+    fun thereIsStock(startQuantity: Long = 100): ResponseEntity<StockDto> {
         val requestBody = CreateStockRequest(startQuantity)
         return restTemplate.postForEntity(
             "/api/stock",

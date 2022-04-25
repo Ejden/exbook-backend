@@ -15,7 +15,7 @@ data class CreateOfferCommand(
     val price: Money?,
     val location: String,
     val shippingMethods: List<ShippingMethod>,
-    val initialStock: Int
+    val initialStock: Long
 ) {
     data class Book(
         val author: String,

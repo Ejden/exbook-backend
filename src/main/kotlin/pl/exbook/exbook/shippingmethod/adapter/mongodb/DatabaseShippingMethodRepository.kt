@@ -6,6 +6,7 @@ import pl.exbook.exbook.shippingmethod.domain.ShippingMethod
 import pl.exbook.exbook.shippingmethod.domain.ShippingMethodRepository
 import org.springframework.stereotype.Component
 import pl.exbook.exbook.shared.dto.toDocument
+import pl.exbook.exbook.shippingmethod.domain.ShippingMethodType
 
 @Component
 class DatabaseShippingMethodRepository(
@@ -30,7 +31,7 @@ class DatabaseShippingMethodRepository(
 private fun ShippingMethod.toDocument() = ShippingMethodDocument(
     id = this.id.raw,
     methodName = this.methodName,
-    pickupPointMethod = this.pickupPointMethod,
+    type = this.type.name,
     defaultCost = ShippingMethodCostDocument(
         cost = this.defaultCost.cost.toDocument(),
         canBeOverridden = this.defaultCost.canBeOverridden
@@ -40,7 +41,7 @@ private fun ShippingMethod.toDocument() = ShippingMethodDocument(
 private fun ShippingMethodDocument.toDomain() = ShippingMethod(
     id = ShippingMethodId(this.id),
     methodName = this.methodName,
-    pickupPointMethod = this.pickupPointMethod,
+    type = ShippingMethodType.valueOf(this.type),
     defaultCost = this.defaultCost.toDomain(),
 )
 

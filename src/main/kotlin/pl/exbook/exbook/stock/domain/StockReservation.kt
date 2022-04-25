@@ -6,5 +6,5 @@ import pl.exbook.exbook.shared.StockReservationId
 data class StockReservation(
     val reservationId: StockReservationId,
     val stockId: StockId,
-    val amount: Int
+    val amount: Long
 )
