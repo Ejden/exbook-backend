@@ -120,6 +120,10 @@ data class Basket(
         val key = ItemsGroupKey(sellerId, Order.OrderType.EXCHANGE)
         itemsGroups[key]?.exchangeBooks?.removeIf { it.id == exchangeBookId }
     }
+
+    fun removeGroups(groups: List<ItemsGroupKey>) {
+        groups.forEach { itemsGroups.remove(it) }
+    }
 }
 
 data class DetailedBasket(

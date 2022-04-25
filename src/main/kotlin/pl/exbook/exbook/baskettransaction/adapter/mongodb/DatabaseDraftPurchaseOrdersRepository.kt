@@ -67,6 +67,8 @@ private fun DraftPurchaseDocument.Item.toDomain() = DraftPurchase.Item(
 
 private fun DraftPurchaseDocument.Shipping.toDomain() = DraftPurchase.Shipping(
     shippingMethodId = ShippingMethodId(this.shippingMethodId),
+    shippingMethodName = this.shippingMethodName,
+    shippingMethodType = ShippingMethodType.valueOf(this.shippingMethodType),
     pickupPoint = this.pickupPoint?.let {
         DraftPurchase.PickupPoint(
             firstAndLastName = it.firstAndLastName,
@@ -139,6 +141,8 @@ private fun DraftPurchase.Item.toDocument() = DraftPurchaseDocument.Item(
 
 private fun DraftPurchase.Shipping.toDocument() = DraftPurchaseDocument.Shipping(
     shippingMethodId = this.shippingMethodId.raw,
+    shippingMethodName = this.shippingMethodName,
+    shippingMethodType = this.shippingMethodType.name,
     pickupPoint = this.pickupPoint?.let {
         DraftPurchaseDocument.PickupPoint(
             firstAndLastName = it.firstAndLastName,

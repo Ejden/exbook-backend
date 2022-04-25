@@ -1,8 +1,13 @@
 package pl.exbook.exbook.order.domain
 
 import pl.exbook.exbook.offer.domain.Offer
-import pl.exbook.exbook.shared.*
 import java.time.Instant
+import pl.exbook.exbook.shared.ExchangeBookId
+import pl.exbook.exbook.shared.Money
+import pl.exbook.exbook.shared.OfferId
+import pl.exbook.exbook.shared.OrderId
+import pl.exbook.exbook.shared.ShippingId
+import pl.exbook.exbook.shared.UserId
 
 data class Order(
     val id: OrderId,
@@ -30,10 +35,12 @@ data class Order(
     data class Shipping(val id: ShippingId)
 
     data class ExchangeBook(
+        val id: ExchangeBookId,
         val author: String,
         val title: String,
-        val isbn: Long?,
-        val condition: Offer.Condition
+        val isbn: String?,
+        val condition: Offer.Condition,
+        val quantity: Int
     )
 
     enum class OrderType {

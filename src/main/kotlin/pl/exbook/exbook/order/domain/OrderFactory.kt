@@ -44,8 +44,10 @@ private fun PlaceOrdersCommand.Item.toOrderItem(price: Money?) = Order.OrderItem
 )
 
 private fun PlaceOrdersCommand.Book.toExchangeBook() = Order.ExchangeBook(
+    id = this.id,
     author = this.author,
     title = this.title,
     isbn = this.isbn,
-    condition = this.condition
+    condition = this.condition,
+    quantity = quantity
 )

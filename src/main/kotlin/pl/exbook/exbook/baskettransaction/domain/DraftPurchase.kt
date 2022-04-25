@@ -56,6 +56,8 @@ data class DraftPurchase(
 
     data class Shipping(
         val shippingMethodId: ShippingMethodId,
+        val shippingMethodName: String,
+        val shippingMethodType: ShippingMethodType,
         val pickupPoint: PickupPoint?,
         val shippingAddress: ShippingAddress?,
         val cost: ShippingCost
@@ -96,5 +98,9 @@ data class DraftPurchase(
         val phoneNumber: String,
         val email: String,
         val pickupPointId: PickupPointId
+    )
+
+    fun removeOrders(orderIds: List<OrderId>): DraftPurchase = this.copy(
+        orders = this.orders.filterNot { it.orderId in orderIds }
     )
 }

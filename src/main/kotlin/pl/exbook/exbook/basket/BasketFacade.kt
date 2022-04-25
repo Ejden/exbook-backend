@@ -107,6 +107,12 @@ class BasketFacade(
         return basketRepository.save(basket)
     }
 
+    fun removeGroupsFromBasket(userId: UserId, groups: List<Basket.ItemsGroupKey>) {
+        val basket = getUserBasket(userId)
+        basket.removeGroups(groups)
+        basketRepository.save(basket)
+    }
+
     private fun AddItemToBasketCommand.validate(offer: Offer, buyer: User): AddItemToBasketCommand {
         validator.validateAddingItem(offer, buyer, this)
         return this

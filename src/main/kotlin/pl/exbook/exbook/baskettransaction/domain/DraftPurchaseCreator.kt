@@ -9,8 +9,12 @@ import pl.exbook.exbook.shared.PurchaseId
 import pl.exbook.exbook.shared.UserId
 import pl.exbook.exbook.shipping.CalculateSelectedShippingCommand
 import pl.exbook.exbook.shipping.ShippingFacade
+import pl.exbook.exbook.shipping.domain.AddressShipping
 import pl.exbook.exbook.shipping.domain.AvailableShipping
+import pl.exbook.exbook.shipping.domain.PersonalShipping
+import pl.exbook.exbook.shipping.domain.PickupPointShipping
 import pl.exbook.exbook.shipping.domain.PreviewAvailableShippingCommand
+import pl.exbook.exbook.shippingmethod.domain.ShippingMethodType
 
 @Service
 class DraftPurchaseCreator(
@@ -106,6 +110,13 @@ class DraftPurchaseCreator(
             val shipping = it.value?.let { shipping ->
                 DraftPurchase.Shipping(
                     shippingMethodId = shipping.first.shippingMethodId,
+                    shippingMethodName = shipping.first.shippingMethodName,
+                    shippingMethodType = when (shipping.first) {
+                        is PickupPointShipping -> ShippingMethodType.PERSONAL_DELIVERY
+                        is AddressShipping -> ShippingMethodType.ADDRESS_DELIVERY
+                        is PersonalShipping -> ShippingMethodType.PERSONAL_DELIVERY
+                        else -> throw IllegalStateException("Incompatible shipping type")
+                    },
                     pickupPoint = shipping.second.pickupPoint?.let { point ->
                         DraftPurchase.PickupPoint(
                             firstAndLastName = point.firstAndLastName,

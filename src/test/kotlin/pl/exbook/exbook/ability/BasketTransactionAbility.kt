@@ -52,7 +52,8 @@ class BasketTransactionAbility {
         offerFacade = offerFacade,
         draftPurchaseDecorator = draftPurchaseDecorator,
         shippingMethodFacade = shippingMethodFacade,
-        orderFacade = orderFacade
+        orderFacade = orderFacade,
+        draftPurchaseRepository = repository
     )
 
     fun thereIsUser(init: UserBuilder.() -> Unit) = userFacadeMocks.thereIsUser(init)

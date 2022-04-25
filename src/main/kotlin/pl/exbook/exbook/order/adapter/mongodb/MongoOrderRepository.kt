@@ -4,13 +4,13 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.data.repository.PagingAndSortingRepository
-import org.springframework.data.repository.Repository
 import pl.exbook.exbook.shared.dto.MoneyDocument
 import pl.exbook.exbook.shared.dto.MoneyDto
 import java.time.Instant
+import org.springframework.stereotype.Repository
 
+@Repository
 interface MongoOrderRepository : PagingAndSortingRepository<OrderDocument, String> {
-
     fun findAllByBuyerId(buyerId: String, pageable: Pageable): Page<OrderDocument>
 
     fun findAllBySellerId(sellerId: String, pageable: Pageable): Page<OrderDocument>
@@ -40,8 +40,10 @@ data class OrderItemDocument(
 )
 
 data class ExchangeBookDocument(
+    val id: String,
     val author: String,
     val title: String,
-    val isbn: Long?,
-    val condition: String
+    val isbn: String?,
+    val condition: String,
+    val quantity: Int
 )

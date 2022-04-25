@@ -5,8 +5,6 @@ import org.springframework.data.domain.Page
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
@@ -17,24 +15,13 @@ import pl.exbook.exbook.shared.OrderId
 import pl.exbook.exbook.shared.dto.MoneyDto
 import pl.exbook.exbook.shared.dto.toDto
 import java.time.Instant
-import javax.validation.Valid
-import javax.validation.constraints.Email
-import javax.validation.constraints.Min
 import pl.exbook.exbook.order.domain.OrderSnippet
-import pl.exbook.exbook.order.domain.PlaceOrdersCommand
 
 @RestController
 @RequestMapping("api")
 class OrderEndpoint(
     private val orderFacade: OrderFacade,
 ) {
-    @PreAuthorize("isFullyAuthenticated()")
-    @PostMapping("orders")
-    fun placePurchaseOrder(
-        @Valid @RequestBody request: PlaceOrdersRequest,
-        user: UsernamePasswordAuthenticationToken
-    ): PlaceOrderResultDto = orderFacade.placeOrders(request.toCommand(), user.name).toDto()
-
     @PreAuthorize("isFullyAuthenticated()")
     @GetMapping("orders")
     fun getUserOrders(
@@ -74,70 +61,6 @@ class OrderEndpoint(
     companion object : KLogging()
 }
 
-private fun PlaceOrdersRequest.toCommand() = PlaceOrdersCommand.fromRequest(this)
-
-private fun List<Order>.toDto() = PlaceOrderResultDto(
-    orders = this.map { it.toDto() }
-)
-
-data class PlaceOrdersRequest(
-    val orders: List<Order>
-) {
-    data class Order(
-        val items: List<Item>,
-        val seller: Seller,
-        val shipping: Shipping,
-        val exchangeBooks: List<Book>,
-        val note: String,
-        val orderType: String
-    )
-
-    data class Item(
-        val offerId: String,
-        @field:Min(value = 1)
-        val quantity: Long
-    )
-
-    data class Seller(
-        val id: String
-    )
-
-    data class Shipping(
-        val shippingMethodId: String,
-        val shippingAddress: ShippingAddress?,
-        val pickupPoint: PickupPoint?
-    )
-
-    data class ShippingAddress(
-        val firstAndLastName: String,
-        val phoneNumber: String,
-        @field:Email
-        val email: String,
-        val address: String,
-        val postalCode: String,
-        val city: String,
-        val country: String
-    )
-
-    data class PickupPoint(
-        val firstAndLastName: String,
-        val phoneNumber: String,
-        val email: String,
-        val pickupPointId: String
-    )
-
-    data class Book(
-        val author: String,
-        val title: String,
-        val isbn: Long?,
-        val condition: String
-    )
-}
-
-data class PlaceOrderResultDto(
-    val orders: List<OrderDto>
-)
-
 data class OrderDto(
     val id: String,
     val buyer: BuyerDto,
@@ -164,10 +87,12 @@ data class OrderDto(
     data class ShippingDto(val id: String)
 
     data class ExchangeBookDto(
+        val id: String,
         val author: String,
         val title: String,
-        val isbn: Long?,
-        val condition: String
+        val isbn: String?,
+        val condition: String,
+        val quantity: Int
     )
 }
 
@@ -209,7 +134,7 @@ data class OrderSnippetDto(
 
     data class BookDto(
         val author: String,
-        val title: String
+        val title: String,
     )
 
     data class ImagesDto(val thumbnail: ImageDto?)
@@ -221,8 +146,9 @@ data class OrderSnippetDto(
     data class ExchangeBookDto(
         val author: String,
         val title: String,
-        val isbn: Long?,
-        val condition: String
+        val isbn: String?,
+        val condition: String,
+        val quantity: Int
     )
 }
 
@@ -247,10 +173,12 @@ private fun Order.OrderItem.toDto() = OrderDto.OrderItemDto(
 )
 
 private fun Order.ExchangeBook.toDto() = OrderDto.ExchangeBookDto(
+    id = this.id.raw,
     author = this.author,
     title = this.title,
     isbn = this.isbn,
-    condition = this.condition.name
+    condition = this.condition.name,
+    quantity = this.quantity
 )
 
 private fun OrderSnippet.toDto() = OrderSnippetDto(
@@ -265,7 +193,8 @@ private fun OrderSnippet.toDto() = OrderSnippetDto(
             author = it.author,
             title = it.title,
             isbn = it.isbn,
-            condition = it.condition.name
+            condition = it.condition.name,
+            quantity = it.quantity
         )
     },
     orderDate = this.orderDate,
