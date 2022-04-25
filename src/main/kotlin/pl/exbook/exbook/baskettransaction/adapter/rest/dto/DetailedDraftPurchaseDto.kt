@@ -8,7 +8,9 @@ data class DetailedDraftPurchaseDto(
     val orders: List<DraftOrder>,
     val totalOffersPrice: MoneyDto,
     val totalShippingPrice: MoneyDto,
-    val totalPrice: MoneyDto
+    val totalPrice: MoneyDto,
+    val isPurchasable: Boolean,
+    val isShippingInfoComplete: Boolean
 ) {
     data class Buyer(
         val id: String
@@ -48,7 +50,7 @@ data class DetailedDraftPurchaseDto(
     data class ShippingOption(
         val shippingMethodId: String,
         val shippingMethodName: String,
-        val pickupPointMethod: Boolean,
+        val shippingMethodType: String,
         val price: MoneyDto
     )
 

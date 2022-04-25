@@ -16,7 +16,6 @@ import pl.exbook.exbook.shared.TestData.sampleCity
 import pl.exbook.exbook.shared.TestData.sampleCountry
 import pl.exbook.exbook.shared.TestData.samplePickupPointId
 import pl.exbook.exbook.shared.TestData.samplePostalCost
-import pl.exbook.exbook.shared.TestData.sampleSellerId
 import pl.exbook.exbook.shared.TestData.sampleShippingId
 import pl.exbook.exbook.shared.TestData.sampleShippingMethodId
 import pl.exbook.exbook.shared.TestData.sampleShippingMethodName
@@ -29,6 +28,7 @@ import pl.exbook.exbook.shipping.domain.AvailableShipping
 import pl.exbook.exbook.shipping.domain.PickupPointShipping
 import pl.exbook.exbook.shipping.domain.Shipping
 import java.util.UUID
+import pl.exbook.exbook.shippingmethod.domain.ShippingMethodType
 
 class ShippingFacadeMocks(private val shippingFacade: ShippingFacade) {
     fun willCreateShipping(idStrategy: IdGenerationStrategy, init: ShippingBuilder.() -> Unit) {
@@ -150,10 +150,10 @@ class AvailableShippingBuilder {
     class ShippingOptionBuilder {
         var methodId: ShippingMethodId = sampleShippingMethodId
         var methodName: String = sampleShippingMethodName
-        var pickupPoint: Boolean = true
+        var type: ShippingMethodType = ShippingMethodType.PICKUP_DELIVERY
         var price: Money = tenPln
 
-        fun build() = AvailableShipping.ShippingOption(methodId, methodName, pickupPoint, price)
+        fun build() = AvailableShipping.ShippingOption(methodId, methodName, type, price)
     }
 
     fun shippingOption(

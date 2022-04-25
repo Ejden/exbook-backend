@@ -4,11 +4,12 @@ import javax.validation.constraints.NotEmpty
 import pl.exbook.exbook.shared.dto.MoneyDto
 import pl.exbook.exbook.shared.dto.toDomain
 import pl.exbook.exbook.shippingmethod.domain.NewShippingMethodCommand
+import pl.exbook.exbook.shippingmethod.domain.ShippingMethodType
 
 data class CreateShippingMethodRequest(
     @field:NotEmpty
     val name: String,
-    val pickupPointMethod: Boolean,
+    val shippingMethodType: String,
     val cost: Cost
 ) {
     data class Cost(
@@ -18,7 +19,7 @@ data class CreateShippingMethodRequest(
 
     fun toCommand() = NewShippingMethodCommand(
         name = this.name,
-        pickupPointMethod = this.pickupPointMethod,
+        shippingMethodType = ShippingMethodType.valueOf(this.shippingMethodType),
         cost = this.cost.toCommand()
     )
 

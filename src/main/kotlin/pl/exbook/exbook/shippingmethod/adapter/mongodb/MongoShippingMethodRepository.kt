@@ -16,7 +16,7 @@ data class ShippingMethodDocument(
     @Id
     val id: String,
     val methodName: String,
-    val pickupPointMethod: Boolean,
+    val type: String,
     val defaultCost: ShippingMethodCostDocument
 )
 

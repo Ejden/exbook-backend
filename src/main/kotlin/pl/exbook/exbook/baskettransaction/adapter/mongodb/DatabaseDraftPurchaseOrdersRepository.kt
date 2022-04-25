@@ -14,6 +14,7 @@ import pl.exbook.exbook.shared.PurchaseId
 import pl.exbook.exbook.shared.ShippingMethodId
 import pl.exbook.exbook.shared.UserId
 import pl.exbook.exbook.shared.dto.toDocument
+import pl.exbook.exbook.shippingmethod.domain.ShippingMethodType
 
 @Component
 class DatabaseDraftPurchaseOrdersRepository(
@@ -91,7 +92,7 @@ private fun DraftPurchaseDocument.Shipping.toDomain() = DraftPurchase.Shipping(
 private fun DraftPurchaseDocument.ShippingOption.toDomain() = DraftPurchase.ShippingOption(
     shippingMethodId = ShippingMethodId(this.shippingMethodId),
     shippingMethodName = this.shippingMethodName,
-    pickupPointMethod = this.pickupPointMethod,
+    shippingMethodType = ShippingMethodType.valueOf(this.shippingMethodType),
     price = this.price.toDomain()
 )
 
@@ -163,7 +164,7 @@ private fun DraftPurchase.Shipping.toDocument() = DraftPurchaseDocument.Shipping
 private fun DraftPurchase.ShippingOption.toDocument() = DraftPurchaseDocument.ShippingOption(
     shippingMethodId = this.shippingMethodId.raw,
     shippingMethodName = this.shippingMethodName,
-    pickupPointMethod = this.pickupPointMethod,
+    shippingMethodType = this.shippingMethodType.name,
     price = this.price.toDocument()
 )
 

@@ -65,7 +65,7 @@ data class DraftPurchaseDocument(
     data class ShippingOption(
         val shippingMethodId: String,
         val shippingMethodName: String,
-        val pickupPointMethod: Boolean,
+        val shippingMethodType: String,
         val price: MoneyDocument
     )
 

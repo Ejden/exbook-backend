@@ -10,6 +10,7 @@ import pl.exbook.exbook.shared.PickupPointId
 import pl.exbook.exbook.shared.PurchaseId
 import pl.exbook.exbook.shared.ShippingMethodId
 import pl.exbook.exbook.shared.UserId
+import pl.exbook.exbook.shippingmethod.domain.ShippingMethodType
 
 data class DetailedDraftPurchase(
     val purchaseId: PurchaseId,
@@ -17,7 +18,9 @@ data class DetailedDraftPurchase(
     val orders: List<DraftOrder>,
     val totalOffersPrice: Money,
     val totalShippingPrice: Money,
-    val totalPrice: Money
+    val totalPrice: Money,
+    val isPurchasable: Boolean,
+    val isShippingInfoComplete: Boolean
 ) {
     data class Buyer(
         val id: UserId
@@ -57,7 +60,7 @@ data class DetailedDraftPurchase(
     data class ShippingOption(
         val shippingMethodId: ShippingMethodId,
         val shippingMethodName: String,
-        val pickupPointMethod: Boolean,
+        val shippingMethodType: ShippingMethodType,
         val price: Money
     )
 

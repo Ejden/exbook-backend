@@ -11,6 +11,7 @@ import pl.exbook.exbook.shared.PickupPointId
 import pl.exbook.exbook.shared.PurchaseId
 import pl.exbook.exbook.shared.ShippingMethodId
 import pl.exbook.exbook.shared.UserId
+import pl.exbook.exbook.shippingmethod.domain.ShippingMethodType
 
 data class DraftPurchase(
     val purchaseId: PurchaseId,
@@ -63,7 +64,7 @@ data class DraftPurchase(
     data class ShippingOption(
         val shippingMethodId: ShippingMethodId,
         val shippingMethodName: String,
-        val pickupPointMethod: Boolean,
+        val shippingMethodType: ShippingMethodType,
         val price: Money
     )
 

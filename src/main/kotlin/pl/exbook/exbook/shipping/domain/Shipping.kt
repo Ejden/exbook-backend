@@ -46,3 +46,10 @@ class AddressShipping(
     cost: Cost,
     val address: ShippingAddress
 ) : Shipping(id, shippingMethodId, shippingMethodName, cost)
+
+class PersonalShipping(
+    id: ShippingId,
+    shippingMethodId: ShippingMethodId,
+    shippingMethodName: String,
+    cost: Cost
+) : Shipping(id, shippingMethodId, shippingMethodName, cost)

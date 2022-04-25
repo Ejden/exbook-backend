@@ -31,7 +31,9 @@ object PreviewPurchaseMapper :
             orders = from.orders.map { it.toDto() },
             totalOffersPrice = from.totalOffersPrice.toDto(),
             totalShippingPrice = from.totalShippingPrice.toDto(),
-            totalPrice = from.totalPrice.toDto()
+            totalPrice = from.totalPrice.toDto(),
+            isPurchasable = from.isPurchasable,
+            isShippingInfoComplete = from.isShippingInfoComplete
         )
     }
 
@@ -103,7 +105,7 @@ object PreviewPurchaseMapper :
     private fun DetailedDraftPurchase.ShippingOption.toDto() = DetailedDraftPurchaseDto.ShippingOption(
         shippingMethodId = this.shippingMethodId.raw,
         shippingMethodName = this.shippingMethodName,
-        pickupPointMethod = this.pickupPointMethod,
+        shippingMethodType = this.shippingMethodType.name,
         price = this.price.toDto()
     )
 

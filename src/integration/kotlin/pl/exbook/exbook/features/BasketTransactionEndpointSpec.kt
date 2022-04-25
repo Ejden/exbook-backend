@@ -110,7 +110,7 @@ class BasketTransactionEndpointSpec(private val rest: TestRestTemplate) : BaseIn
                     {
                       "shippingMethodId": "${shippingMethod.id}",
                       "shippingMethodName": "shipping-method",
-                      "pickupPointMethod": false,
+                      "shippingMethodType": "PICKUP_DELIVERY",
                       "price": {
                         "amount": 10.00,
                         "currency": "PLN"
@@ -127,6 +127,10 @@ class BasketTransactionEndpointSpec(private val rest: TestRestTemplate) : BaseIn
                   }
                 }
               ],
+              "totalShippingPrice": {
+                "amount": 0.00,
+                "currency": "PLN"
+              },
               "totalOffersPrice": {
                 "amount": 10.00,
                 "currency": "PLN"
@@ -134,7 +138,9 @@ class BasketTransactionEndpointSpec(private val rest: TestRestTemplate) : BaseIn
               "totalPrice": {
                 "amount": 10.00,
                 "currency": "PLN"
-              }
+              },
+              "isPurchasable": false,
+              "isShippingInfoComplete": false
             }
         """
     }
@@ -143,7 +149,7 @@ class BasketTransactionEndpointSpec(private val rest: TestRestTemplate) : BaseIn
         // given
         val adminToken = authAbility.getTokenForNewAdmin(username = sampleAdminUsername, email = sampleAdminEmail)
         val category = categoryAbility.thereIsCategory(token = adminToken).body!!
-        val shippingMethod = shippingMethodAbility.thereIsShippingMethod(pickupMethod = true).body!!
+        val shippingMethod = shippingMethodAbility.thereIsShippingMethod(type = "PICKUP_DELIVERY").body!!
         val sellerToken = authAbility.getTokenForNewUser(username = sampleSellerUsername, email = sampleSellerEmail)
         val seller = userAbility.getUserFromToken(sellerToken).body!!
         val offer = offerAbility.thereIsOffer(
@@ -248,7 +254,7 @@ class BasketTransactionEndpointSpec(private val rest: TestRestTemplate) : BaseIn
                     {
                       "shippingMethodId": "${shippingMethod.id}",
                       "shippingMethodName": "shipping-method",
-                      "pickupPointMethod": true,
+                      "shippingMethodType": "PICKUP_DELIVERY",
                       "price": {
                         "amount": 5.00,
                         "currency": "PLN"
@@ -269,10 +275,16 @@ class BasketTransactionEndpointSpec(private val rest: TestRestTemplate) : BaseIn
                 "amount": 20.00,
                 "currency": "PLN"
               },
+              "totalShippingPrice": {
+                "amount": 5.00,
+                "currency": "PLN"
+              },
               "totalPrice": {
                 "amount": 25.00,
                 "currency":"PLN"
-              }
+              },
+              "isPurchasable": true,
+              "isShippingInfoComplete": true
             }
         """
     }

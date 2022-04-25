@@ -59,7 +59,7 @@ class DraftPurchaseCreator(
         oldDraftPurchase: DraftPurchase,
         availableShipping: AvailableShipping
     ): DraftPurchase {
-        val orders = groupOrders(command, availableShipping)
+        val orders = groupOrders(command, availableShipping, oldDraftPurchase)
 
         return DraftPurchase(
             purchaseId = oldDraftPurchase.purchaseId,
@@ -77,9 +77,13 @@ class DraftPurchaseCreator(
 
     private fun groupOrders(
         command: PreviewBasketTransactionCommand,
-        availableShipping: AvailableShipping
+        availableShipping: AvailableShipping,
+        oldDraftPurchase: DraftPurchase? = null
     ): List<DraftPurchase.DraftOrder> {
         return groupItems(command).entries.map {
+            val oldOrder = oldDraftPurchase?.orders?.firstOrNull { oldOrder ->
+                oldOrder.seller.id == it.key.sellerId && oldOrder.orderType == it.key.orderType
+            }
             val items = it.key.items.map { item ->
                 val offer = command.offers.first { offer -> offer.id == item.offer.id }
                 val offerPrice = if (it.key.orderType == OrderType.BUY) offer.price!! else Money.zeroPln()
@@ -94,10 +98,42 @@ class DraftPurchaseCreator(
                 )
             }
             val totalOffersPrice = items.fold(Money.zeroPln()) { acc, x -> acc + x.totalPrice }
-            val totalPrice = totalOffersPrice + (it.value?.first?.cost?.finalCost ?: Money.zeroPln())
+            val availableShippingOptions = availableShipping.getOptionsFor(it.key.sellerId, it.key.orderType)
+            val oldShippingIsStillValid = availableShippingOptions.any { option ->
+                option.shippingMethodId == oldOrder?.shipping?.shippingMethodId &&
+                        option.price == oldOrder.shipping.cost.finalCost
+            }
+            val shipping = it.value?.let { shipping ->
+                DraftPurchase.Shipping(
+                    shippingMethodId = shipping.first.shippingMethodId,
+                    pickupPoint = shipping.second.pickupPoint?.let { point ->
+                        DraftPurchase.PickupPoint(
+                            firstAndLastName = point.firstAndLastName,
+                            phoneNumber = point.phoneNumber,
+                            email = point.email,
+                            pickupPointId = point.pickupPointId
+                        )
+                    },
+                    shippingAddress = shipping.second.shippingAddress?.let { address ->
+                        DraftPurchase.ShippingAddress(
+                            firstAndLastName = address.firstAndLastName,
+                            phoneNumber = address.phoneNumber,
+                            email = address.email,
+                            address = address.address,
+                            postalCode = address.postalCode,
+                            city = address.city,
+                            country = address.country
+                        )
+                    },
+                    cost = DraftPurchase.ShippingCost(
+                        finalCost = shipping.first.cost.finalCost
+                    )
+                )
+            } ?: (if (oldShippingIsStillValid) oldOrder?.shipping else null)
+            val totalPrice = totalOffersPrice + (shipping?.cost?.finalCost ?: Money.zeroPln())
 
             DraftPurchase.DraftOrder(
-                orderId = OrderId(UUID.randomUUID().toString()),
+                orderId = oldOrder?.orderId ?: OrderId(UUID.randomUUID().toString()),
                 orderType = it.key.orderType,
                 seller = DraftPurchase.Seller(it.key.sellerId),
                 items = items,
@@ -111,34 +147,8 @@ class DraftPurchaseCreator(
                         quantity = book.quantity
                     )
                 },
-                shipping = it.value?.let { shipping ->
-                    DraftPurchase.Shipping(
-                        shippingMethodId = shipping.first.shippingMethodId,
-                        pickupPoint = shipping.second.pickupPoint?.let { point ->
-                            DraftPurchase.PickupPoint(
-                                firstAndLastName = point.firstAndLastName,
-                                phoneNumber = point.phoneNumber,
-                                email = point.email,
-                                pickupPointId = point.pickupPointId
-                            )
-                        },
-                        shippingAddress = shipping.second.shippingAddress?.let { address ->
-                            DraftPurchase.ShippingAddress(
-                                firstAndLastName = address.firstAndLastName,
-                                phoneNumber = address.phoneNumber,
-                                email = address.email,
-                                address = address.address,
-                                postalCode = address.postalCode,
-                                city = address.city,
-                                country = address.country
-                            )
-                        },
-                        cost = DraftPurchase.ShippingCost(
-                            finalCost = shipping.first.cost.finalCost
-                        )
-                    )
-                },
-                availableShippingMethods = availableShipping.getOptionsFor(it.key.sellerId, it.key.orderType),
+                shipping = shipping,
+                availableShippingMethods = availableShippingOptions,
                 totalOffersPrice = totalOffersPrice,
                 totalPrice = totalPrice
             )
@@ -200,5 +210,5 @@ class DraftPurchaseCreator(
         .values
         .firstOrNull()
         .orEmpty()
-        .map { DraftPurchase.ShippingOption(it.methodId, it.methodName, it.pickupPoint, it.price) }
+        .map { DraftPurchase.ShippingOption(it.methodId, it.methodName, it.type, it.price) }
 }

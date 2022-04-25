@@ -12,14 +12,14 @@ import java.math.BigDecimal
 class ShippingMethodDomainAbility(private val restTemplate: TestRestTemplate) {
     fun thereIsShippingMethod(
         name: String = sampleShippingMethodName,
-        pickupMethod: Boolean = false,
+        type: String = "PICKUP_DELIVERY",
         defaultCost: BigDecimal = BigDecimal("10.00"),
         costCurrency: String = "PLN",
         costCanBeOverridden: Boolean = true
     ): ResponseEntity<ShippingMethodDto> {
         val requestBody = CreateShippingMethodRequest(
             name = name,
-            pickupPointMethod = pickupMethod,
+            shippingMethodType = type,
             cost = CreateShippingMethodRequest.Cost(
                 defaultCost = MoneyDto(defaultCost, costCurrency),
                 canBeOverridden = costCanBeOverridden

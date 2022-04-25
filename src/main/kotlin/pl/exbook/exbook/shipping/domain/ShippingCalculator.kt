@@ -52,14 +52,17 @@ class ShippingCalculator(
     private fun ShippingMethod.toOption(cost: Money) = AvailableShipping.ShippingOption(
         methodId = this.id,
         methodName = this.methodName,
-        pickupPoint = pickupPointMethod,
+        type = this.type,
         price = cost
     )
 
     private fun calculateShippingCost(
         shippingMethodId: ShippingMethodId, request: CalculateSelectedShippingCommand
     ): Shipping.Cost {
-        val maxOfferDeliveryCostInOrder = request.offersShippingMethods.flatMap { it.value }.maxOf { it.price }
+        val maxOfferDeliveryCostInOrder = request.offersShippingMethods
+            .flatMap { it.value }
+            .filter { it.id == shippingMethodId }
+            .maxOf { it.price }
         return Shipping.Cost(maxOfferDeliveryCostInOrder)
     }
 

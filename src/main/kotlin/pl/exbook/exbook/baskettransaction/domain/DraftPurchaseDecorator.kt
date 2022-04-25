@@ -3,6 +3,7 @@ package pl.exbook.exbook.baskettransaction.domain
 import org.springframework.stereotype.Component
 import pl.exbook.exbook.offer.domain.Offer
 import pl.exbook.exbook.shippingmethod.domain.ShippingMethod
+import pl.exbook.exbook.shippingmethod.domain.ShippingMethodType
 import pl.exbook.exbook.user.domain.User
 
 @Component
@@ -14,17 +15,43 @@ class DraftPurchaseDecorator {
         shippingMethods: List<ShippingMethod>
     ): DetailedDraftPurchase {
         return with(draftPurchase) {
+            val orders = orders.map { it.toDetailed(offers, sellers, shippingMethods) }
             DetailedDraftPurchase(
                 purchaseId = purchaseId,
                 buyer = DetailedDraftPurchase.Buyer(
                     buyer.id
                 ),
-                orders = orders.map { it.toDetailed(offers, sellers, shippingMethods) },
+                orders = orders,
                 totalOffersPrice = totalOffersPrice,
                 totalShippingPrice = totalShippingPrice,
-                totalPrice = totalPrice
+                totalPrice = totalPrice,
+                isPurchasable = orders.isPurchasable(shippingMethods),
+                isShippingInfoComplete = orders.isShippingInfoComplete(shippingMethods)
             )
         }
+    }
+
+    private fun List<DetailedDraftPurchase.DraftOrder>.isPurchasable(shippingMethods: List<ShippingMethod>) = this.all {
+        it.shipping != null &&
+                it.shipping.shippingMethod.id in it.availableShippingMethods.map { id -> id.shippingMethodId } &&
+                it.shipping.isComplete(shippingMethods)
+    }
+
+    private fun DetailedDraftPurchase.Shipping.isComplete(shippingMethods: List<ShippingMethod>): Boolean {
+        val shippingMethod = shippingMethods.first { it.id == this.shippingMethod.id }
+        return when (shippingMethod.type) {
+            ShippingMethodType.PERSONAL_DELIVERY -> this.pickupPoint == null && this.shippingAddress == null
+            ShippingMethodType.ADDRESS_DELIVERY -> this.pickupPoint == null && this.shippingAddress != null
+            ShippingMethodType.PICKUP_DELIVERY -> this.pickupPoint != null && this.shippingAddress == null
+        }
+    }
+
+    private fun List<DetailedDraftPurchase.DraftOrder>.isShippingInfoComplete(
+        shippingMethods: List<ShippingMethod>
+    ) = this.all {
+        it.shipping != null &&
+                it.shipping.shippingMethod.id in it.availableShippingMethods.map { id -> id.shippingMethodId } &&
+                it.shipping.isComplete(shippingMethods)
     }
 
     private fun DraftPurchase.DraftOrder.toDetailed(
@@ -107,7 +134,7 @@ class DraftPurchaseDecorator {
     private fun DraftPurchase.ShippingOption.toDetailed() = DetailedDraftPurchase.ShippingOption(
         shippingMethodId = this.shippingMethodId,
         shippingMethodName = this.shippingMethodName,
-        pickupPointMethod = this.pickupPointMethod,
+        shippingMethodType = this.shippingMethodType,
         price = this.price
     )
 

@@ -34,6 +34,13 @@ class AddressShippingDocument(
     val address: AddressDocument
 ) : ShippingDocument(id, shippingMethodId, shippingMethodName, cost)
 
+class PersonalShippingDocument(
+    id: String?,
+    shippingMethodId: String,
+    shippingMethodName: String,
+    cost: DeliveryCostDocument
+) : ShippingDocument(id, shippingMethodId, shippingMethodName, cost)
+
 data class AddressDocument(
     val firstAndLastName: String,
     val phoneNumber: String,

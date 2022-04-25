@@ -9,6 +9,7 @@ import pl.exbook.exbook.shipping.domain.PickupPointShipping
 import pl.exbook.exbook.shipping.domain.Shipping
 import pl.exbook.exbook.shipping.domain.ShippingRepository
 import java.lang.RuntimeException
+import pl.exbook.exbook.shipping.domain.PersonalShipping
 
 class DatabaseShippingRepository(
     private val mongoShippingRepository: MongoShippingRepository
@@ -32,6 +33,7 @@ private fun ShippingDocument.toDomain(): Shipping {
     return when (this) {
         is PickupPointShippingDocument -> this.toPickupPointDomain()
         is AddressShippingDocument -> this.toAddressDomain()
+        is PersonalShippingDocument -> this.toPersonalDomain()
         else -> throw TypeCastException()
     }
 }
@@ -50,6 +52,13 @@ private fun AddressShippingDocument.toAddressDomain() = AddressShipping(
     shippingMethodName = this.shippingMethodName,
     cost = Shipping.Cost(this.cost.finalCost.toDomain()),
     address = this.address.toDomain()
+)
+
+private fun PersonalShippingDocument.toPersonalDomain() = PersonalShipping(
+    id = ShippingId(this.id!!),
+    shippingMethodId = ShippingMethodId(this.shippingMethodId),
+    shippingMethodName = this.shippingMethodName,
+    cost = Shipping.Cost(this.cost.finalCost.toDomain())
 )
 
 private fun AddressDocument.toDomain() = Shipping.ShippingAddress(
@@ -73,6 +82,7 @@ private fun Shipping.toDocument(): ShippingDocument {
     return when (this) {
         is PickupPointShipping -> this.toDocument()
         is AddressShipping -> this.toDocument()
+        is PersonalShipping -> this.toDocument()
         else -> throw TypeCastException()
     }
 }
@@ -90,7 +100,14 @@ private fun AddressShipping.toDocument() = AddressShippingDocument(
     shippingMethodId = this.shippingMethodId.raw,
     shippingMethodName = this.shippingMethodName,
     cost = DeliveryCostDocument(this.cost.finalCost.toDocument()),
-    address = this.address.toDocument(),
+    address = this.address.toDocument()
+)
+
+private fun PersonalShipping.toDocument() = PersonalShippingDocument(
+    id = this.id.raw,
+    shippingMethodId = this.shippingMethodId.raw,
+    shippingMethodName = this.shippingMethodName,
+    cost = DeliveryCostDocument(this.cost.finalCost.toDocument()),
 )
 
 private fun Shipping.ShippingAddress.toDocument() = AddressDocument(

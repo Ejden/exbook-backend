@@ -34,6 +34,7 @@ import pl.exbook.exbook.user.UserFacade
 import pl.exbook.exbook.user.domain.User
 import pl.exbook.exbook.user.domain.UserNotFoundException
 import java.time.Instant
+import pl.exbook.exbook.shippingmethod.domain.ShippingMethodType
 
 class OfferDomainAbility {
     private val offerRepository: InMemoryOfferRepository = InMemoryOfferRepository()
@@ -109,14 +110,14 @@ class OfferDomainAbility {
     fun thereIsShippingMethod(
         shippingMethodId: ShippingMethodId = sampleShippingMethodId,
         methodName: String = "Shipping method",
-        pickupPointMethod: Boolean = true,
+        type: ShippingMethodType = ShippingMethodType.PICKUP_DELIVERY,
         cost: Money = "8.99".pln(),
         costCanBeOverridden: Boolean = true
     ) {
         val mockShippingMethod = ShippingMethod(
             id = shippingMethodId,
             methodName = methodName,
-            pickupPointMethod = pickupPointMethod,
+            type = type,
             defaultCost = Cost(
                 cost = cost,
                 canBeOverridden = costCanBeOverridden

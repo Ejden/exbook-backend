@@ -38,6 +38,7 @@ import pl.exbook.exbook.shared.TestData.sampleSellerUsername
 import pl.exbook.exbook.shared.TestData.sampleShippingMethodId
 import pl.exbook.exbook.shared.TestData.sampleTitle
 import pl.exbook.exbook.shared.TestData.tenPln
+import pl.exbook.exbook.shippingmethod.domain.ShippingMethodType
 
 class PreviewBasketSpec : ShouldSpec({
     val domain = BasketTransactionAbility()
@@ -327,12 +328,12 @@ class PreviewBasketSpec : ShouldSpec({
         }
         domain.thereIsShippingMethod {
             id = sampleShippingMethodId
-            pickupPointMethod = true
+            type = ShippingMethodType.PICKUP_DELIVERY
             defaultCost = "5.00".pln()
         }
         domain.thereIsShippingMethod {
             id = otherSampleShippingMethodId
-            pickupPointMethod = false
+            type = ShippingMethodType.ADDRESS_DELIVERY
             defaultCost = "5.00".pln()
         }
         domain.willCreateShipping(IdGenerationStrategy.RANDOM) {
@@ -472,12 +473,12 @@ class PreviewBasketSpec : ShouldSpec({
         }
         domain.thereIsShippingMethod {
             id = sampleShippingMethodId
-            pickupPointMethod = true
+            type = ShippingMethodType.PICKUP_DELIVERY
             defaultCost = "5.00".pln()
         }
         domain.thereIsShippingMethod {
             id = otherSampleShippingMethodId
-            pickupPointMethod = false
+            type = ShippingMethodType.ADDRESS_DELIVERY
             defaultCost = "5.00".pln()
         }
         domain.willCreateShipping(IdGenerationStrategy.RANDOM) {
@@ -620,7 +621,7 @@ class PreviewBasketSpec : ShouldSpec({
         }
         domain.thereIsShippingMethod {
             id = sampleShippingMethodId
-            pickupPointMethod = true
+            type = ShippingMethodType.PICKUP_DELIVERY
             defaultCost = "5.00".pln()
         }
         domain.willCreateShipping(IdGenerationStrategy.RANDOM) {
