@@ -1,21 +1,32 @@
 package pl.exbook.exbook.order.domain
 
+import java.time.Instant
 import pl.exbook.exbook.offer.domain.Offer
-import pl.exbook.exbook.order.adapter.rest.PlaceOrdersRequest
+import pl.exbook.exbook.order.domain.Order.OrderType
+import pl.exbook.exbook.shared.ExchangeBookId
+import pl.exbook.exbook.shared.Money
 import pl.exbook.exbook.shared.OfferId
+import pl.exbook.exbook.shared.OrderId
 import pl.exbook.exbook.shared.PickupPointId
+import pl.exbook.exbook.shared.PurchaseId
 import pl.exbook.exbook.shared.ShippingMethodId
 import pl.exbook.exbook.shared.UserId
+import pl.exbook.exbook.shippingmethod.domain.ShippingMethodType
+import pl.exbook.exbook.user.domain.User
 
 data class PlaceOrdersCommand(
-    val orders: List<Order>
+    val purchaseId: PurchaseId,
+    val buyer: User,
+    val orders: List<Order>,
+    val timestamp: Instant
 ) {
     data class Order(
+        val orderId: OrderId,
         val items: List<Item>,
         val seller: Seller,
         val shipping: Shipping,
         val exchangeBooks: List<Book>,
-        val orderType: pl.exbook.exbook.order.domain.Order.OrderType,
+        val orderType: OrderType,
         val note: String
     )
 
@@ -30,8 +41,15 @@ data class PlaceOrdersCommand(
 
     data class Shipping(
         val shippingMethodId: ShippingMethodId,
+        val shippingMethodName: String,
+        val shippingMethodType: ShippingMethodType,
         val shippingAddress: ShippingAddress?,
-        val pickupPoint: PickupPoint?
+        val pickupPoint: PickupPoint?,
+        val cost: ShippingCost
+    )
+
+    data class ShippingCost(
+        val finalCost: Money
     )
 
     data class ShippingAddress(
@@ -52,52 +70,11 @@ data class PlaceOrdersCommand(
     )
 
     data class Book(
+        val id: ExchangeBookId,
         val author: String,
         val title: String,
-        val isbn: Long?,
-        val condition: Offer.Condition
+        val isbn: String?,
+        val condition: Offer.Condition,
+        val quantity: Int
     )
-
-    companion object {
-        fun fromRequest(request: PlaceOrdersRequest) = PlaceOrdersCommand(
-            orders = request.orders.map {
-                Order(
-                    items = it.items.map { item -> Item(OfferId(item.offerId), item.quantity) },
-                    seller = Seller(UserId(it.seller.id)),
-                    shipping = Shipping(
-                        shippingMethodId = ShippingMethodId(it.shipping.shippingMethodId),
-                        shippingAddress = it.shipping.shippingAddress?.let { address ->
-                            ShippingAddress(
-                                firstAndLastName = address.firstAndLastName,
-                                phoneNumber = address.phoneNumber,
-                                email = address.email,
-                                address = address.address,
-                                postalCode = address.postalCode,
-                                city = address.city,
-                                country = address.country
-                            )
-                        },
-                        pickupPoint = it.shipping.pickupPoint?.let { point ->
-                            PickupPoint(
-                                firstAndLastName = point.firstAndLastName,
-                                phoneNumber = point.phoneNumber,
-                                email = point.email,
-                                pickupPointId = PickupPointId(point.pickupPointId)
-                            )
-                        }
-                    ),
-                    exchangeBooks = it.exchangeBooks.map { book ->
-                        Book(
-                            author = book.author,
-                            title = book.title,
-                            isbn = book.isbn,
-                            condition = Offer.Condition.valueOf(book.condition)
-                        )
-                    },
-                    orderType = pl.exbook.exbook.order.domain.Order.OrderType.valueOf(it.orderType),
-                    note = it.note
-                )
-            }
-        )
-    }
 }

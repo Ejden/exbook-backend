@@ -15,9 +15,9 @@ import pl.exbook.exbook.shared.dto.toDocument
 import pl.exbook.exbook.shared.dto.toDomain
 import pl.exbook.exbook.shared.dto.toDto
 import java.lang.RuntimeException
+import pl.exbook.exbook.shared.ExchangeBookId
 
 class DatabaseOrderRepository(private val mongoOrderRepository: MongoOrderRepository) : OrderRepository {
-
     override fun findById(id: OrderId): Order {
         return mongoOrderRepository.findById(id.raw)
             .orElseThrow { OrderNotFoundException(id) }
@@ -64,10 +64,12 @@ private fun OrderItemDocument.toDomain() = Order.OrderItem(
 )
 
 private fun ExchangeBookDocument.toDomain() = Order.ExchangeBook(
+    id = ExchangeBookId(this.id),
     author = this.author,
     title = this.title,
     condition = Offer.Condition.valueOf(this.condition),
-    isbn = this.isbn
+    isbn = this.isbn,
+    quantity = this.quantity
 )
 
 private fun Order.toDocument() = OrderDocument(
@@ -91,10 +93,12 @@ private fun Order.OrderItem.toDocument() = OrderItemDocument(
 )
 
 private fun Order.ExchangeBook.toDocument() = ExchangeBookDocument(
+    id = this.id.raw,
     author = this.author,
     title = this.title,
     isbn = this.isbn,
-    condition = this.condition.name
+    condition = this.condition.name,
+    quantity = this.quantity
 )
 
 data class OrderNotFoundException(val orderId: OrderId) : RuntimeException("Order with id $orderId not found")
