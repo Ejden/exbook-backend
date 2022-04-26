@@ -16,12 +16,11 @@ import pl.exbook.exbook.shared.dto.MoneyDto
 import pl.exbook.exbook.shared.dto.toDto
 import java.time.Instant
 import pl.exbook.exbook.order.domain.OrderSnippet
+import pl.exbook.exbook.shared.ContentType
 
 @RestController
 @RequestMapping("api")
-class OrderEndpoint(
-    private val orderFacade: OrderFacade,
-) {
+class OrderEndpoint(private val orderFacade: OrderFacade) {
     @PreAuthorize("isFullyAuthenticated()")
     @GetMapping("orders")
     fun getUserOrders(
@@ -29,7 +28,7 @@ class OrderEndpoint(
         @RequestParam("size") itemsPerPage: Int?,
         user: UsernamePasswordAuthenticationToken
     ): Page<OrderDto> {
-        return orderFacade.getUserOrders(user.name, page, itemsPerPage).map { it.toDto() }
+        return orderFacade.getUserOrders(user.name, itemsPerPage, page).map { it.toDto() }
     }
 
     @PreAuthorize("isFullyAuthenticated()")
@@ -39,7 +38,7 @@ class OrderEndpoint(
         @RequestParam("size") itemsPerPage: Int?,
         user: UsernamePasswordAuthenticationToken
     ) : Page<OrderSnippetDto> {
-        return orderFacade.getUserOrdersSnippets(user.name, page, itemsPerPage).map { it.toDto() }
+        return orderFacade.getUserOrdersSnippets(user.name, itemsPerPage, page).map { it.toDto() }
     }
 
     @PreAuthorize("isFullyAuthenticated()")
@@ -56,6 +55,16 @@ class OrderEndpoint(
         user: UsernamePasswordAuthenticationToken
     ): Page<OrderDto> {
         return orderFacade.getSellerOrders(user.name, page, itemsPerPage).map { it.toDto() }
+    }
+
+    @PreAuthorize("isFullyAuthenticated()")
+    @GetMapping("sale/orders/snippet", produces = [ContentType.V1])
+    fun getSellerOrdersSnippets(
+        @RequestParam("p") page: Int?,
+        @RequestParam("size") itemsPerPage: Int?,
+        user: UsernamePasswordAuthenticationToken
+    ): Page<OrderSnippetDto> {
+        return orderFacade.getSellerOrdersSnippets(user.name, itemsPerPage, page).map { it.toDto() }
     }
 
     companion object : KLogging()
@@ -109,7 +118,12 @@ data class OrderSnippetDto(
     val totalCost: MoneyDto,
     val note: String
 ) {
-    data class BuyerDto(val id: String)
+    data class BuyerDto(
+        val id: String,
+        val name: String,
+        val firstName: String,
+        val lastName: String
+    )
 
     data class SellerDto(
         val id: String,
@@ -203,7 +217,12 @@ private fun OrderSnippet.toDto() = OrderSnippetDto(
     note = this.note
 )
 
-private fun OrderSnippet.Buyer.toDto() = OrderSnippetDto.BuyerDto(this.id.raw)
+private fun OrderSnippet.Buyer.toDto() = OrderSnippetDto.BuyerDto(
+    id = this.id.raw,
+    name = this.name,
+    firstName = this.firstName,
+    lastName = this.lastName
+)
 
 private fun OrderSnippet.Seller.toDto() = OrderSnippetDto.SellerDto(
     id = this.id.raw,

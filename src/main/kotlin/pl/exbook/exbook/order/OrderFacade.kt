@@ -147,18 +147,28 @@ class OrderFacade(
     }
 
     fun getUserOrdersSnippets(username: String, itemsPerPage: Int?, page: Int?): Page<OrderSnippet> {
-        val userId = userFacade.getUserByUsername(username).id
-        return orderRepository.findBySellerId(userId, itemsPerPage, page, null).map {
+        val user = userFacade.getUserByUsername(username)
+        return orderRepository.findByBuyerId(user.id, itemsPerPage, page, null).map {
             val seller = userFacade.getUserById(it.seller.id)
             val shipping = shippingFacade.findShipping(it.shipping.id)
             val items = it.items.map { item -> toOrderSnippetItem(item) }
-            it.toOrderSnippet(seller, shipping, items)
+            it.toOrderSnippet(seller, user, shipping, items)
         }
     }
 
     fun getSellerOrders(username: String, itemsPerPage: Int?, page: Int?): Page<Order> {
         val sellerId = userFacade.getUserByUsername(username).id
         return orderRepository.findBySellerId(sellerId, itemsPerPage, page, null)
+    }
+
+    fun getSellerOrdersSnippets(username: String, itemsPerPage: Int?, page: Int?): Page<OrderSnippet> {
+        val user = userFacade.getUserByUsername(username)
+        return orderRepository.findBySellerId(user.id, itemsPerPage, page, null).map {
+            val shipping = shippingFacade.findShipping(it.shipping.id)
+            val items = it.items.map { item -> toOrderSnippetItem(item) }
+            val buyer = userFacade.getUserById(it.buyer.id)
+            it.toOrderSnippet(user, buyer, shipping, items)
+        }
     }
 
     private fun confirmOffersReservations(stockReservations: List<StockReservation>) = stockReservations.forEach {
@@ -186,9 +196,19 @@ class OrderFacade(
     companion object : KLogging()
 }
 
-private fun Order.toOrderSnippet(seller: User, shipping: Shipping, orderItems: List<OrderSnippet.OrderItem>) = OrderSnippet(
+private fun Order.toOrderSnippet(
+    seller: User,
+    buyer: User,
+    shipping: Shipping,
+    orderItems: List<OrderSnippet.OrderItem>
+) = OrderSnippet(
     id = this.id,
-    buyer = OrderSnippet.Buyer(this.buyer.id),
+    buyer = OrderSnippet.Buyer(
+        id = this.buyer.id,
+        name = buyer.username,
+        firstName = buyer.firstName,
+        lastName = buyer.lastName
+    ),
     seller = OrderSnippet.Seller(seller.id, seller.username, seller.firstName, seller.lastName),
     shipping = OrderSnippet.Shipping(this.shipping.id, shipping.shippingMethodName, OrderSnippet.Cost(shipping.cost.finalCost)),
     items = orderItems,

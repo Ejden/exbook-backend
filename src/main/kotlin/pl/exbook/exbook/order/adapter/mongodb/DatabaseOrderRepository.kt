@@ -39,7 +39,7 @@ class DatabaseOrderRepository(private val mongoOrderRepository: MongoOrderReposi
     override fun remove(orderId: OrderId) = mongoOrderRepository.removeById(orderId.raw)
 
     private fun createPageable(itemsPerPage: Int?, page: Int?, sorting: String?): Pageable {
-        return PageRequest.of(page ?: 0, itemsPerPage ?: 10, Sort.Direction.DESC, "orderDate")
+        return PageRequest.of(page?.minus(1) ?: 0, itemsPerPage ?: 10, Sort.Direction.DESC, "orderDate")
     }
 }
 

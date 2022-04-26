@@ -20,7 +20,12 @@ data class OrderSnippet(
     val totalCost: Money,
     val note: String
 ) {
-    data class Buyer(val id: UserId)
+    data class Buyer(
+        val id: UserId,
+        val name: String,
+        val firstName: String,
+        val lastName: String
+    )
 
     data class Seller(
         val id: UserId,

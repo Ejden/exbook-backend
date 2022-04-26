@@ -57,6 +57,8 @@ dependencies {
     implementation("com.auth0:java-jwt:3.18.3")
     implementation("com.google.guava:guava:31.0.1-jre")
     implementation("org.springframework.boot:spring-boot-starter-validation")
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     runtimeOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.0")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
