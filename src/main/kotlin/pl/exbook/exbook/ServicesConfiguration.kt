@@ -2,6 +2,7 @@ package pl.exbook.exbook
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Import
 import pl.exbook.exbook.offer.OfferFacade
 import pl.exbook.exbook.order.OrderFacade
 import pl.exbook.exbook.order.adapter.mongodb.DatabaseOrderRepository
@@ -18,8 +19,10 @@ import pl.exbook.exbook.shipping.domain.ShippingValidator
 import pl.exbook.exbook.shippingmethod.ShippingMethodFacade
 import pl.exbook.exbook.stock.StockFacade
 import pl.exbook.exbook.user.UserFacade
+import pl.exbook.exbook.util.retrofit.RetrofitServiceRegistrar
 
 @Configuration
+@Import(RetrofitServiceRegistrar::class)
 class ServicesConfiguration {
     @Bean
     fun orderRepository(mongoOrderRepository: MongoOrderRepository) = DatabaseOrderRepository(mongoOrderRepository)
