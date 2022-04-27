@@ -8,9 +8,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 @EnableConfigurationProperties(RetrofitServicesConfiguration::class)
 @Component("RetrofitServiceFactory")
-class RetrofitServiceFactory(
-    private val servicesConfigurations: RetrofitServicesConfiguration
-) {
+class RetrofitServiceFactory(private val servicesConfigurations: RetrofitServicesConfiguration) {
     fun <T> createClient(serviceClass: Class<T>): T {
         val annotation = serviceClass.getAnnotation(RetrofitService::class.java)
         try {

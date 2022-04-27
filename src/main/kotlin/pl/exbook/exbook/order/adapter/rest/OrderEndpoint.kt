@@ -43,8 +43,8 @@ class OrderEndpoint(private val orderFacade: OrderFacade) {
 
     @PreAuthorize("isFullyAuthenticated()")
     @GetMapping("orders/{orderId}")
-    fun getUserOrder(@PathVariable orderId: OrderId, user: UsernamePasswordAuthenticationToken): OrderDto {
-        return orderFacade.getOrder(orderId, user.name).toDto()
+    fun getUserOrder(@PathVariable orderId: OrderId, user: UsernamePasswordAuthenticationToken): OrderSnippetDto {
+        return orderFacade.getOrderSnippet(orderId, user.name).toDto()
     }
 
     @PreAuthorize("isFullyAuthenticated()")
@@ -135,7 +135,27 @@ data class OrderSnippetDto(
     data class ShippingDto(
         val id: String,
         val methodName: String,
+        val methodType: String,
+        val shippingAddress: ShippingAddressDto?,
+        val pickupPoint: PickupPointDto?,
         val cost: CostDto
+    )
+
+    data class ShippingAddressDto(
+        val firstAndLastName: String,
+        val phoneNumber: String,
+        val email: String,
+        val address: String,
+        val postalCode: String,
+        val city: String,
+        val country: String
+    )
+
+    data class PickupPointDto(
+        val firstAndLastName: String,
+        val phoneNumber: String,
+        val email: String,
+        val pickupPointId: String
     )
 
     data class OrderItemDto(
@@ -234,6 +254,26 @@ private fun OrderSnippet.Seller.toDto() = OrderSnippetDto.SellerDto(
 private fun OrderSnippet.Shipping.toDto() = OrderSnippetDto.ShippingDto(
     id = this.id.raw,
     methodName = this.methodName,
+    methodType = this.methodType.name,
+    shippingAddress = this.shippingAddress?.let {
+        OrderSnippetDto.ShippingAddressDto(
+            firstAndLastName = it.firstAndLastName,
+            phoneNumber = it.phoneNumber,
+            email = it.email,
+            address = it.address,
+            postalCode = it.postalCode,
+            city = it.city,
+            country = it.country
+        )
+    },
+    pickupPoint = this.pickupPoint?.let {
+        OrderSnippetDto.PickupPointDto(
+            firstAndLastName = it.firstAndLastName,
+            phoneNumber = it.phoneNumber,
+            email = it.email,
+            pickupPointId = it.pickupPointId.raw
+        )
+    },
     cost = OrderSnippetDto.CostDto(this.cost.finalCost.toDto())
 )
 

@@ -141,6 +141,16 @@ class OrderFacade(
         return order
     }
 
+    fun getOrderSnippet(orderId: OrderId, username: String): OrderSnippet {
+        val user = userFacade.getUserByUsername(username)
+        val order = orderRepository.findById(orderId) ?: throw OrderNotFoundException(orderId)
+        val seller = userFacade.getUserById(order.seller.id)
+        val shipping = shippingFacade.findShipping(order.shipping.id)
+        val items = order.items.map { item -> toOrderSnippetItem(item) }
+
+        return order.toOrderSnippet(seller, user, shipping, items)
+    }
+
     fun getUserOrders(username: String, itemsPerPage: Int?, page: Int?): Page<Order> {
         val userId = userFacade.getUserByUsername(username).id
         return orderRepository.findByBuyerId(userId, itemsPerPage, page, null)
@@ -210,7 +220,40 @@ private fun Order.toOrderSnippet(
         lastName = buyer.lastName
     ),
     seller = OrderSnippet.Seller(seller.id, seller.username, seller.firstName, seller.lastName),
-    shipping = OrderSnippet.Shipping(this.shipping.id, shipping.shippingMethodName, OrderSnippet.Cost(shipping.cost.finalCost)),
+    shipping = OrderSnippet.Shipping(
+        id = this.shipping.id,
+        methodName = shipping.shippingMethodName,
+        methodType = when (shipping) {
+            is PersonalShipping -> ShippingMethodType.PERSONAL_DELIVERY
+            is AddressShipping -> ShippingMethodType.ADDRESS_DELIVERY
+            is PickupPointShipping -> ShippingMethodType.PICKUP_DELIVERY
+            else -> throw IllegalStateException("")
+        },
+        shippingAddress = shipping.let {
+            if (it is AddressShipping) {
+                OrderSnippet.ShippingAddress(
+                    firstAndLastName = it.address.firstAndLastName,
+                    phoneNumber = it.address.phoneNumber,
+                    email = it.address.email,
+                    address = it.address.address,
+                    postalCode = it.address.postalCode,
+                    city = it.address.city,
+                    country = it.address.country
+                )
+            } else null
+        },
+        pickupPoint = shipping.let {
+           if (it is PickupPointShipping) {
+               OrderSnippet.PickupPoint(
+                   firstAndLastName = it.pickupPoint.firstAndLastName,
+                   phoneNumber = it.pickupPoint.phoneNumber,
+                   email = it.pickupPoint.email,
+                   pickupPointId = it.pickupPoint.pickupPointId
+               )
+           } else null
+        },
+        cost = OrderSnippet.Cost(shipping.cost.finalCost)
+    ),
     items = orderItems,
     orderType = this.orderType,
     exchangeBooks = this.exchangeBooks,

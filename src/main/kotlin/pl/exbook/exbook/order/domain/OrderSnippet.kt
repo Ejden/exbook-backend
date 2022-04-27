@@ -4,8 +4,10 @@ import java.time.Instant
 import pl.exbook.exbook.shared.Money
 import pl.exbook.exbook.shared.OfferId
 import pl.exbook.exbook.shared.OrderId
+import pl.exbook.exbook.shared.PickupPointId
 import pl.exbook.exbook.shared.ShippingId
 import pl.exbook.exbook.shared.UserId
+import pl.exbook.exbook.shippingmethod.domain.ShippingMethodType
 
 data class OrderSnippet(
     val id: OrderId,
@@ -37,7 +39,27 @@ data class OrderSnippet(
     data class Shipping(
         val id: ShippingId,
         val methodName: String,
+        val methodType: ShippingMethodType,
+        val shippingAddress: ShippingAddress?,
+        val pickupPoint: PickupPoint?,
         val cost: Cost
+    )
+
+    data class ShippingAddress(
+        val firstAndLastName: String,
+        val phoneNumber: String,
+        val email: String,
+        val address: String,
+        val postalCode: String,
+        val city: String,
+        val country: String
+    )
+
+    data class PickupPoint(
+        val firstAndLastName: String,
+        val phoneNumber: String,
+        val email: String,
+        val pickupPointId: PickupPointId
     )
 
     data class OrderItem(
