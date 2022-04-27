@@ -7,28 +7,23 @@ import pl.exbook.exbook.bookinfo.domain.BookInfo
 import pl.exbook.exbook.bookinfo.domain.BookInfoProvider
 import pl.exbook.exbook.shared.ExternalServiceException
 import pl.exbook.exbook.shared.NotFoundException
+import pl.exbook.exbook.util.retrofit.RetrofitService
 import retrofit2.Call
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
 
+@RetrofitService("google-books")
 interface GoogleInfoService {
     @GET("volumes")
     fun getBooksByIsbn(@Query("q") query: String): Call<BookInfoDto>
 }
 
 @Service
-class GoogleInfoProviderService : BookInfoProvider {
-    private val retrofit = Retrofit.Builder()
-        .baseUrl("https://www.googleapis.com/books/v1/")
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-    private val githubService = retrofit.create(GoogleInfoService::class.java)
-
+@Suppress("SpringJavaInjectionPointsAutowiringInspection")
+class GoogleInfoProviderService(private val googleInfoService: GoogleInfoService) : BookInfoProvider {
     override fun getBookInformation(isbn: String): BookInfo {
         val query = "isbn:${isbn}"
-        val response = githubService.getBooksByIsbn(query).execute()
+        val response = googleInfoService.getBooksByIsbn(query).execute()
 
         if (response.isSuccessful) {
             return response.body()?.items?.firstOrNull()?.toDomain() ?: throw BookNotFoundException(isbn)
