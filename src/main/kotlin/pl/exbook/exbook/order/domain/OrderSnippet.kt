@@ -20,7 +20,8 @@ data class OrderSnippet(
     val orderDate: Instant,
     val status: Order.OrderStatus,
     val totalCost: Money,
-    val note: String
+    val note: String,
+    val availableActions: Actions
 ) {
     data class Buyer(
         val id: UserId,
@@ -82,4 +83,22 @@ data class OrderSnippet(
     data class Image(val url: String)
 
     data class Cost(val finalCost: Money)
+
+    data class Actions(
+        val buyerActions: BuyerActions,
+        val sellerActions: SellerActions
+    )
+
+    data class BuyerActions(
+        val canBeReturned: Boolean,
+        val canBeCancelled: Boolean,
+        val canBeMarkedAsDelivered: Boolean
+    )
+
+    data class SellerActions(
+        val canBeCancelled: Boolean,
+        val canExchangeBeDismissed: Boolean,
+        val canExchangeBeAccepted: Boolean,
+        val canBeMarkedAsSent: Boolean
+    )
 }

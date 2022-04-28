@@ -260,5 +260,18 @@ private fun Order.toOrderSnippet(
     orderDate = this.orderDate,
     status = this.status,
     totalCost = this.totalCost,
-    note = this.note
+    note = this.note,
+    availableActions = OrderSnippet.Actions(
+        buyerActions = OrderSnippet.BuyerActions(
+            canBeReturned = this.canBeReturned,
+            canBeCancelled = this.canBeCancelled,
+            canBeMarkedAsDelivered = this.canBeMarkedAsDelivered
+        ),
+        sellerActions = OrderSnippet.SellerActions(
+            canBeCancelled = this.canBeCancelled,
+            canExchangeBeDismissed = this.canExchangeBeDismissed,
+            canExchangeBeAccepted = this.canExchangeBeAccepted,
+            canBeMarkedAsSent = this.canBeMarkedAsSent
+        )
+    )
 )

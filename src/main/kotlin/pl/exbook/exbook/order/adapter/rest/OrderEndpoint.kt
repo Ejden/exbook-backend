@@ -116,7 +116,8 @@ data class OrderSnippetDto(
     val orderDate: Instant,
     val status: String,
     val totalCost: MoneyDto,
-    val note: String
+    val note: String,
+    val availableActions: Actions
 ) {
     data class BuyerDto(
         val id: String,
@@ -184,6 +185,24 @@ data class OrderSnippetDto(
         val condition: String,
         val quantity: Int
     )
+
+    data class Actions(
+        val buyerActions: BuyerActions,
+        val sellerActions: SellerActions
+    )
+
+    data class BuyerActions(
+        val canBeReturned: Boolean,
+        val canBeCancelled: Boolean,
+        val canBeMarkedAsDelivered: Boolean
+    )
+
+    data class SellerActions(
+        val canBeCancelled: Boolean,
+        val canExchangeBeDismissed: Boolean,
+        val canExchangeBeAccepted: Boolean,
+        val canBeMarkedAsSent: Boolean
+    )
 }
 
 private fun Order.toDto() = OrderDto(
@@ -234,7 +253,20 @@ private fun OrderSnippet.toDto() = OrderSnippetDto(
     orderDate = this.orderDate,
     status = this.status.name,
     totalCost = this.totalCost.toDto(),
-    note = this.note
+    note = this.note,
+    availableActions = OrderSnippetDto.Actions(
+        buyerActions = OrderSnippetDto.BuyerActions(
+            canBeReturned = this.availableActions.buyerActions.canBeReturned,
+            canBeCancelled = this.availableActions.buyerActions.canBeCancelled,
+            canBeMarkedAsDelivered = this.availableActions.buyerActions.canBeMarkedAsDelivered,
+        ),
+        sellerActions = OrderSnippetDto.SellerActions(
+            canBeCancelled = this.availableActions.sellerActions.canBeCancelled,
+            canExchangeBeDismissed = this.availableActions.sellerActions.canExchangeBeDismissed,
+            canExchangeBeAccepted = this.availableActions.sellerActions.canExchangeBeAccepted,
+            canBeMarkedAsSent = this.availableActions.sellerActions.canBeMarkedAsSent
+        )
+    )
 )
 
 private fun OrderSnippet.Buyer.toDto() = OrderSnippetDto.BuyerDto(
