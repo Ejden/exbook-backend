@@ -18,23 +18,43 @@ import java.lang.RuntimeException
 import pl.exbook.exbook.shared.ExchangeBookId
 
 class DatabaseOrderRepository(private val mongoOrderRepository: MongoOrderRepository) : OrderRepository {
-    override fun findById(id: OrderId): Order {
-        return mongoOrderRepository.findById(id.raw)
-            .orElseThrow { OrderNotFoundException(id) }
-            .toDomain()
-    }
+    override fun findById(id: OrderId): Order = mongoOrderRepository.findById(id.raw)
+        .orElseThrow { OrderNotFoundException(id) }
+        .toDomain()
 
-    override fun save(order: Order): Order {
-        return mongoOrderRepository.save(order.toDocument()).toDomain()
-    }
+    override fun save(order: Order): Order = mongoOrderRepository.save(order.toDocument()).toDomain()
 
-    override fun findByBuyerId(buyerId: UserId, itemsPerPage: Int?, page: Int?, sorting: String?): Page<Order> {
-        return mongoOrderRepository.findAllByBuyerId(buyerId.raw, createPageable(itemsPerPage, page, sorting)).map { it.toDomain() }
-    }
+    override fun findByBuyerId(buyerId: UserId, itemsPerPage: Int?, page: Int?, sorting: String?): Page<Order> =
+        mongoOrderRepository.findAllByBuyerId(buyerId.raw, createPageable(itemsPerPage, page, sorting))
+            .map { it.toDomain() }
 
-    override fun findBySellerId(sellerId: UserId, itemsPerPage: Int?, page: Int?, sorting: String?): Page<Order> {
-        return mongoOrderRepository.findAllBySellerId(sellerId.raw, createPageable(itemsPerPage, page, sorting)).map { it.toDomain() }
-    }
+    override fun findByBuyerIdAndStatus(
+        buyerId: UserId,
+        status: List<Order.OrderStatus>,
+        itemsPerPage: Int?,
+        page: Int?,
+        sorting: String?
+    ): Page<Order> = mongoOrderRepository.findAllByBuyerIdAndStatusIn(
+        buyerId.raw,
+        status.map { it.name },
+        createPageable(itemsPerPage, page, sorting)
+    ).map { it.toDomain() }
+
+    override fun findBySellerId(sellerId: UserId, itemsPerPage: Int?, page: Int?, sorting: String?): Page<Order> =
+        mongoOrderRepository.findAllBySellerId(sellerId.raw, createPageable(itemsPerPage, page, sorting))
+            .map { it.toDomain() }
+
+    override fun findBySellerIdAndStatus(
+        sellerId: UserId,
+        status: List<Order.OrderStatus>,
+        itemsPerPage: Int?,
+        page: Int?,
+        sorting: String?
+    ): Page<Order> = mongoOrderRepository.findAllBySellerIdAndStatusIn(
+        sellerId.raw,
+        status.map { it.name },
+        createPageable(itemsPerPage, page, sorting)
+    ).map { it.toDomain() }
 
     override fun remove(orderId: OrderId) = mongoOrderRepository.removeById(orderId.raw)
 

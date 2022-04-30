@@ -13,7 +13,11 @@ import org.springframework.stereotype.Repository
 interface MongoOrderRepository : PagingAndSortingRepository<OrderDocument, String> {
     fun findAllByBuyerId(buyerId: String, pageable: Pageable): Page<OrderDocument>
 
+    fun findAllByBuyerIdAndStatusIn(buyerId: String, status: List<String>, pageable: Pageable): Page<OrderDocument>
+
     fun findAllBySellerId(sellerId: String, pageable: Pageable): Page<OrderDocument>
+
+    fun findAllBySellerIdAndStatusIn(sellerId: String, status: List<String>, pageable: Pageable): Page<OrderDocument>
 
     fun removeById(orderId: String)
 }

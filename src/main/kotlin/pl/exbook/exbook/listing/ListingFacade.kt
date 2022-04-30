@@ -34,6 +34,22 @@ class ListingFacade(
         }
     }
 
+    fun getUserOffers(
+        username: String,
+        offersPerPage: Int?,
+        page: Int?,
+        sorting: String?
+    ): Page<DetailedOffer> {
+        val seller = userFacade.getUserByUsername(username)
+        return offerFacade.getUserOffers(seller.id, offersPerPage, page, sorting).map {
+            val shippingMethods = it.shippingMethods
+                .map { s -> Pair(shippingMethodFacade.getShippingMethodById(s.id), s) }
+                .map { s -> s.first.toDetailed(s.second.price) }
+            val stock = stockFacade.getStock(it.stockId)
+            it.toDetailedOffer(seller, shippingMethods, findCheapestShippingMethod(shippingMethods), stock.inStock)
+        }
+    }
+
     fun getOffer(offerId: OfferId): DetailedOffer {
         val offer = offerFacade.getOffer(offerId)
         val seller = userFacade.getUserById(offer.seller.id)

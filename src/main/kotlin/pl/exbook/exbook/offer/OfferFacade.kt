@@ -17,6 +17,7 @@ import pl.exbook.exbook.offer.domain.OfferVersioningRepository
 import pl.exbook.exbook.offer.domain.UpdateOfferCommand
 import pl.exbook.exbook.security.domain.UnauthorizedException
 import pl.exbook.exbook.shared.OfferVersionId
+import pl.exbook.exbook.shared.UserId
 import pl.exbook.exbook.user.UserFacade
 
 @Service
@@ -29,11 +30,16 @@ class OfferFacade (
     private val MAX_NUMBER_OF_OFFERS_PER_PAGE = 100
 
     fun getOffers(offersPerPage: Int?, page: Int?, sorting: String?): Page<Offer> {
-        val pageRequest = parsePageRequest(offersPerPage, page, sorting)
+        val pageRequest = parsePageRequest(offersPerPage, page?.minus(1), sorting)
         return offerRepository.findAll(pageRequest)
     }
 
     fun getOffer(offerId: OfferId) = offerRepository.findById(offerId) ?: throw OfferNotFoundException(offerId)
+
+    fun getUserOffers(userId: UserId, offersPerPage: Int?, page: Int?, sorting: String?): Page<Offer> {
+        val pageRequest = parsePageRequest(offersPerPage, page?.minus(1), sorting)
+        return offerRepository.findBySellerId(userId, pageRequest)
+    }
 
     fun getOfferVersion(
         offerId: OfferId,

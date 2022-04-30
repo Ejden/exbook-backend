@@ -90,46 +90,47 @@ class OrderFacade(
         }
     }
 
-    private fun createShippingFromDraft(shipping: PlaceOrdersCommand.Shipping): Shipping = when (shipping.shippingMethodType) {
-        ShippingMethodType.PICKUP_DELIVERY -> PickupPointShipping(
-            id = ShippingId(UUID.randomUUID().toString()),
-            shippingMethodId = shipping.shippingMethodId,
-            shippingMethodName = shipping.shippingMethodName,
-            cost = Shipping.Cost(shipping.cost.finalCost),
-            pickupPoint = Shipping.PickupPoint(
-                firstAndLastName = shipping.pickupPoint!!.firstAndLastName,
-                phoneNumber = shipping.pickupPoint.phoneNumber,
-                email = shipping.pickupPoint.email,
-                pickupPointId = shipping.pickupPoint.pickupPointId
+    private fun createShippingFromDraft(shipping: PlaceOrdersCommand.Shipping): Shipping =
+        when (shipping.shippingMethodType) {
+            ShippingMethodType.PICKUP_DELIVERY -> PickupPointShipping(
+                id = ShippingId(UUID.randomUUID().toString()),
+                shippingMethodId = shipping.shippingMethodId,
+                shippingMethodName = shipping.shippingMethodName,
+                cost = Shipping.Cost(shipping.cost.finalCost),
+                pickupPoint = Shipping.PickupPoint(
+                    firstAndLastName = shipping.pickupPoint!!.firstAndLastName,
+                    phoneNumber = shipping.pickupPoint.phoneNumber,
+                    email = shipping.pickupPoint.email,
+                    pickupPointId = shipping.pickupPoint.pickupPointId
+                )
             )
-        )
-        ShippingMethodType.ADDRESS_DELIVERY -> AddressShipping(
-            id = ShippingId(UUID.randomUUID().toString()),
-            shippingMethodId = shipping.shippingMethodId,
-            shippingMethodName = shipping.shippingMethodName,
-            cost = Shipping.Cost(shipping.cost.finalCost),
-            address = Shipping.ShippingAddress(
-                firstAndLastName = shipping.shippingAddress!!.firstAndLastName,
-                phoneNumber = shipping.shippingAddress.phoneNumber,
-                email = shipping.shippingAddress.email,
-                address = shipping.shippingAddress.address,
-                postalCode = shipping.shippingAddress.postalCode,
-                city = shipping.shippingAddress.city,
-                country = shipping.shippingAddress.country
+            ShippingMethodType.ADDRESS_DELIVERY -> AddressShipping(
+                id = ShippingId(UUID.randomUUID().toString()),
+                shippingMethodId = shipping.shippingMethodId,
+                shippingMethodName = shipping.shippingMethodName,
+                cost = Shipping.Cost(shipping.cost.finalCost),
+                address = Shipping.ShippingAddress(
+                    firstAndLastName = shipping.shippingAddress!!.firstAndLastName,
+                    phoneNumber = shipping.shippingAddress.phoneNumber,
+                    email = shipping.shippingAddress.email,
+                    address = shipping.shippingAddress.address,
+                    postalCode = shipping.shippingAddress.postalCode,
+                    city = shipping.shippingAddress.city,
+                    country = shipping.shippingAddress.country
+                )
             )
-        )
-        ShippingMethodType.PERSONAL_DELIVERY -> PersonalShipping(
-            id = ShippingId(UUID.randomUUID().toString()),
-            shippingMethodId = shipping.shippingMethodId,
-            shippingMethodName = shipping.shippingMethodName,
-            cost = Shipping.Cost(shipping.cost.finalCost)
-        )
-    }.also { shippingFacade.save(it) }
+            ShippingMethodType.PERSONAL_DELIVERY -> PersonalShipping(
+                id = ShippingId(UUID.randomUUID().toString()),
+                shippingMethodId = shipping.shippingMethodId,
+                shippingMethodName = shipping.shippingMethodName,
+                cost = Shipping.Cost(shipping.cost.finalCost)
+            )
+        }.also { shippingFacade.save(it) }
 
     private fun reserveOffers(
         order: PlaceOrdersCommand.Order,
         offers: List<Offer>
-    ) : List<StockReservation> = order.items.map {
+    ): List<StockReservation> = order.items.map {
         val correspondingOffer = offers.first { offer -> offer.id == it.offerId }
         stockFacade.reserve(correspondingOffer.stockId, it.quantity)
     }
@@ -156,9 +157,17 @@ class OrderFacade(
         return orderRepository.findByBuyerId(userId, itemsPerPage, page, null)
     }
 
-    fun getUserOrdersSnippets(username: String, itemsPerPage: Int?, page: Int?): Page<OrderSnippet> {
+    fun getUserOrdersSnippets(
+        username: String,
+        itemsPerPage: Int?,
+        page: Int?,
+        statusFilters: List<Order.OrderStatus>
+    ): Page<OrderSnippet> {
         val user = userFacade.getUserByUsername(username)
-        return orderRepository.findByBuyerId(user.id, itemsPerPage, page, null).map {
+        val orders = if (statusFilters.isEmpty()) orderRepository.findByBuyerId(user.id, itemsPerPage, page, null)
+        else orderRepository.findByBuyerIdAndStatus(user.id, statusFilters, itemsPerPage, page, null)
+
+        return orders.map {
             val seller = userFacade.getUserById(it.seller.id)
             val shipping = shippingFacade.findShipping(it.shipping.id)
             val items = it.items.map { item -> toOrderSnippetItem(item) }
@@ -171,9 +180,17 @@ class OrderFacade(
         return orderRepository.findBySellerId(sellerId, itemsPerPage, page, null)
     }
 
-    fun getSellerOrdersSnippets(username: String, itemsPerPage: Int?, page: Int?): Page<OrderSnippet> {
+    fun getSellerOrdersSnippets(
+        username: String,
+        itemsPerPage: Int?,
+        page: Int?,
+        statusFilters: List<Order.OrderStatus>
+    ): Page<OrderSnippet> {
         val user = userFacade.getUserByUsername(username)
-        return orderRepository.findBySellerId(user.id, itemsPerPage, page, null).map {
+        val orders = if (statusFilters.isEmpty()) orderRepository.findBySellerId(user.id, itemsPerPage, page, null)
+        else orderRepository.findBySellerIdAndStatus(user.id, statusFilters, itemsPerPage, page, null)
+
+        return orders.map {
             val shipping = shippingFacade.findShipping(it.shipping.id)
             val items = it.items.map { item -> toOrderSnippetItem(item) }
             val buyer = userFacade.getUserById(it.buyer.id)
@@ -243,14 +260,14 @@ private fun Order.toOrderSnippet(
             } else null
         },
         pickupPoint = shipping.let {
-           if (it is PickupPointShipping) {
-               OrderSnippet.PickupPoint(
-                   firstAndLastName = it.pickupPoint.firstAndLastName,
-                   phoneNumber = it.pickupPoint.phoneNumber,
-                   email = it.pickupPoint.email,
-                   pickupPointId = it.pickupPoint.pickupPointId
-               )
-           } else null
+            if (it is PickupPointShipping) {
+                OrderSnippet.PickupPoint(
+                    firstAndLastName = it.pickupPoint.firstAndLastName,
+                    phoneNumber = it.pickupPoint.phoneNumber,
+                    email = it.pickupPoint.email,
+                    pickupPointId = it.pickupPoint.pickupPointId
+                )
+            } else null
         },
         cost = OrderSnippet.Cost(shipping.cost.finalCost)
     ),

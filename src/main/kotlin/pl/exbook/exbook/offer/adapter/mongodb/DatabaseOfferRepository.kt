@@ -27,6 +27,10 @@ class DatabaseOfferRepository(
         return mongoOfferRepository.findAll(pageable).map { it.toDomain() }
     }
 
+    override fun findBySellerId(sellerId: UserId, pageable: Pageable): Page<Offer> {
+        return mongoOfferRepository.findAllBySellerId(sellerId.raw, pageable).map { it.toDomain() }
+    }
+
     override fun findAll(): List<Offer> {
         return mongoOfferRepository.findAll().map { it.toDomain() }
     }

@@ -2,13 +2,18 @@ package pl.exbook.exbook.offer.adapter.mongodb
 
 import java.time.Instant
 import org.springframework.data.annotation.Id
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.data.repository.PagingAndSortingRepository
 import org.springframework.stereotype.Repository
+import pl.exbook.exbook.offer.domain.Offer
 import pl.exbook.exbook.shared.dto.MoneyDocument
 
 @Repository
-interface MongoOfferRepository : PagingAndSortingRepository<OfferDocument, String>
+interface MongoOfferRepository : PagingAndSortingRepository<OfferDocument, String> {
+    fun findAllBySellerId(sellerId: String, pageable: Pageable): Page<OfferDocument>
+}
 
 @Document(collection = "offers")
 data class OfferDocument(

@@ -36,9 +36,15 @@ class OrderEndpoint(private val orderFacade: OrderFacade) {
     fun getUserOrdersSnippets(
         @RequestParam("p") page: Int?,
         @RequestParam("size") itemsPerPage: Int?,
+        @RequestParam("status") status: List<String>?,
         user: UsernamePasswordAuthenticationToken
     ) : Page<OrderSnippetDto> {
-        return orderFacade.getUserOrdersSnippets(user.name, itemsPerPage, page).map { it.toDto() }
+        return orderFacade.getUserOrdersSnippets(
+            user.name,
+            itemsPerPage,
+            page,
+            status.orEmpty().map { Order.OrderStatus.valueOf(it) }
+        ).map { it.toDto() }
     }
 
     @PreAuthorize("isFullyAuthenticated()")
@@ -62,9 +68,15 @@ class OrderEndpoint(private val orderFacade: OrderFacade) {
     fun getSellerOrdersSnippets(
         @RequestParam("p") page: Int?,
         @RequestParam("size") itemsPerPage: Int?,
+        @RequestParam("status") status: List<String>?,
         user: UsernamePasswordAuthenticationToken
     ): Page<OrderSnippetDto> {
-        return orderFacade.getSellerOrdersSnippets(user.name, itemsPerPage, page).map { it.toDto() }
+        return orderFacade.getSellerOrdersSnippets(
+            user.name,
+            itemsPerPage,
+            page,
+            status.orEmpty().map { Order.OrderStatus.valueOf(it) }
+        ).map { it.toDto() }
     }
 
     companion object : KLogging()
