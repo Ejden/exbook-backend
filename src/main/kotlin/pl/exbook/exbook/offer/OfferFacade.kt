@@ -1,5 +1,6 @@
 package pl.exbook.exbook.offer
 
+import java.math.BigDecimal
 import java.time.Instant
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
@@ -16,6 +17,7 @@ import pl.exbook.exbook.offer.domain.OfferVersionNotFoundException
 import pl.exbook.exbook.offer.domain.OfferVersioningRepository
 import pl.exbook.exbook.offer.domain.UpdateOfferCommand
 import pl.exbook.exbook.security.domain.UnauthorizedException
+import pl.exbook.exbook.shared.CategoryId
 import pl.exbook.exbook.shared.OfferVersionId
 import pl.exbook.exbook.shared.UserId
 import pl.exbook.exbook.user.UserFacade
@@ -32,6 +34,34 @@ class OfferFacade (
     fun getOffers(offersPerPage: Int?, page: Int?, sorting: String?): Page<Offer> {
         val pageRequest = parsePageRequest(offersPerPage, page?.minus(1), sorting)
         return offerRepository.findAll(pageRequest)
+    }
+
+    fun getOffers(
+        searchingPhrase: String,
+        bookConditions: List<Offer.Condition>?,
+        offerType: List<Offer.Type>?,
+        priceFrom: BigDecimal?,
+        priceTo: BigDecimal?,
+        location: String?,
+        categoryId: CategoryId?,
+        offersPerPage: Int?,
+        page: Int?,
+        sorting: String?
+    ): Page<Offer> {
+        val searchingPhrasesFilter = searchingPhrase.split(" ").filterNot { it.trim().isBlank() }
+        val bookConditionsFilter = bookConditions ?: Offer.Condition.values().asList()
+        val offerTypeFilter = offerType ?: Offer.Type.values().asList()
+        val pageRequest = parsePageRequest(offersPerPage, page?.minus(1), sorting)
+        return offerRepository.findWithFilters(
+            searchingPhrases = searchingPhrasesFilter,
+            bookConditions = bookConditionsFilter,
+            offerType = offerTypeFilter,
+            priceFrom = priceFrom,
+            priceTo = priceTo,
+            location = location,
+            categoryId = categoryId,
+            pageable = pageRequest
+        )
     }
 
     fun getOffer(offerId: OfferId) = offerRepository.findById(offerId) ?: throw OfferNotFoundException(offerId)

@@ -1,5 +1,6 @@
 package pl.exbook.exbook.offer.adapter.mongodb
 
+import java.math.BigDecimal
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Component
@@ -14,10 +15,7 @@ import pl.exbook.exbook.shared.UserId
 import pl.exbook.exbook.shared.dto.toDocument
 
 @Component
-class DatabaseOfferRepository(
-    private val mongoOfferRepository: MongoOfferRepository,
-) : OfferRepository {
-
+class DatabaseOfferRepository(private val mongoOfferRepository: MongoOfferRepository) : OfferRepository {
     override fun findById(offerId: OfferId): Offer? {
         val offer = mongoOfferRepository.findById(offerId.raw)
         return if (offer.isPresent) offer.get().toDomain() else null
@@ -34,6 +32,26 @@ class DatabaseOfferRepository(
     override fun findAll(): List<Offer> {
         return mongoOfferRepository.findAll().map { it.toDomain() }
     }
+
+    override fun findWithFilters(
+        searchingPhrases: List<String>,
+        bookConditions: List<Offer.Condition>,
+        offerType: List<Offer.Type>,
+        priceFrom: BigDecimal?,
+        priceTo: BigDecimal?,
+        location: String?,
+        categoryId: CategoryId?,
+        pageable: Pageable
+    ): Page<Offer> = mongoOfferRepository.findWithFilters(
+        searchingPhrases,
+        bookConditions.map { it.name },
+        offerType.map { it.name },
+        priceFrom,
+        priceTo,
+        location,
+        categoryId?.raw,
+        pageable
+    ).map { it.toDomain() }
 
     override fun save(offer: Offer): Offer {
         return mongoOfferRepository.save(offer.toDocument()).toDomain()

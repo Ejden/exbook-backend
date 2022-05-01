@@ -1,5 +1,6 @@
 package pl.exbook.exbook.listing
 
+import java.math.BigDecimal
 import org.springframework.data.domain.Page
 import org.springframework.stereotype.Service
 import pl.exbook.exbook.listing.domain.DetailedOffer
@@ -23,8 +24,30 @@ class ListingFacade(
     private val shippingMethodFacade: ShippingMethodFacade,
     private val stockFacade: StockFacade
 ) {
-    fun getOfferListing(offersPerPage: Int?, page: Int?, sorting: String?): Page<DetailedOffer> {
-        return offerFacade.getOffers(offersPerPage, page, sorting).map {
+    fun getOfferListing(
+        searchingPhrase: String,
+        bookConditions: List<Offer.Condition>?,
+        offerType: List<Offer.Type>?,
+        priceFrom: BigDecimal?,
+        priceTo: BigDecimal?,
+        location: String?,
+        categoryId: CategoryId?,
+        offersPerPage: Int?,
+        page: Int?,
+        sorting: String?
+    ): Page<DetailedOffer> {
+        return offerFacade.getOffers(
+            searchingPhrase = searchingPhrase,
+            bookConditions = bookConditions,
+            offerType = offerType,
+            priceFrom = priceFrom,
+            priceTo = priceTo,
+            location = location,
+            categoryId = categoryId,
+            offersPerPage = offersPerPage,
+            page = page,
+            sorting = sorting
+        ).map {
             val seller = userFacade.getUserById(it.seller.id)
             val shippingMethods = it.shippingMethods
                 .map { s -> Pair(shippingMethodFacade.getShippingMethodById(s.id), s) }
