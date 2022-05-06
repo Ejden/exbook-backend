@@ -111,7 +111,8 @@ private fun Offer.toDetailedOffer(
         shippingMethods = shippingMethods,
         cheapestMethod = cheapestMethod
     ),
-    inStock = inStock
+    inStock = inStock,
+    available = inStock > 0L
 )
 
 private fun Offer.Book.toDetailed() = DetailedOffer.Book(

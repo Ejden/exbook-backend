@@ -15,7 +15,8 @@ class DetailedOffer(
     val location: String,
     val category: Category,
     val shipping: Shipping,
-    val inStock: Long
+    val inStock: Long,
+    val available: Boolean
 ) {
     data class Book(
         val author: String,

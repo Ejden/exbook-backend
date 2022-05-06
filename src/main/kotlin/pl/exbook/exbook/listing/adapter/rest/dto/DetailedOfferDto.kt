@@ -15,7 +15,8 @@ data class DetailedOfferDto(
     val location: String,
     val category: CategoryDto,
     val shipping: ShippingDto,
-    val inStock: Long
+    val inStock: Long,
+    val available: Boolean
 ) {
     companion object {
         fun fromDomain(offer: DetailedOffer) = DetailedOfferDto(
@@ -29,7 +30,8 @@ data class DetailedOfferDto(
             location = offer.location,
             category = offer.category.toDto(),
             shipping = offer.shipping.toDto(),
-            inStock = offer.inStock
+            inStock = offer.inStock,
+            available = offer.available
         )
     }
 }

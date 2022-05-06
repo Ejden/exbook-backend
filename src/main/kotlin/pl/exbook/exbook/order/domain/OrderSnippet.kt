@@ -99,6 +99,7 @@ data class OrderSnippet(
         val canBeCancelled: Boolean,
         val canExchangeBeDismissed: Boolean,
         val canExchangeBeAccepted: Boolean,
-        val canBeMarkedAsSent: Boolean
+        val canBeMarkedAsSent: Boolean,
+        val canBeMarkedAsReturnDelivered: Boolean
     )
 }

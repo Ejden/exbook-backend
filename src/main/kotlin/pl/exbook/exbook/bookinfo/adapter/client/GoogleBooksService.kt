@@ -53,7 +53,7 @@ data class BookInfoDto(
     @JsonIgnoreProperties(ignoreUnknown = true)
     data class VolumeInfo(
         val title: String,
-        val subtitle: String,
+        val subtitle: String?,
         val authors: List<String>,
         val publishedDate: String,
         val industryIdentifiers: List<IndustryIdentifier>

@@ -25,6 +25,12 @@ data class Order(
 ) {
     val canBeReturned: Boolean
         get() = Duration.between(orderDate, Instant.now()).abs().toDays() <= 14
+                && status != OrderStatus.RETURN_IN_PROGRESS
+                && status != OrderStatus.RETURN_DELIVERED
+                && status != OrderStatus.CANCELED
+                && status != OrderStatus.DECLINED
+    val canBeMarkedAsReturnDelivered: Boolean
+        get() = status == OrderStatus.RETURN_DELIVERED
     val canBeCancelled: Boolean
         get() = status == OrderStatus.WAITING_FOR_ACCEPT || status == OrderStatus.NEW || status == OrderStatus.ACCEPTED
     val canBeMarkedAsDelivered: Boolean
@@ -35,6 +41,8 @@ data class Order(
         get() = status == OrderStatus.WAITING_FOR_ACCEPT
     val canBeMarkedAsSent: Boolean
         get() = status == OrderStatus.NEW || status == OrderStatus.ACCEPTED
+
+    fun changeStatus(newStatus: OrderStatus) = this.copy(status = newStatus)
 
     data class OrderItem(
         val offerId: OfferId,
@@ -69,7 +77,8 @@ data class Order(
         DELIVERED,
         DECLINED,
         ACCEPTED,
-        RETURNED,
+        RETURN_DELIVERED,
+        RETURN_IN_PROGRESS,
         CANCELED
     }
 }

@@ -15,6 +15,9 @@ import pl.exbook.exbook.shared.OrderId
 import pl.exbook.exbook.shared.dto.MoneyDto
 import pl.exbook.exbook.shared.dto.toDto
 import java.time.Instant
+import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RequestBody
+import pl.exbook.exbook.order.adapter.rest.dto.OrderStatusChangeRequest
 import pl.exbook.exbook.order.domain.OrderSnippet
 import pl.exbook.exbook.shared.ContentType
 
@@ -51,6 +54,16 @@ class OrderEndpoint(private val orderFacade: OrderFacade) {
     @GetMapping("orders/{orderId}")
     fun getUserOrder(@PathVariable orderId: OrderId, user: UsernamePasswordAuthenticationToken): OrderSnippetDto {
         return orderFacade.getOrderSnippet(orderId, user.name).toDto()
+    }
+
+    @PreAuthorize("isFullyAuthenticated()")
+    @PutMapping("orders/{orderId}/status", consumes = [ContentType.V1], produces = [ContentType.V1])
+    fun changeOrderStatus(
+        @PathVariable orderId: OrderId,
+        @RequestBody requestBody: OrderStatusChangeRequest,
+        token: UsernamePasswordAuthenticationToken
+    ): OrderSnippetDto {
+        return orderFacade.changeOrderStatus(requestBody.toCommand(orderId, token.name)).toDto()
     }
 
     @PreAuthorize("isFullyAuthenticated()")
@@ -213,7 +226,8 @@ data class OrderSnippetDto(
         val canBeCancelled: Boolean,
         val canExchangeBeDismissed: Boolean,
         val canExchangeBeAccepted: Boolean,
-        val canBeMarkedAsSent: Boolean
+        val canBeMarkedAsSent: Boolean,
+        val canBeMarkesAsReturnDelivered: Boolean
     )
 }
 
@@ -276,7 +290,8 @@ private fun OrderSnippet.toDto() = OrderSnippetDto(
             canBeCancelled = this.availableActions.sellerActions.canBeCancelled,
             canExchangeBeDismissed = this.availableActions.sellerActions.canExchangeBeDismissed,
             canExchangeBeAccepted = this.availableActions.sellerActions.canExchangeBeAccepted,
-            canBeMarkedAsSent = this.availableActions.sellerActions.canBeMarkedAsSent
+            canBeMarkedAsSent = this.availableActions.sellerActions.canBeMarkedAsSent,
+            canBeMarkesAsReturnDelivered = this.availableActions.sellerActions.canBeMarkedAsReturnDelivered
         )
     )
 )
