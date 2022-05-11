@@ -26,3 +26,8 @@ logging:
     pl:
       exbook:
         DEBUG
+
+retrofit-services:
+  services:
+    google-books:
+      url: https://www.googleapis.com/books/v1/

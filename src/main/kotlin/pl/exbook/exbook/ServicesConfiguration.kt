@@ -2,8 +2,8 @@ package pl.exbook.exbook
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Import
 import pl.exbook.exbook.offer.OfferFacade
-import pl.exbook.exbook.order.OrderFacade
 import pl.exbook.exbook.order.adapter.mongodb.DatabaseOrderRepository
 import pl.exbook.exbook.order.adapter.mongodb.MongoOrderRepository
 import pl.exbook.exbook.order.domain.OrderFactory
@@ -16,10 +16,10 @@ import pl.exbook.exbook.shipping.domain.ShippingFactory
 import pl.exbook.exbook.shipping.domain.ShippingRepository
 import pl.exbook.exbook.shipping.domain.ShippingValidator
 import pl.exbook.exbook.shippingmethod.ShippingMethodFacade
-import pl.exbook.exbook.stock.StockFacade
-import pl.exbook.exbook.user.UserFacade
+import pl.exbook.exbook.util.retrofit.RetrofitServiceRegistrar
 
 @Configuration
+@Import(RetrofitServiceRegistrar::class)
 class ServicesConfiguration {
     @Bean
     fun orderRepository(mongoOrderRepository: MongoOrderRepository) = DatabaseOrderRepository(mongoOrderRepository)
@@ -54,15 +54,4 @@ class ServicesConfiguration {
 
     @Bean
     fun orderValidator() = OrderValidator()
-
-    @Bean
-    fun orderFacade(
-        orderRepository: DatabaseOrderRepository,
-        userFacade: UserFacade,
-        shippingFacade: ShippingFacade,
-        offerFacade: OfferFacade,
-        orderValidator: OrderValidator,
-        orderFactory: OrderFactory,
-        stockFacade: StockFacade
-    ) = OrderFacade(orderRepository, userFacade, shippingFacade, offerFacade, orderValidator, orderFactory, stockFacade)
 }

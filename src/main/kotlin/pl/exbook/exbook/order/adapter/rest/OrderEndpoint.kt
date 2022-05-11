@@ -15,13 +15,15 @@ import pl.exbook.exbook.shared.OrderId
 import pl.exbook.exbook.shared.dto.MoneyDto
 import pl.exbook.exbook.shared.dto.toDto
 import java.time.Instant
+import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RequestBody
+import pl.exbook.exbook.order.adapter.rest.dto.OrderStatusChangeRequest
 import pl.exbook.exbook.order.domain.OrderSnippet
+import pl.exbook.exbook.shared.ContentType
 
 @RestController
 @RequestMapping("api")
-class OrderEndpoint(
-    private val orderFacade: OrderFacade,
-) {
+class OrderEndpoint(private val orderFacade: OrderFacade) {
     @PreAuthorize("isFullyAuthenticated()")
     @GetMapping("orders")
     fun getUserOrders(
@@ -29,7 +31,7 @@ class OrderEndpoint(
         @RequestParam("size") itemsPerPage: Int?,
         user: UsernamePasswordAuthenticationToken
     ): Page<OrderDto> {
-        return orderFacade.getUserOrders(user.name, page, itemsPerPage).map { it.toDto() }
+        return orderFacade.getUserOrders(user.name, itemsPerPage, page).map { it.toDto() }
     }
 
     @PreAuthorize("isFullyAuthenticated()")
@@ -37,15 +39,31 @@ class OrderEndpoint(
     fun getUserOrdersSnippets(
         @RequestParam("p") page: Int?,
         @RequestParam("size") itemsPerPage: Int?,
+        @RequestParam("status") status: List<String>?,
         user: UsernamePasswordAuthenticationToken
     ) : Page<OrderSnippetDto> {
-        return orderFacade.getUserOrdersSnippets(user.name, page, itemsPerPage).map { it.toDto() }
+        return orderFacade.getUserOrdersSnippets(
+            user.name,
+            itemsPerPage,
+            page,
+            status.orEmpty().map { Order.OrderStatus.valueOf(it) }
+        ).map { it.toDto() }
     }
 
     @PreAuthorize("isFullyAuthenticated()")
     @GetMapping("orders/{orderId}")
-    fun getUserOrder(@PathVariable orderId: OrderId, user: UsernamePasswordAuthenticationToken): OrderDto {
-        return orderFacade.getOrder(orderId, user.name).toDto()
+    fun getUserOrder(@PathVariable orderId: OrderId, user: UsernamePasswordAuthenticationToken): OrderSnippetDto {
+        return orderFacade.getOrderSnippet(orderId, user.name).toDto()
+    }
+
+    @PreAuthorize("isFullyAuthenticated()")
+    @PutMapping("orders/{orderId}/status", consumes = [ContentType.V1], produces = [ContentType.V1])
+    fun changeOrderStatus(
+        @PathVariable orderId: OrderId,
+        @RequestBody requestBody: OrderStatusChangeRequest,
+        token: UsernamePasswordAuthenticationToken
+    ): OrderSnippetDto {
+        return orderFacade.changeOrderStatus(requestBody.toCommand(orderId, token.name)).toDto()
     }
 
     @PreAuthorize("isFullyAuthenticated()")
@@ -56,6 +74,22 @@ class OrderEndpoint(
         user: UsernamePasswordAuthenticationToken
     ): Page<OrderDto> {
         return orderFacade.getSellerOrders(user.name, page, itemsPerPage).map { it.toDto() }
+    }
+
+    @PreAuthorize("isFullyAuthenticated()")
+    @GetMapping("sale/orders/snippet", produces = [ContentType.V1])
+    fun getSellerOrdersSnippets(
+        @RequestParam("p") page: Int?,
+        @RequestParam("size") itemsPerPage: Int?,
+        @RequestParam("status") status: List<String>?,
+        user: UsernamePasswordAuthenticationToken
+    ): Page<OrderSnippetDto> {
+        return orderFacade.getSellerOrdersSnippets(
+            user.name,
+            itemsPerPage,
+            page,
+            status.orEmpty().map { Order.OrderStatus.valueOf(it) }
+        ).map { it.toDto() }
     }
 
     companion object : KLogging()
@@ -107,9 +141,15 @@ data class OrderSnippetDto(
     val orderDate: Instant,
     val status: String,
     val totalCost: MoneyDto,
-    val note: String
+    val note: String,
+    val availableActions: Actions
 ) {
-    data class BuyerDto(val id: String)
+    data class BuyerDto(
+        val id: String,
+        val name: String,
+        val firstName: String,
+        val lastName: String
+    )
 
     data class SellerDto(
         val id: String,
@@ -121,7 +161,27 @@ data class OrderSnippetDto(
     data class ShippingDto(
         val id: String,
         val methodName: String,
+        val methodType: String,
+        val shippingAddress: ShippingAddressDto?,
+        val pickupPoint: PickupPointDto?,
         val cost: CostDto
+    )
+
+    data class ShippingAddressDto(
+        val firstAndLastName: String,
+        val phoneNumber: String,
+        val email: String,
+        val address: String,
+        val postalCode: String,
+        val city: String,
+        val country: String
+    )
+
+    data class PickupPointDto(
+        val firstAndLastName: String,
+        val phoneNumber: String,
+        val email: String,
+        val pickupPointId: String
     )
 
     data class OrderItemDto(
@@ -149,6 +209,25 @@ data class OrderSnippetDto(
         val isbn: String?,
         val condition: String,
         val quantity: Int
+    )
+
+    data class Actions(
+        val buyerActions: BuyerActions,
+        val sellerActions: SellerActions
+    )
+
+    data class BuyerActions(
+        val canBeReturned: Boolean,
+        val canBeCancelled: Boolean,
+        val canBeMarkedAsDelivered: Boolean
+    )
+
+    data class SellerActions(
+        val canBeCancelled: Boolean,
+        val canExchangeBeDismissed: Boolean,
+        val canExchangeBeAccepted: Boolean,
+        val canBeMarkedAsSent: Boolean,
+        val canBeMarkesAsReturnDelivered: Boolean
     )
 }
 
@@ -200,10 +279,29 @@ private fun OrderSnippet.toDto() = OrderSnippetDto(
     orderDate = this.orderDate,
     status = this.status.name,
     totalCost = this.totalCost.toDto(),
-    note = this.note
+    note = this.note,
+    availableActions = OrderSnippetDto.Actions(
+        buyerActions = OrderSnippetDto.BuyerActions(
+            canBeReturned = this.availableActions.buyerActions.canBeReturned,
+            canBeCancelled = this.availableActions.buyerActions.canBeCancelled,
+            canBeMarkedAsDelivered = this.availableActions.buyerActions.canBeMarkedAsDelivered,
+        ),
+        sellerActions = OrderSnippetDto.SellerActions(
+            canBeCancelled = this.availableActions.sellerActions.canBeCancelled,
+            canExchangeBeDismissed = this.availableActions.sellerActions.canExchangeBeDismissed,
+            canExchangeBeAccepted = this.availableActions.sellerActions.canExchangeBeAccepted,
+            canBeMarkedAsSent = this.availableActions.sellerActions.canBeMarkedAsSent,
+            canBeMarkesAsReturnDelivered = this.availableActions.sellerActions.canBeMarkedAsReturnDelivered
+        )
+    )
 )
 
-private fun OrderSnippet.Buyer.toDto() = OrderSnippetDto.BuyerDto(this.id.raw)
+private fun OrderSnippet.Buyer.toDto() = OrderSnippetDto.BuyerDto(
+    id = this.id.raw,
+    name = this.name,
+    firstName = this.firstName,
+    lastName = this.lastName
+)
 
 private fun OrderSnippet.Seller.toDto() = OrderSnippetDto.SellerDto(
     id = this.id.raw,
@@ -215,6 +313,26 @@ private fun OrderSnippet.Seller.toDto() = OrderSnippetDto.SellerDto(
 private fun OrderSnippet.Shipping.toDto() = OrderSnippetDto.ShippingDto(
     id = this.id.raw,
     methodName = this.methodName,
+    methodType = this.methodType.name,
+    shippingAddress = this.shippingAddress?.let {
+        OrderSnippetDto.ShippingAddressDto(
+            firstAndLastName = it.firstAndLastName,
+            phoneNumber = it.phoneNumber,
+            email = it.email,
+            address = it.address,
+            postalCode = it.postalCode,
+            city = it.city,
+            country = it.country
+        )
+    },
+    pickupPoint = this.pickupPoint?.let {
+        OrderSnippetDto.PickupPointDto(
+            firstAndLastName = it.firstAndLastName,
+            phoneNumber = it.phoneNumber,
+            email = it.email,
+            pickupPointId = it.pickupPointId.raw
+        )
+    },
     cost = OrderSnippetDto.CostDto(this.cost.finalCost.toDto())
 )
 

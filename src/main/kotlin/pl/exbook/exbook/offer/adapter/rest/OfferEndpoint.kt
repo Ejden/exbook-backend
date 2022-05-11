@@ -22,9 +22,9 @@ import pl.exbook.exbook.shared.OfferId
 import pl.exbook.exbook.user.domain.UserNotFoundException
 
 @RestController
-@RequestMapping("api/offers")
+@RequestMapping("api")
 class OfferEndpoint(private val offerFacade: OfferFacade) {
-    @PostMapping(consumes = [ContentType.V1], produces = [ContentType.V1])
+    @PostMapping("offers", consumes = [ContentType.V1], produces = [ContentType.V1])
     @PreAuthorize("hasAuthority('EXCHANGE_BOOKS')")
     fun addOffer(@RequestBody request: CreateOfferRequest, user: UsernamePasswordAuthenticationToken?): ResponseEntity<OfferDto> {
         return if (user != null) {
@@ -35,7 +35,7 @@ class OfferEndpoint(private val offerFacade: OfferFacade) {
         }
     }
 
-    @PutMapping("{offerId}", consumes = [ContentType.V1], produces = [ContentType.V1])
+    @PutMapping("offers/{offerId}", consumes = [ContentType.V1], produces = [ContentType.V1])
     @PreAuthorize("hasAuthority('EXCHANGE_BOOKS')")
     fun updateOffer(
         @RequestBody request: UpdateOfferRequest,
@@ -50,7 +50,7 @@ class OfferEndpoint(private val offerFacade: OfferFacade) {
         }
     }
 
-    @GetMapping("{offerId}", produces = [ContentType.V1])
+    @GetMapping("offers/{offerId}", produces = [ContentType.V1])
     fun getOffer(@PathVariable offerId: OfferId): OfferDto {
         return offerFacade.getOffer(offerId).toDto()
     }

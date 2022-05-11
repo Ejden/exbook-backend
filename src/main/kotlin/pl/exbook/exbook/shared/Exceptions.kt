@@ -11,3 +11,5 @@ open class NotFoundException(
 ) : ApplicationException(message, cause, userMessage)
 
 open class ValidationException(message: String? = null, cause: Throwable? = null) : ApplicationException(message, cause)
+
+open class ExternalServiceException(message: String?, cause: Throwable? = null) : ApplicationException(message, cause)
