@@ -13,22 +13,20 @@
   <a href="https://github.com/github_username/repo_name">
     <img src="img/logo.jpg" alt="Logo" width="114">
   </a>
+</p>
 
 <h3 align="center">Exbook</h3>
 
-  <p align="center">
-    Website for exchanging or buying books with other users
-    <br />
-    <br />
-    <a href="">View Demo (Not set up at the moment)</a>
-    ·
-    <a href="https://github.com/Ejden/exbook-backend/issues">Report Bug</a>
-    ·
-    <a href="https://github.com/Ejden/exbook-backend/issues">Request Feature</a>
-  </p>
+<p align="center">
+Website for exchanging or buying books with other users
+<br />
+<br />
+<a href="">View Demo (Not set up at the moment)</a>
+·
+<a href="https://github.com/Ejden/exbook-backend/issues">Report Bug</a>
+·
+<a href="https://github.com/Ejden/exbook-backend/issues">Request Feature</a>
 </p>
-
-
 
 <!-- TABLE OF CONTENTS -->
 <details open="open">
@@ -162,13 +160,18 @@ This will activate local profile of the application.
 * Shipping Methods
 * JWT Token Authorization
 * Swagger
+* Searching and filtering offers
+* Displaying offers
+* Exchanging/Buying books
+* Basket
+* Offer versioning
+* Downloading Book info from Google api
+* Searching common shipping method for order group
+
 
 ### Not implemented yet
-* Searching offers
-* Displaying offers
 * Messaging users
-* Exchanging/Buying books
-* Recommendations
+* Basic Recommendations
 
 
 See the [open issues](https://github.com/Ejden/exbook-backend/issues) for a list of proposed features (and known issues).
