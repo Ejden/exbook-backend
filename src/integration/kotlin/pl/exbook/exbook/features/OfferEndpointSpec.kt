@@ -65,8 +65,14 @@ class OfferEndpointSpec(private val rest: TestRestTemplate) : BaseIntegrationSpe
                 },
                 "description": "description",
                 "images": {
-                    "thumbnail": null,
-                    "allImages": []
+                    "thumbnail": {
+                        "url": "http://localhost:8082/api/images/617ae0fd9ad2e061b2464bea"
+                    },
+                    "allImages": [
+                        {
+                            "url": "http://localhost:8082/api/images/617ae0fd9ad2e061b2464bea"
+                        }
+                    ]
                 },
                 "type": "EXCHANGE_AND_BUY",
                 "cost": {
@@ -526,8 +532,14 @@ class OfferEndpointSpec(private val rest: TestRestTemplate) : BaseIntegrationSpe
                 },
                 "description": "description",
                 "images": {
-                    "thumbnail": null,
-                    "allImages": []
+                    "thumbnail": {
+                        "url": "http://localhost:8082/api/images/617ae0fd9ad2e061b2464bea"
+                    },
+                    "allImages": [
+                        {
+                            "url": "http://localhost:8082/api/images/617ae0fd9ad2e061b2464bea"
+                        }
+                    ]
                 },
                 "type": "EXCHANGE_AND_BUY",
                 "cost": {
