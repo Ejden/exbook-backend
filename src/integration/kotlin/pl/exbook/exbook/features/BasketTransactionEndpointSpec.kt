@@ -93,8 +93,14 @@ class BasketTransactionEndpointSpec(private val rest: TestRestTemplate) : BaseIn
                           "isbn": "1234567890"
                         },
                         "images": {
-                          "thumbnail": null,
-                          "allImages": []
+                            "thumbnail": {
+                                "url": "http://localhost:8082/api/images/617ae0fd9ad2e061b2464bea"
+                            },
+                            "allImages": [
+                                {
+                                    "url": "http://localhost:8082/api/images/617ae0fd9ad2e061b2464bea"
+                                }
+                            ]
                         }
                       },
                       "quantity": 1,
@@ -219,8 +225,14 @@ class BasketTransactionEndpointSpec(private val rest: TestRestTemplate) : BaseIn
                           "isbn": "1234567890"
                         },
                         "images": {
-                          "thumbnail": null,
-                          "allImages": []
+                            "thumbnail": {
+                                "url": "http://localhost:8082/api/images/617ae0fd9ad2e061b2464bea"
+                            },
+                            "allImages": [
+                                {
+                                    "url": "http://localhost:8082/api/images/617ae0fd9ad2e061b2464bea"
+                                }
+                            ]
                         }
                       },
                       "quantity": 2,
