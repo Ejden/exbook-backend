@@ -112,7 +112,7 @@ class DraftPurchaseCreator(
                     shippingMethodId = shipping.first.shippingMethodId,
                     shippingMethodName = shipping.first.shippingMethodName,
                     shippingMethodType = when (shipping.first) {
-                        is PickupPointShipping -> ShippingMethodType.PERSONAL_DELIVERY
+                        is PickupPointShipping -> ShippingMethodType.PICKUP_DELIVERY
                         is AddressShipping -> ShippingMethodType.ADDRESS_DELIVERY
                         is PersonalShipping -> ShippingMethodType.PERSONAL_DELIVERY
                         else -> throw IllegalStateException("Incompatible shipping type")
