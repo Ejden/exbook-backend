@@ -2,13 +2,8 @@ package pl.exbook.exbook.order.domain
 
 import java.time.Duration
 import pl.exbook.exbook.offer.domain.Offer
+import pl.exbook.exbook.shared.*
 import java.time.Instant
-import pl.exbook.exbook.shared.ExchangeBookId
-import pl.exbook.exbook.shared.Money
-import pl.exbook.exbook.shared.OfferId
-import pl.exbook.exbook.shared.OrderId
-import pl.exbook.exbook.shared.ShippingId
-import pl.exbook.exbook.shared.UserId
 
 data class Order(
     val id: OrderId,
@@ -44,6 +39,11 @@ data class Order(
 
     fun changeStatus(newStatus: OrderStatus) = this.copy(status = newStatus)
 
+    fun markAsAccepted(sellerShippingInfo: SellerShippingInfo) = this.copy(
+        status = OrderStatus.ACCEPTED,
+        shipping = this.shipping.copy(sellerShippingInfo = sellerShippingInfo)
+    )
+
     data class OrderItem(
         val offerId: OfferId,
         val quantity: Long,
@@ -54,7 +54,10 @@ data class Order(
 
     data class Seller(val id: UserId)
 
-    data class Shipping(val id: ShippingId)
+    data class Shipping(
+        val id: ShippingId,
+        val sellerShippingInfo: SellerShippingInfo?
+    )
 
     data class ExchangeBook(
         val id: ExchangeBookId,
@@ -63,6 +66,28 @@ data class Order(
         val isbn: String?,
         val condition: Offer.Condition,
         val quantity: Int
+    )
+
+    data class SellerShippingInfo(
+        val address: SellerShippingInfoAddress?,
+        val pickupPoint: SellerShippingInfoPickupPoint?
+    )
+
+    data class SellerShippingInfoAddress(
+        val firstAndLastName: String,
+        val phoneNumber: String,
+        val email: String,
+        val address: String,
+        val postalCode: String,
+        val city: String,
+        val country: String
+    )
+
+    data class SellerShippingInfoPickupPoint(
+        val firstAndLastName: String,
+        val phoneNumber: String,
+        val email: String,
+        val pickupPointId: PickupPointId
     )
 
     enum class OrderType {

@@ -14,6 +14,7 @@ data class OrderSnippet(
     val buyer: Buyer,
     val seller: Seller,
     val shipping: Shipping,
+    val sellerShippingInfo: SellerShippingInfo?,
     val items: List<OrderItem>,
     val orderType: Order.OrderType,
     val exchangeBooks: List<Order.ExchangeBook>,
@@ -44,6 +45,11 @@ data class OrderSnippet(
         val shippingAddress: ShippingAddress?,
         val pickupPoint: PickupPoint?,
         val cost: Cost
+    )
+
+    data class SellerShippingInfo(
+        val address: ShippingAddress?,
+        val pickupPoint: PickupPoint?
     )
 
     data class ShippingAddress(

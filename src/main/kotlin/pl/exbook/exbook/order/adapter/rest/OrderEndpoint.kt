@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.web.bind.annotation.PatchMapping
 import pl.exbook.exbook.order.OrderFacade
 import pl.exbook.exbook.order.domain.Order
 import pl.exbook.exbook.shared.OrderId
@@ -17,6 +18,7 @@ import pl.exbook.exbook.shared.dto.toDto
 import java.time.Instant
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
+import pl.exbook.exbook.order.adapter.rest.dto.AcceptExchangeRequest
 import pl.exbook.exbook.order.adapter.rest.dto.OrderStatusChangeRequest
 import pl.exbook.exbook.order.domain.OrderSnippet
 import pl.exbook.exbook.shared.ContentType
@@ -64,6 +66,16 @@ class OrderEndpoint(private val orderFacade: OrderFacade) {
         token: UsernamePasswordAuthenticationToken
     ): OrderSnippetDto {
         return orderFacade.changeOrderStatus(requestBody.toCommand(orderId, token.name)).toDto()
+    }
+
+    @PreAuthorize("isFullyAuthenticated()")
+    @PatchMapping("orders/{orderId}/accept", consumes = [ContentType.V1], produces = [ContentType.V1])
+    fun acceptExchange(
+        @PathVariable orderId: OrderId,
+        @RequestBody requestBody: AcceptExchangeRequest,
+        token: UsernamePasswordAuthenticationToken
+    ): OrderSnippetDto {
+        return orderFacade.markOrderAsAccepted(requestBody.toCommand(orderId, token.name)).toDto()
     }
 
     @PreAuthorize("isFullyAuthenticated()")
@@ -135,6 +147,7 @@ data class OrderSnippetDto(
     val buyer: BuyerDto,
     val seller: SellerDto,
     val shipping: ShippingDto,
+    val sellerShippingInfo: SellerShippingInfoDto?,
     val items: List<OrderItemDto>,
     val orderType: String,
     val exchangeBooks: List<ExchangeBookDto>,
@@ -156,6 +169,11 @@ data class OrderSnippetDto(
         val name: String,
         val firstName: String,
         val lastName: String
+    )
+
+    data class SellerShippingInfoDto(
+        val address: ShippingAddressDto?,
+        val pickupPoint: PickupPointDto?
     )
 
     data class ShippingDto(
@@ -227,7 +245,7 @@ data class OrderSnippetDto(
         val canExchangeBeDismissed: Boolean,
         val canExchangeBeAccepted: Boolean,
         val canBeMarkedAsSent: Boolean,
-        val canBeMarkesAsReturnDelivered: Boolean
+        val canBeMarkedAsReturnDelivered: Boolean
     )
 }
 
@@ -265,6 +283,7 @@ private fun OrderSnippet.toDto() = OrderSnippetDto(
     buyer = this.buyer.toDto(),
     seller = this.seller.toDto(),
     shipping = this.shipping.toDto(),
+    sellerShippingInfo = this.sellerShippingInfo?.toDto(),
     items = this.items.map { it.toDto() },
     orderType = this.orderType.name,
     exchangeBooks = this.exchangeBooks.map {
@@ -291,7 +310,7 @@ private fun OrderSnippet.toDto() = OrderSnippetDto(
             canExchangeBeDismissed = this.availableActions.sellerActions.canExchangeBeDismissed,
             canExchangeBeAccepted = this.availableActions.sellerActions.canExchangeBeAccepted,
             canBeMarkedAsSent = this.availableActions.sellerActions.canBeMarkedAsSent,
-            canBeMarkesAsReturnDelivered = this.availableActions.sellerActions.canBeMarkedAsReturnDelivered
+            canBeMarkedAsReturnDelivered = this.availableActions.sellerActions.canBeMarkedAsReturnDelivered
         )
     )
 )
@@ -351,4 +370,26 @@ private fun OrderSnippet.Book.toDto() = OrderSnippetDto.BookDto(
 
 private fun OrderSnippet.Images.toDto() = OrderSnippetDto.ImagesDto(
     thumbnail = this.thumbnail?.let { OrderSnippetDto.ImageDto(it.url) }
+)
+
+private fun OrderSnippet.SellerShippingInfo.toDto() = OrderSnippetDto.SellerShippingInfoDto(
+    address = this.address?.let {
+        OrderSnippetDto.ShippingAddressDto(
+            firstAndLastName = it.firstAndLastName,
+            phoneNumber = it.phoneNumber,
+            email = it.email,
+            address = it.address,
+            postalCode = it.postalCode,
+            city = it.city,
+            country = it.country
+        )
+    },
+    pickupPoint = this.pickupPoint?.let {
+        OrderSnippetDto.PickupPointDto(
+            firstAndLastName = it.firstAndLastName,
+            phoneNumber = it.phoneNumber,
+            email = it.email,
+            pickupPointId = it.pickupPointId.raw
+        )
+    }
 )
