@@ -78,7 +78,7 @@ class SecurityConfig (
         return object:WebMvcConfigurer{
             override fun addCorsMappings(registry: CorsRegistry) {
                 registry.addMapping("/**")
-                    .allowedMethods(HttpMethod.POST.name, HttpMethod.GET.name, HttpMethod.PUT.name, HttpMethod.DELETE.name, HttpMethod.OPTIONS.name)
+                    .allowedMethods(HttpMethod.POST.name, HttpMethod.GET.name, HttpMethod.PUT.name, HttpMethod.DELETE.name, HttpMethod.OPTIONS.name, HttpMethod.PATCH.name)
                     .allowedHeaders("*", "Content-Type")
                     .allowedOrigins("http://localhost:8080")
                     .allowCredentials(true)

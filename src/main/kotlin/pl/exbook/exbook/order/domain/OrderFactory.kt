@@ -25,7 +25,7 @@ class OrderFactory {
             id = OrderId(UUID.randomUUID().toString()),
             buyer = Order.Buyer(buyerId),
             seller = Order.Seller(command.seller.id),
-            shipping = Order.Shipping(shipping.id),
+            shipping = Order.Shipping(shipping.id, Order.SellerShippingInfo(null, null)),
             items = orderItems,
             orderType = command.orderType,
             exchangeBooks = command.exchangeBooks.map { it.toExchangeBook() },

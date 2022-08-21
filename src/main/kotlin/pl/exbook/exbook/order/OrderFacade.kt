@@ -4,14 +4,7 @@ import mu.KLogging
 import org.springframework.data.domain.Page
 import org.springframework.stereotype.Service
 import pl.exbook.exbook.order.adapter.mongodb.OrderNotFoundException
-import pl.exbook.exbook.order.domain.Order
-import pl.exbook.exbook.order.domain.OrderCreator
-import pl.exbook.exbook.order.domain.OrderDecorator
-import pl.exbook.exbook.order.domain.OrderRepository
-import pl.exbook.exbook.order.domain.OrderSnippet
-import pl.exbook.exbook.order.domain.OrderStatusChangeCommand
-import pl.exbook.exbook.order.domain.OrderStatusService
-import pl.exbook.exbook.order.domain.PlaceOrdersCommand
+import pl.exbook.exbook.order.domain.*
 import pl.exbook.exbook.shared.OrderId
 import pl.exbook.exbook.shipping.ShippingFacade
 import pl.exbook.exbook.user.UserFacade
@@ -80,7 +73,13 @@ class OrderFacade(
         }
     }
 
-    fun changeOrderStatus(command: OrderStatusChangeCommand) = orderStatusService.changeStatus(command).decorate()
+    fun changeOrderStatus(command: OrderStatusChangeCommand) = orderStatusService
+        .changeStatus(command)
+        .decorate()
+
+    fun markOrderAsAccepted(command: AcceptExchangeCommand) = orderStatusService
+        .acceptExchange(command)
+        .decorate()
 
     private fun Order.decorate() = orderDecorator.decorate(
         order = this,
