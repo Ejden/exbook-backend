@@ -1,11 +1,8 @@
 spring:
   data:
     mongodb:
-      host: ${DATABASE_HOST}
-      port: ${DATABASE_PORT}
+      uri: ${DATABASE_URI}
       database: ${DATABASE_NAME}
-      username: ${DATABASE_USERNAME}
-      password: ${DATABASE_PASSWORD}
   jpa:
     show-sql: false
   servlet:
