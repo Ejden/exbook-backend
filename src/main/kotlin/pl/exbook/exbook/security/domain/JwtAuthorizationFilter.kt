@@ -37,7 +37,8 @@ class JwtAuthorizationFilter(
         } catch (e: TokenExpiredException) {
             logger.info("User token expired")
             response.status = 401
-            throw TokenExpiredException("User token expired")
+            response.setHeader("Authorization", " ; expires = Thu, 01 Jan 1970 00:00:00 GMT")
+            response.sendError(401)
         }
     }
 

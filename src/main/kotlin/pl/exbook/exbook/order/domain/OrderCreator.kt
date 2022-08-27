@@ -1,5 +1,6 @@
 package pl.exbook.exbook.order.domain
 
+import mu.KLogging
 import java.time.Instant
 import java.util.UUID
 import org.springframework.stereotype.Service
@@ -26,6 +27,7 @@ class OrderCreator(
     private val stockFacade: StockFacade,
     private val orderFactory: OrderFactory
 ) {
+    companion object : KLogging()
     fun placeOrders(command: PlaceOrdersCommand): List<Order> {
         val orders = mutableListOf<Order>()
 
@@ -33,7 +35,7 @@ class OrderCreator(
             try {
                 orders += placeOrder(order, command.buyer, command.timestamp)
             } catch (cause: Exception) {
-                OrderFacade.logger.error { "Error creating order ${order.orderId.raw} from purchase ${command.purchaseId.raw}" }
+                logger.error(cause) { "Error creating order ${order.orderId.raw} from purchase ${command.purchaseId.raw}" }
             }
         }
 
