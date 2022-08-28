@@ -7,4 +7,7 @@ class InsufficientStockException(
     stockId: StockId,
     requestedAmount: Long,
     availableAmount: Long
-) : ValidationException("Tried to reserve $requestedAmount for ${stockId.raw} stock amount but actual is $availableAmount")
+) : ValidationException(
+    message = "Tried to reserve $requestedAmount for ${stockId.raw} stock amount but actual is $availableAmount",
+    userMessageKey = "validation.insufficientStockException.userMessage"
+)

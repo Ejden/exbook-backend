@@ -1,19 +1,20 @@
 package pl.exbook.exbook.baskettransaction.adapter.rest.dto
 
-interface PurchaseCreationResultDto {
-    val result: String
-}
+data class PurchaseCreationResultDto(
+    val result: String,
+    val numberOfCreatedOrders: Int,
+    val numberOfFailedOrders: Int,
+    val createdOrders: List<String>,
+    val errorsByOrder: Map<String, OrderCreationError>,
+    val purchaseCreationError: PurchaseCreationError?
+)
 
-class UnsuccessfulPurchaseCreationResultDto(
-    override val result: String,
-    val reason: String,
-) : PurchaseCreationResultDto
+data class OrderCreationError(
+    val code: String,
+    val userMessage: String
+)
 
-class SuccessfulPurchaseCreationResultDto(
-    override val result: String,
-    val createdOrders: List<Order>,
-) : PurchaseCreationResultDto {
-    class Order(
-        val id: String
-    )
-}
+data class PurchaseCreationError(
+    val code: String,
+    val userMessage: String
+)

@@ -10,21 +10,23 @@ import pl.exbook.exbook.baskettransaction.domain.DraftPurchase
 import pl.exbook.exbook.baskettransaction.domain.DraftPurchaseCreator
 import pl.exbook.exbook.baskettransaction.domain.DraftPurchaseDecorator
 import pl.exbook.exbook.baskettransaction.domain.DraftPurchaseOrdersRepository
+import pl.exbook.exbook.baskettransaction.domain.OrderNotCreatedReason
 import pl.exbook.exbook.baskettransaction.domain.PreviewBasketTransactionCommand
 import pl.exbook.exbook.baskettransaction.domain.PreviewPurchaseCommand
 import pl.exbook.exbook.baskettransaction.domain.PurchaseCreationResult
 import pl.exbook.exbook.baskettransaction.domain.PurchaseNotCreatedReason
-import pl.exbook.exbook.baskettransaction.domain.SuccessfulPurchaseCreationResult
-import pl.exbook.exbook.baskettransaction.domain.UnsuccessfulPurchaseCreationResult
 import pl.exbook.exbook.offer.OfferFacade
 import pl.exbook.exbook.order.OrderFacade
 import pl.exbook.exbook.order.domain.Order
+import pl.exbook.exbook.order.domain.OrdersCreationResult
 import pl.exbook.exbook.order.domain.PlaceOrdersCommand
+import pl.exbook.exbook.shared.OrderId
 import pl.exbook.exbook.shared.ShippingMethodId
 import pl.exbook.exbook.shippingmethod.ShippingMethodFacade
 import pl.exbook.exbook.shippingmethod.domain.ShippingMethod
 import pl.exbook.exbook.shippingmethod.domain.ShippingMethodNotFoundException
 import pl.exbook.exbook.shippingmethod.domain.ShippingMethodType
+import pl.exbook.exbook.stock.domain.InsufficientStockException
 import pl.exbook.exbook.user.UserFacade
 import pl.exbook.exbook.user.domain.User
 
@@ -67,11 +69,34 @@ class BasketTransactionFacade(
             return validationErrors
         }
 
-        val orders = orderFacade.placeOrders(createPlaceOrdersCommand(draftPurchase!!, buyer, timestamp))
-        removeRealisedOrdersFromBasket(buyer, orders, draftPurchase)
+        val creationResult = orderFacade.placeOrders(createPlaceOrdersCommand(draftPurchase!!, buyer, timestamp))
+        removeRealisedOrdersFromBasket(buyer, creationResult.createdOrders, draftPurchase)
 
-        return SuccessfulPurchaseCreationResult(orders.map { it.id })
+        return resolveOrdersCreationResult(creationResult)
     }
+
+    private fun resolveOrdersCreationResult(ordersCreationResult: OrdersCreationResult): PurchaseCreationResult {
+        return when {
+            ordersCreationResult.errors.isEmpty() -> PurchaseCreationResult.AllOrdersCreated(
+                ordersCreationResult.createdOrders.map { it.id }
+            )
+            ordersCreationResult.createdOrders.isEmpty() -> PurchaseCreationResult.NoneOrdersCreated(
+                mapOrderNotCreatedErrorsToReasons(ordersCreationResult.errors)
+            )
+            else -> PurchaseCreationResult.SomeOrdersCreated(
+                ordersCreationResult.createdOrders.map { it.id },
+                mapOrderNotCreatedErrorsToReasons(ordersCreationResult.errors)
+            )
+        }
+    }
+
+    private fun mapOrderNotCreatedErrorsToReasons(errors: Map<OrderId, Exception>): Map<OrderId, OrderNotCreatedReason> =
+        errors.mapValues { (_, exception) ->
+            when (exception) {
+                is InsufficientStockException -> OrderNotCreatedReason.NOT_SUFFICIENT_OFFER_QUANTITY
+                else -> OrderNotCreatedReason.UNKNOWN_ERROR
+            }
+        }
 
     fun removeRealisedOrdersFromBasket(
         buyer: User,
@@ -84,17 +109,25 @@ class BasketTransactionFacade(
         draftPurchaseRepository.saveDraftPurchase(updatedPurchase)
     }
 
-    private fun DraftPurchase?.validatePurchase(timestamp: Instant): UnsuccessfulPurchaseCreationResult? {
+    private fun DraftPurchase?.validatePurchase(timestamp: Instant): PurchaseCreationResult.PurchaseCreationError? {
         if (this == null) {
-            return UnsuccessfulPurchaseCreationResult(PurchaseNotCreatedReason.EMPTY_DRAFT)
+            return PurchaseCreationResult.PurchaseCreationError(
+                PurchaseNotCreatedReason.EMPTY_DRAFT,
+                0
+            )
         }
 
         if (Duration.between(timestamp, this.lastUpdated).abs().toMinutes() > 30) {
-            return UnsuccessfulPurchaseCreationResult(PurchaseNotCreatedReason.DRAFT_TOO_OLD)
+            return PurchaseCreationResult.PurchaseCreationError(
+                PurchaseNotCreatedReason.DRAFT_TOO_OLD, this.orders.size
+            )
         }
 
         if (!this.orders.isPurchasable()) {
-            return UnsuccessfulPurchaseCreationResult(PurchaseNotCreatedReason.DELIVERY_INFO_NOT_COMPLETE)
+            return PurchaseCreationResult.PurchaseCreationError(
+                PurchaseNotCreatedReason.DELIVERY_INFO_NOT_COMPLETE,
+                this.orders.size
+            )
         }
 
         return null

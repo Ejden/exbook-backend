@@ -1,5 +1,6 @@
 package pl.exbook.exbook.baskettransaction.adapter.rest
 
+import org.springframework.context.MessageSource
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.ok
 import org.springframework.security.access.prepost.PreAuthorize
@@ -17,10 +18,14 @@ import pl.exbook.exbook.baskettransaction.adapter.rest.dto.PurchaseCreationResul
 import pl.exbook.exbook.baskettransaction.adapter.rest.dto.PurchaseCreationResultMapper
 import pl.exbook.exbook.shared.ContentType
 import pl.exbook.exbook.util.callhandler.handleRequest
+import java.util.Locale
 
 @RestController
 @RequestMapping("api/purchase")
-class DraftPurchaseEndpoint(private val basketTransactionFacade: BasketTransactionFacade) {
+class DraftPurchaseEndpoint(
+    private val basketTransactionFacade: BasketTransactionFacade,
+    private val messageSource: MessageSource
+) {
     @PutMapping("preview", consumes = [ContentType.V1], produces = [ContentType.V1])
     @PreAuthorize("isFullyAuthenticated()")
     fun previewTransaction(
@@ -36,9 +41,10 @@ class DraftPurchaseEndpoint(private val basketTransactionFacade: BasketTransacti
     @PostMapping("realise", produces = [ContentType.V1])
     @PreAuthorize("isFullyAuthenticated()")
     fun realisePurchase(
-        token: UsernamePasswordAuthenticationToken
+        token: UsernamePasswordAuthenticationToken,
+        locale: Locale
     ): ResponseEntity<PurchaseCreationResultDto> = handleRequest(
-        mapper = PurchaseCreationResultMapper,
+        mapper = PurchaseCreationResultMapper(messageSource, locale),
         call = { basketTransactionFacade.realisePurchase(token.name) },
         response = { ok(it) }
     )
