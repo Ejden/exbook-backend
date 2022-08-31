@@ -35,9 +35,14 @@ class JwtAuthorizationFilter(
             SecurityContextHolder.getContext().authentication = authentication
             chain.doFilter(request, response)
         } catch (e: TokenExpiredException) {
-            logger.info("User token expired")
-            response.status = 401
-            throw TokenExpiredException("User token expired")
+            if (request.requestURI.startsWith("/api")) {
+                logger.info("User token expired")
+                response.status = 401
+                response.setHeader("Authorization", " ; expires = Thu, 01 Jan 1970 00:00:00 GMT")
+                response.sendError(401)
+            } else {
+                chain.doFilter(request, response)
+            }
         }
     }
 

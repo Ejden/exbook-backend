@@ -1,11 +1,13 @@
 package pl.exbook.exbook.order.domain
 
+import mu.KLogging
 import java.time.Instant
 import java.util.UUID
 import org.springframework.stereotype.Service
 import pl.exbook.exbook.offer.OfferFacade
 import pl.exbook.exbook.offer.domain.Offer
 import pl.exbook.exbook.order.OrderFacade
+import pl.exbook.exbook.shared.OrderId
 import pl.exbook.exbook.shared.ShippingId
 import pl.exbook.exbook.shipping.ShippingFacade
 import pl.exbook.exbook.shipping.domain.AddressShipping
@@ -26,18 +28,21 @@ class OrderCreator(
     private val stockFacade: StockFacade,
     private val orderFactory: OrderFactory
 ) {
-    fun placeOrders(command: PlaceOrdersCommand): List<Order> {
+    companion object : KLogging()
+    fun placeOrders(command: PlaceOrdersCommand): OrdersCreationResult {
         val orders = mutableListOf<Order>()
+        val errors = mutableMapOf<OrderId, Exception>()
 
         command.orders.forEach { order ->
             try {
                 orders += placeOrder(order, command.buyer, command.timestamp)
             } catch (cause: Exception) {
-                OrderFacade.logger.error { "Error creating order ${order.orderId.raw} from purchase ${command.purchaseId.raw}" }
+                logger.error(cause) { "Error creating order ${order.orderId.raw} from purchase ${command.purchaseId.raw}" }
+                errors[order.orderId] = cause
             }
         }
 
-        return orders
+        return OrdersCreationResult(createdOrders = orders, errors = errors)
     }
 
     private fun placeOrder(command: PlaceOrdersCommand.Order, buyer: User, timestamp: Instant): Order {

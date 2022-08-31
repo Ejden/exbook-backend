@@ -18,7 +18,7 @@ class OrderFacade(
     private val orderCreator: OrderCreator,
     private val orderDecorator: OrderDecorator
 ) {
-    fun placeOrders(command: PlaceOrdersCommand): List<Order> = orderCreator.placeOrders(command)
+    fun placeOrders(command: PlaceOrdersCommand): OrdersCreationResult = orderCreator.placeOrders(command)
 
     fun getOrderSnippet(orderId: OrderId, username: String): OrderSnippet {
         val buyer = userFacade.getUserByUsername(username)

@@ -38,3 +38,9 @@ out/
 
 ### Env files ###
 *.env
+
+### WebApp ###
+/src/main/resources/static
+
+### Dockerfile ###
+/docker/Dockerfile
