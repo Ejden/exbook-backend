@@ -1,6 +1,11 @@
 spring:
   messages:
     encoding: UTF-8
+  servlet:
+    multipart:
+      max-file-size: 2MB
+      max-request-size: 2MB
+      enabled: true
 
 retrofit-services:
   services:

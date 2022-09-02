@@ -7,14 +7,15 @@ import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import pl.exbook.exbook.image.ImageFacade
+import pl.exbook.exbook.image.adapter.rest.dto.ImageDto
 import pl.exbook.exbook.shared.ImageId
 import pl.exbook.exbook.shared.ContentType
 
 @Controller
 @RequestMapping("api/images")
-class ImageEndpoint(val imageFacade: ImageFacade) {
+class ImageEndpoint(private val imageFacade: ImageFacade) {
     @PostMapping(produces = [ContentType.V1])
-    fun uploadImage(@RequestBody file: MultipartFile?): ResponseEntity<Any> {
+    fun uploadImage(@RequestBody file: MultipartFile?): ResponseEntity<ImageDto> {
         val uploadedImage = imageFacade.addImage(file!!)
 
         val location = ServletUriComponentsBuilder
@@ -23,12 +24,7 @@ class ImageEndpoint(val imageFacade: ImageFacade) {
             .buildAndExpand(uploadedImage.id.raw)
             .toUri()
 
-        return ResponseEntity.created(location).build()
-    }
-
-    @DeleteMapping("{imageId}" ,produces = [ContentType.V1])
-    fun deleteImage(@PathVariable imageId: ImageId) {
-        imageFacade.deleteImage(imageId)
+        return ResponseEntity.created(location).body(ImageDto(location.toASCIIString()))
     }
 
     @GetMapping("{imageId}")

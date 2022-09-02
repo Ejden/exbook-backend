@@ -7,6 +7,7 @@ data class CreateOfferRequest(
     val description: String,
     val category: Category,
     val type: String,
+    val images: Images,
     val price: MoneyDto?,
     val location: String,
     val shippingMethods: Collection<ShippingMethod>,
@@ -25,4 +26,13 @@ data class CreateOfferRequest(
     )
 
     data class Category(val id: String)
+
+    data class Images(
+        val allImages: List<Image>,
+        val thumbnail: Image
+    )
+
+    data class Image(
+        val url: String
+    )
 }
