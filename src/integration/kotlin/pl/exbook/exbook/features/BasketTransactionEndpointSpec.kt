@@ -94,11 +94,11 @@ class BasketTransactionEndpointSpec(private val rest: TestRestTemplate) : BaseIn
                         },
                         "images": {
                             "thumbnail": {
-                                "url": "http://localhost:8082/api/images/617ae0fd9ad2e061b2464bea"
+                                "url": "http://localhost:8082/api/images/d327ft3278fg23f7g32c23"
                             },
                             "allImages": [
                                 {
-                                    "url": "http://localhost:8082/api/images/617ae0fd9ad2e061b2464bea"
+                                    "url": "http://localhost:8082/api/images/d327ft3278fg23f7g32c23"
                                 }
                             ]
                         }
@@ -226,11 +226,11 @@ class BasketTransactionEndpointSpec(private val rest: TestRestTemplate) : BaseIn
                         },
                         "images": {
                             "thumbnail": {
-                                "url": "http://localhost:8082/api/images/617ae0fd9ad2e061b2464bea"
+                                "url": "http://localhost:8082/api/images/d327ft3278fg23f7g32c23"
                             },
                             "allImages": [
                                 {
-                                    "url": "http://localhost:8082/api/images/617ae0fd9ad2e061b2464bea"
+                                    "url": "http://localhost:8082/api/images/d327ft3278fg23f7g32c23"
                                 }
                             ]
                         }

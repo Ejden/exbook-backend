@@ -6,7 +6,9 @@ import org.springframework.http.ResponseEntity
 import pl.exbook.exbook.offer.adapter.rest.dto.CreateOfferRequest
 import pl.exbook.exbook.offer.adapter.rest.dto.OfferDto
 import pl.exbook.exbook.offer.adapter.rest.dto.UpdateOfferRequest
+import pl.exbook.exbook.offer.domain.CreateOfferCommand
 import pl.exbook.exbook.shared.TestData.sampleCategoryId
+import pl.exbook.exbook.shared.TestData.sampleImageUrl
 import pl.exbook.exbook.shared.TestData.sampleShippingMethodId
 import pl.exbook.exbook.shared.dto.MoneyDto
 import pl.exbook.exbook.utils.createHttpEntity
@@ -41,6 +43,10 @@ class OfferDomainAbility(private val restTemplate: TestRestTemplate) {
             description = description,
             category = CreateOfferRequest.Category(categoryId),
             type = type,
+            images = CreateOfferRequest.Images(
+                thumbnail = CreateOfferRequest.Image(sampleImageUrl),
+                allImages = listOf(CreateOfferRequest.Image(sampleImageUrl))
+            ),
             price = price,
             location = location,
             shippingMethods = shippingMethods,

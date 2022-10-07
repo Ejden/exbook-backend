@@ -15,6 +15,7 @@ import pl.exbook.exbook.shared.IllegalParameterException
 import pl.exbook.exbook.shared.Money
 import pl.exbook.exbook.shared.TestData.otherSampleShippingMethodId
 import pl.exbook.exbook.shared.TestData.sampleCategoryId
+import pl.exbook.exbook.shared.TestData.sampleImageUrl
 import pl.exbook.exbook.shared.TestData.sampleSellerId
 import pl.exbook.exbook.shared.TestData.sampleSellerUsername
 import pl.exbook.exbook.shared.TestData.sampleShippingMethodId
@@ -48,6 +49,10 @@ class OfferCreationSpec : ShouldSpec({
                 description = "Offer description",
                 category = CreateOfferCommand.Category(sampleCategoryId),
                 type = offerType,
+                images = CreateOfferCommand.Images(
+                    thumbnail = CreateOfferCommand.Image(sampleImageUrl),
+                    allImages = listOf(CreateOfferCommand.Image(sampleImageUrl))
+                ),
                 price = price,
                 location = "Warsaw",
                 shippingMethods = listOf(CreateOfferCommand.ShippingMethod(sampleShippingMethodId, "10.00".pln())),
@@ -94,6 +99,10 @@ class OfferCreationSpec : ShouldSpec({
             description = "Offer description",
             category = CreateOfferCommand.Category(sampleCategoryId),
             type = Offer.Type.BUY_ONLY,
+            images = CreateOfferCommand.Images(
+                thumbnail = CreateOfferCommand.Image(sampleImageUrl),
+                allImages = listOf(CreateOfferCommand.Image(sampleImageUrl))
+            ),
             price = "10.00".pln(),
             location = "Warsaw",
             shippingMethods = listOf(CreateOfferCommand.ShippingMethod(sampleShippingMethodId, "10.00".pln())),
@@ -147,6 +156,10 @@ class OfferCreationSpec : ShouldSpec({
                     description = description,
                     category = CreateOfferCommand.Category(sampleCategoryId),
                     type = offerType,
+                    images = CreateOfferCommand.Images(
+                        thumbnail = CreateOfferCommand.Image(sampleImageUrl),
+                        allImages = listOf(CreateOfferCommand.Image(sampleImageUrl))
+                    ),
                     price = price,
                     location = location,
                     shippingMethods = shippingMethods,
@@ -172,6 +185,10 @@ class OfferCreationSpec : ShouldSpec({
             description = "Offer description",
             category = CreateOfferCommand.Category(sampleCategoryId),
             type = Offer.Type.EXCHANGE_AND_BUY,
+            images = CreateOfferCommand.Images(
+                thumbnail = CreateOfferCommand.Image(sampleImageUrl),
+                allImages = listOf(CreateOfferCommand.Image(sampleImageUrl))
+            ),
             price = "10.00".pln(),
             location = "Warsaw",
             shippingMethods = listOf(CreateOfferCommand.ShippingMethod(sampleShippingMethodId, "10.00".pln())),
@@ -201,6 +218,10 @@ class OfferCreationSpec : ShouldSpec({
             description = "Offer description",
             category = CreateOfferCommand.Category(sampleCategoryId),
             type = Offer.Type.EXCHANGE_AND_BUY,
+            images = CreateOfferCommand.Images(
+                thumbnail = CreateOfferCommand.Image(sampleImageUrl),
+                allImages = listOf(CreateOfferCommand.Image(sampleImageUrl))
+            ),
             price = "10.00".pln(),
             location = "Warsaw",
             shippingMethods = listOf(CreateOfferCommand.ShippingMethod(sampleShippingMethodId, "10.00".pln())),
@@ -230,6 +251,10 @@ class OfferCreationSpec : ShouldSpec({
             description = "Offer description",
             category = CreateOfferCommand.Category(sampleCategoryId),
             type = Offer.Type.EXCHANGE_AND_BUY,
+            images = CreateOfferCommand.Images(
+                thumbnail = CreateOfferCommand.Image(sampleImageUrl),
+                allImages = listOf(CreateOfferCommand.Image(sampleImageUrl))
+            ),
             price = "10.00".pln(),
             location = "Warsaw",
             shippingMethods = listOf(CreateOfferCommand.ShippingMethod(sampleShippingMethodId, "10.00".pln())),

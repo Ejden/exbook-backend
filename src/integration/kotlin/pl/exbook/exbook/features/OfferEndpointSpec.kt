@@ -11,6 +11,7 @@ import pl.exbook.exbook.ability.OfferDomainAbility
 import pl.exbook.exbook.ability.ShippingMethodDomainAbility
 import pl.exbook.exbook.offer.adapter.rest.dto.CreateOfferRequest
 import pl.exbook.exbook.offer.adapter.rest.dto.UpdateOfferRequest
+import pl.exbook.exbook.shared.TestData
 import pl.exbook.exbook.shared.TestData.otherSampleSellerEmail
 import pl.exbook.exbook.shared.TestData.otherSampleSellerUsername
 import pl.exbook.exbook.shared.TestData.sampleAdminEmail
@@ -43,6 +44,10 @@ class OfferEndpointSpec(private val rest: TestRestTemplate) : BaseIntegrationSpe
             description = "description",
             category = CreateOfferRequest.Category(categoryId),
             type = "EXCHANGE_AND_BUY",
+            images = CreateOfferRequest.Images(
+                thumbnail = CreateOfferRequest.Image(TestData.sampleImageUrl),
+                allImages = listOf(CreateOfferRequest.Image(TestData.sampleImageUrl))
+            ),
             price = "10.00".plnDto(),
             location = "Warsaw",
             shippingMethods = listOf(CreateOfferRequest.ShippingMethod(shippingMethodId, "10.09".plnDto())),
@@ -66,11 +71,11 @@ class OfferEndpointSpec(private val rest: TestRestTemplate) : BaseIntegrationSpe
                 "description": "description",
                 "images": {
                     "thumbnail": {
-                        "url": "http://localhost:8082/api/images/617ae0fd9ad2e061b2464bea"
+                        "url": "http://localhost:8082/api/images/d327ft3278fg23f7g32c23"
                     },
                     "allImages": [
                         {
-                            "url": "http://localhost:8082/api/images/617ae0fd9ad2e061b2464bea"
+                            "url": "http://localhost:8082/api/images/d327ft3278fg23f7g32c23"
                         }
                     ]
                 },
@@ -120,6 +125,10 @@ class OfferEndpointSpec(private val rest: TestRestTemplate) : BaseIntegrationSpe
             description = "description",
             category = CreateOfferRequest.Category(categoryId),
             type = "EXCHANGE_AND_BUY",
+            images = CreateOfferRequest.Images(
+                thumbnail = CreateOfferRequest.Image(TestData.sampleImageUrl),
+                allImages = listOf(CreateOfferRequest.Image(TestData.sampleImageUrl))
+            ),
             price = "10.00".plnDto(),
             location = "Warsaw",
             shippingMethods = listOf(CreateOfferRequest.ShippingMethod(shippingMethodId, "10.09".plnDto())),
@@ -147,6 +156,10 @@ class OfferEndpointSpec(private val rest: TestRestTemplate) : BaseIntegrationSpe
             description = "description",
             category = CreateOfferRequest.Category(sampleCategoryId.raw),
             type = "EXCHANGE_AND_BUY",
+            images = CreateOfferRequest.Images(
+                thumbnail = CreateOfferRequest.Image(TestData.sampleImageUrl),
+                allImages = listOf(CreateOfferRequest.Image(TestData.sampleImageUrl))
+            ),
             price = "10.00".plnDto(),
             location = "Warsaw",
             shippingMethods = listOf(CreateOfferRequest.ShippingMethod(shippingMethodId, "10.09".plnDto())),
@@ -176,6 +189,10 @@ class OfferEndpointSpec(private val rest: TestRestTemplate) : BaseIntegrationSpe
             description = "description",
             category = CreateOfferRequest.Category(categoryId),
             type = "EXCHANGE_AND_BUY",
+            images = CreateOfferRequest.Images(
+                thumbnail = CreateOfferRequest.Image(TestData.sampleImageUrl),
+                allImages = listOf(CreateOfferRequest.Image(TestData.sampleImageUrl))
+            ),
             price = "10.00".plnDto(),
             location = "Warsaw",
             shippingMethods = listOf(CreateOfferRequest.ShippingMethod(shippingMethodId, "10.09".plnDto())),
@@ -533,11 +550,11 @@ class OfferEndpointSpec(private val rest: TestRestTemplate) : BaseIntegrationSpe
                 "description": "description",
                 "images": {
                     "thumbnail": {
-                        "url": "http://localhost:8082/api/images/617ae0fd9ad2e061b2464bea"
+                        "url": "http://localhost:8082/api/images/d327ft3278fg23f7g32c23"
                     },
                     "allImages": [
                         {
-                            "url": "http://localhost:8082/api/images/617ae0fd9ad2e061b2464bea"
+                            "url": "http://localhost:8082/api/images/d327ft3278fg23f7g32c23"
                         }
                     ]
                 },
