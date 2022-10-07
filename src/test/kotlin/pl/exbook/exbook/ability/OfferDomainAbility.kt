@@ -18,6 +18,7 @@ import pl.exbook.exbook.shared.CategoryId
 import pl.exbook.exbook.shared.Money
 import pl.exbook.exbook.shared.ShippingMethodId
 import pl.exbook.exbook.shared.StockId
+import pl.exbook.exbook.shared.TestData
 import pl.exbook.exbook.shared.TestData.sampleCategoryId
 import pl.exbook.exbook.shared.TestData.sampleCategoryName
 import pl.exbook.exbook.shared.TestData.sampleSellerUsername
@@ -173,6 +174,10 @@ class OfferDomainAbility {
             description = description,
             category = CreateOfferCommand.Category(categoryId),
             type = type,
+            images = CreateOfferCommand.Images(
+                thumbnail = CreateOfferCommand.Image(TestData.sampleImageUrl),
+                allImages = listOf(CreateOfferCommand.Image(TestData.sampleImageUrl))
+            ),
             price = price,
             location = location,
             shippingMethods = shippingMethods,

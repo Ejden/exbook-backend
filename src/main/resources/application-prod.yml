@@ -5,11 +5,6 @@ spring:
       database: ${DATABASE_NAME}
   jpa:
     show-sql: false
-  servlet:
-    multipart:
-      max-file-size: 16MB
-      max-request-size: 16MB
-      enabled: true
 
 server:
   port: ${SERVER_PORT}

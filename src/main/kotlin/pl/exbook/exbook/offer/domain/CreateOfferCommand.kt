@@ -12,6 +12,7 @@ data class CreateOfferCommand(
     val description: String,
     val category: Category,
     val type: Offer.Type,
+    val images: Images,
     val price: Money?,
     val location: String,
     val shippingMethods: List<ShippingMethod>,
@@ -30,6 +31,15 @@ data class CreateOfferCommand(
     )
 
     data class Category(val id: CategoryId)
+
+    data class Images(
+        val thumbnail: Image,
+        val allImages: List<Image>
+    )
+
+    data class Image(
+        val url: String
+    )
 
     init {
         if (initialStock <= 0) {
@@ -81,6 +91,10 @@ data class CreateOfferCommand(
         if (shippingMethods.any { it.price < Money.zero(it.price.currency) }) {
             throw IllegalParameterException("Shipping method price cannot be less than 0.00")
         }
+
+        if (!images.allImages.contains(images.thumbnail)) {
+            throw IllegalParameterException("Thumbnail image not set")
+        }
     }
 
     companion object {
@@ -95,6 +109,10 @@ data class CreateOfferCommand(
                 description = request.description,
                 category = Category(CategoryId(request.category.id)),
                 type = Offer.Type.valueOf(request.type),
+                images = Images(
+                    thumbnail = Image(request.images.thumbnail.url),
+                    allImages = request.images.allImages.map { Image(it.url) }
+                ),
                 price = request.price?.toDomain(),
                 location = request.location,
                 shippingMethods = request.shippingMethods.map { ShippingMethod(ShippingMethodId(it.id), it.price.toDomain()) },

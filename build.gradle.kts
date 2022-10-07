@@ -18,7 +18,7 @@ plugins {
 }
 
 group = "pl.exbook"
-version = "0.10.0-SNAPSHOT"
+version = "0.10.1-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_11
 
 configurations {

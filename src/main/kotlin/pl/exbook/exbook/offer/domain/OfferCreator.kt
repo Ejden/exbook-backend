@@ -37,8 +37,8 @@ class OfferCreator(
                 condition = command.book.condition
             ),
             images = Offer.Images(
-                thumbnail = Offer.Image("http://localhost:8082/api/images/617ae0fd9ad2e061b2464bea"),
-                allImages = listOf(Offer.Image("http://localhost:8082/api/images/617ae0fd9ad2e061b2464bea"))
+                thumbnail = Offer.Image(command.images.thumbnail.url),
+                allImages = command.images.allImages.map { Offer.Image(it.url) }
             ),
             description = command.description,
             type = command.type,
