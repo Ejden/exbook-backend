@@ -9,6 +9,7 @@ abstract class Shipping(
     val id: ShippingId,
     val shippingMethodId: ShippingMethodId,
     val shippingMethodName: String,
+    val sellerShippingInfo: SellerShippingInfo?,
     val cost: Cost
 ) {
     data class ShippingAddress(
@@ -29,27 +30,42 @@ abstract class Shipping(
     )
 
     data class Cost(val finalCost: Money)
+
+    data class SellerShippingInfo(
+        val address: ShippingAddress?,
+        val pickupPoint: PickupPoint?
+    )
+
+    fun setSellerShippingInfo(shippingInfo: SellerShippingInfo): Shipping = when (this) {
+        is PickupPointShipping -> PickupPointShipping(id, shippingMethodId, shippingMethodName, shippingInfo, cost, pickupPoint)
+        is AddressShipping -> AddressShipping(id, shippingMethodId, shippingMethodName, shippingInfo, cost, address)
+        is PersonalShipping -> PersonalShipping(id, shippingMethodId, shippingMethodName, shippingInfo, cost)
+        else -> throw Exception("Cannot create shipping. Unknown type")
+    }
 }
 
 class PickupPointShipping(
     id: ShippingId,
     shippingMethodId: ShippingMethodId,
     shippingMethodName: String,
+    sellerShippingInfo: SellerShippingInfo? = null,
     cost: Cost,
     val pickupPoint: PickupPoint
-) : Shipping(id, shippingMethodId, shippingMethodName, cost)
+) : Shipping(id, shippingMethodId, shippingMethodName, sellerShippingInfo, cost)
 
 class AddressShipping(
     id: ShippingId,
     shippingMethodId: ShippingMethodId,
     shippingMethodName: String,
+    sellerShippingInfo: SellerShippingInfo? = null,
     cost: Cost,
     val address: ShippingAddress
-) : Shipping(id, shippingMethodId, shippingMethodName, cost)
+) : Shipping(id, shippingMethodId, shippingMethodName, sellerShippingInfo, cost)
 
 class PersonalShipping(
     id: ShippingId,
     shippingMethodId: ShippingMethodId,
     shippingMethodName: String,
+    sellerShippingInfo: SellerShippingInfo? = null,
     cost: Cost
-) : Shipping(id, shippingMethodId, shippingMethodName, cost)
+) : Shipping(id, shippingMethodId, shippingMethodName, sellerShippingInfo, cost)

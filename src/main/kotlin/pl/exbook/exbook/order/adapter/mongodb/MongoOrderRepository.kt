@@ -56,7 +56,6 @@ data class ExchangeBookDocument(
 data class ShippingDocument(
     @field:Field("id")
     val id: String,
-    val sellerShippingInfo: SellerShippingInfoDocument?
 )
 
 data class SellerShippingInfoDocument(

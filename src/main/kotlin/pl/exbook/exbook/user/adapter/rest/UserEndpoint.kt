@@ -18,7 +18,7 @@ import pl.exbook.exbook.user.domain.User
 
 @RestController
 @RequestMapping("api")
-class UserController(private val userFacade: UserFacade) {
+class UserEndpoint(private val userFacade: UserFacade) {
 
     @GetMapping("me", produces = [ContentType.V1])
     @PreAuthorize("isAuthenticated()")

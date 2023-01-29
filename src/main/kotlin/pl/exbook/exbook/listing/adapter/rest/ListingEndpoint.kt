@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*
 import pl.exbook.exbook.listing.ListingFacade
 import pl.exbook.exbook.listing.adapter.rest.dto.DetailedOfferDto
 import pl.exbook.exbook.listing.domain.DetailedOffer
+import pl.exbook.exbook.offer.domain.GetOffersCommand
 import pl.exbook.exbook.offer.domain.Offer
 import pl.exbook.exbook.shared.CategoryId
 import pl.exbook.exbook.shared.ContentType
@@ -36,21 +37,23 @@ class ListingEndpoint(private val listingFacade: ListingFacade) {
     ): Page<DetailedOfferDto> {
         request.log(using = logger)
         return listingFacade.getOfferListing(
-            searchingPhrase,
-            bookConditions?.map { Offer.Condition.valueOf(it) },
-            offerType?.map {
-                if (it == "BUY") listOf(
-                    Offer.Type.EXCHANGE_AND_BUY,
-                    Offer.Type.BUY_ONLY
-                ) else listOf(Offer.Type.EXCHANGE_AND_BUY, Offer.Type.EXCHANGE_ONLY)
-            }?.flatten()?.distinct(),
-            priceFrom?.toBigDecimal(),
-            priceTo?.toBigDecimal(),
-            location,
-            categoryId?.let { CategoryId(it) },
-            offersPerPage,
-            page,
-            sorting
+            GetOffersCommand(
+                searchingPhrase,
+                bookConditions?.map { Offer.Condition.valueOf(it) },
+                offerType?.map {
+                    if (it == "BUY") listOf(
+                        Offer.Type.EXCHANGE_AND_BUY,
+                        Offer.Type.BUY_ONLY
+                    ) else listOf(Offer.Type.EXCHANGE_AND_BUY, Offer.Type.EXCHANGE_ONLY)
+                }?.flatten()?.distinct(),
+                priceFrom?.toBigDecimal(),
+                priceTo?.toBigDecimal(),
+                location,
+                categoryId?.let { CategoryId(it) },
+                offersPerPage,
+                page,
+                sorting
+            )
         ).map { it.toDto() }
     }
 

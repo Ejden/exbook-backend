@@ -1,23 +1,22 @@
 package pl.exbook.exbook.basket.domain
 
 import org.springframework.stereotype.Service
-import pl.exbook.exbook.offer.OfferFacade
+import pl.exbook.exbook.offer.domain.Offer
 import pl.exbook.exbook.order.domain.Order
 import pl.exbook.exbook.shared.Money
-import pl.exbook.exbook.user.UserFacade
+import pl.exbook.exbook.shared.OfferId
+import pl.exbook.exbook.shared.UserId
+import pl.exbook.exbook.user.domain.User
 
 @Service
-class BasketDetailsDecorator(
-    private val offerFacade: OfferFacade,
-    private val userFacade: UserFacade
-) {
-    fun decorateBasketWithDetails(basket: Basket): DetailedBasket {
+class BasketDetailsDecorator {
+    fun decorateBasketWithDetails(basket: Basket, sellers: Map<UserId, User>, offers: Map<OfferId, Offer>): DetailedBasket {
         val detailedItemsGroups = mutableListOf<DetailedBasket.ItemGroup>()
 
         basket.itemsGroups.forEach {
-            val seller = userFacade.getUserById(it.key.sellerId)
+            val seller = sellers[it.key.sellerId]!!
             val items = it.value.items.map { item ->
-                val offer = offerFacade.getOffer(item.offer.id)
+                val offer = offers[item.offer.id]!!
                 DetailedBasket.Item(
                     offer = DetailedBasket.Offer(
                         id = offer.id,

@@ -12,7 +12,7 @@ interface MongoStockReservationRepository : Repository<StockReservationDocument,
     fun removeById(id: String)
 }
 
-@Document(collection = "stockReservation")
+@Document(collection = "stockReservations")
 data class StockReservationDocument(
     val id: String,
     val stockId: String,

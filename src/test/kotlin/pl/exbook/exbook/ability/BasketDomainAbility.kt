@@ -27,7 +27,7 @@ class BasketDomainAbility {
     private val offerFacade: OfferFacade = mockk()
     private val validator: BasketValidator = BasketValidator()
     private val basketFactory: BasketFactory = BasketFactory()
-    private val basketDetailsDecorator: BasketDetailsDecorator = BasketDetailsDecorator(offerFacade, userFacade)
+    private val basketDetailsDecorator: BasketDetailsDecorator = BasketDetailsDecorator()
     val facade = BasketFacade(
         basketRepository = basketRepository,
         userFacade = userFacade,

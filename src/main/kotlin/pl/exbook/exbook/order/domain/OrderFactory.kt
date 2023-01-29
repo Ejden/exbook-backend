@@ -18,14 +18,14 @@ class OrderFactory {
     ): Order = with(command) {
         val orderItems = command.items.map {
             val offer = offers.first { o -> o.id == it.offerId }
-            it.toOrderItem(offer.price)
+            it.toOrderItem(offer.price, command.orderType)
         }
 
         Order(
             id = OrderId(UUID.randomUUID().toString()),
             buyer = Order.Buyer(buyerId),
             seller = Order.Seller(command.seller.id),
-            shipping = Order.Shipping(shipping.id, Order.SellerShippingInfo(null, null)),
+            shipping = Order.Shipping(shipping.id),
             items = orderItems,
             orderType = command.orderType,
             exchangeBooks = command.exchangeBooks.map { it.toExchangeBook() },
@@ -37,10 +37,10 @@ class OrderFactory {
     }
 }
 
-private fun PlaceOrdersCommand.Item.toOrderItem(price: Money?) = Order.OrderItem(
+private fun PlaceOrdersCommand.Item.toOrderItem(price: Money?, orderType: Order.OrderType) = Order.OrderItem(
     offerId = this.offerId,
     quantity = this.quantity,
-    cost = price
+    cost = if (orderType == Order.OrderType.BUY) price else null
 )
 
 private fun PlaceOrdersCommand.Book.toExchangeBook() = Order.ExchangeBook(

@@ -16,7 +16,6 @@ import pl.exbook.exbook.shared.dto.toDomain
 import pl.exbook.exbook.shared.dto.toDto
 import java.lang.RuntimeException
 import pl.exbook.exbook.shared.ExchangeBookId
-import pl.exbook.exbook.shared.PickupPointId
 
 class DatabaseOrderRepository(private val mongoOrderRepository: MongoOrderRepository) : OrderRepository {
     override fun findById(id: OrderId): Order = mongoOrderRepository.findById(id.raw)
@@ -69,8 +68,7 @@ private fun OrderDocument.toDomain() = Order(
     buyer = Order.Buyer(UserId(this.buyerId)),
     seller = Order.Seller(UserId(this.sellerId)),
     shipping = Order.Shipping(
-        id = ShippingId(this.shipping.id),
-        sellerShippingInfo = this.shipping.sellerShippingInfo?.toDomain()
+        id = ShippingId(this.shipping.id)
     ),
     items = this.items.map { it.toDomain() },
     orderType = Order.OrderType.valueOf(this.orderType),
@@ -96,36 +94,11 @@ private fun ExchangeBookDocument.toDomain() = Order.ExchangeBook(
     quantity = this.quantity
 )
 
-private fun SellerShippingInfoDocument.toDomain() = Order.SellerShippingInfo(
-    address = this.address?.toDomain(),
-    pickupPoint = this.pickupPoint?.toDomain()
-)
-
-private fun SellerShippingInfoAddressDocument.toDomain() = Order.SellerShippingInfoAddress(
-    firstAndLastName = this.firstAndLastName,
-    phoneNumber = this.phoneNumber,
-    email = this.email,
-    address = this.address,
-    postalCode = this.postalCode,
-    city = this.city,
-    country = this.country
-)
-
-private fun SellerShippingInfoPickupPointDocument.toDomain() = Order.SellerShippingInfoPickupPoint(
-    firstAndLastName = this.firstAndLastName,
-    phoneNumber = this.phoneNumber,
-    email = this.email,
-    pickupPointId = PickupPointId(this.pickupPointId)
-)
-
 private fun Order.toDocument() = OrderDocument(
     id = this.id.raw,
     buyerId = this.buyer.id.raw,
     sellerId = this.seller.id.raw,
-    shipping = ShippingDocument(
-        id = this.shipping.id.raw,
-        sellerShippingInfo = this.shipping.sellerShippingInfo?.toDocument()
-    ),
+    shipping = ShippingDocument(id = this.shipping.id.raw),
     items = this.items.map { it.toDocument() },
     orderType = this.orderType.name,
     exchangeBooks = this.exchangeBooks.map { it.toDocument() },
@@ -148,28 +121,6 @@ private fun Order.ExchangeBook.toDocument() = ExchangeBookDocument(
     isbn = this.isbn,
     condition = this.condition.name,
     quantity = this.quantity
-)
-
-private fun Order.SellerShippingInfo.toDocument() = SellerShippingInfoDocument(
-    address = this.address?.toDocument(),
-    pickupPoint = this.pickupPoint?.toDocument()
-)
-
-private fun Order.SellerShippingInfoAddress.toDocument() = SellerShippingInfoAddressDocument(
-    firstAndLastName = this.firstAndLastName,
-    phoneNumber = this.phoneNumber,
-    email = this.email,
-    address = this.address,
-    postalCode = this.postalCode,
-    city = this.city,
-    country = this.country
-)
-
-private fun Order.SellerShippingInfoPickupPoint.toDocument() = SellerShippingInfoPickupPointDocument(
-    firstAndLastName = this.firstAndLastName,
-    phoneNumber = this.phoneNumber,
-    email = this.email,
-    pickupPointId = this.pickupPointId.raw
 )
 
 data class OrderNotFoundException(val orderId: OrderId) : RuntimeException("Order with id $orderId not found")

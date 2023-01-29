@@ -8,6 +8,7 @@ import pl.exbook.exbook.offer.domain.Offer
 import pl.exbook.exbook.order.domain.Order
 import pl.exbook.exbook.shared.BasketId
 import pl.exbook.exbook.shared.ExchangeBookId
+import pl.exbook.exbook.shared.NotFoundException
 import pl.exbook.exbook.shared.OfferId
 import pl.exbook.exbook.shared.UserId
 
@@ -83,4 +84,4 @@ private fun ExchangeBookDocument.toDomain() = Basket.ExchangeBook(
     quantity = this.quantity
 )
 
-class BasketNotFoundException : RuntimeException()
+class BasketNotFoundException : NotFoundException()
