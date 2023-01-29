@@ -207,7 +207,7 @@ data class OrderSnippetDto(
         val book: BookDto,
         val images: ImagesDto,
         val quantity: Long,
-        val cost: MoneyDto?
+        val cost: MoneyDto
     )
 
     data class BookDto(
@@ -360,7 +360,7 @@ private fun OrderSnippet.OrderItem.toDto() = OrderSnippetDto.OrderItemDto(
     book = this.book.toDto(),
     images = this.images.toDto(),
     quantity = this.quantity,
-    cost = this.cost?.toDto()
+    cost = this.cost?.toDto() ?: MoneyDto("0.00".toBigDecimal(), "PLN")
 )
 
 private fun OrderSnippet.Book.toDto() = OrderSnippetDto.BookDto(

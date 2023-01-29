@@ -132,6 +132,14 @@ data class DetailedBasket(
     val itemsGroups: List<ItemGroup>,
 ) {
     val totalOffersCost: Money = itemsGroups.foldRight(Money.zeroPln()) { itemGroup, acc -> itemGroup.groupTotalOffersPrice + acc }
+    val canProceedToSummaryPage: Boolean = itemsGroups.all { validate(it) }
+
+    private fun validate(itemGroup: ItemGroup): Boolean {
+        val notEmpty = itemGroup.items.isNotEmpty()
+        val hasExchangeGroupIfRequired = if (itemGroup.orderType == Order.OrderType.EXCHANGE)
+            itemGroup.exchangeBooks.isNotEmpty() else true
+        return notEmpty && hasExchangeGroupIfRequired
+    }
 
     data class ItemGroup(
         val seller: Seller,

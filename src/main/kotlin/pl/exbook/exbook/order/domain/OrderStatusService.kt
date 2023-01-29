@@ -30,9 +30,10 @@ class OrderStatusService(
         val order = orderRepository.findById(command.orderId) ?: throw OrderNotFoundException(command.orderId)
         val shipping = shippingFacade.findShipping(order.shipping.id)
         statusChangeValidator.validateStatusChangeToAccepted(command, seller, order, shipping)
-
-        val updatedOrder = order.markAsAccepted(command.toSellerShippingInfo())
+        val newShipping = shipping.setSellerShippingInfo(command.toSellerShippingInfo())
+        val updatedOrder = order.changeStatus(OrderStatus.ACCEPTED)
         val savedOrder = orderRepository.save(updatedOrder)
+        shippingFacade.save(newShipping)
         logger.info { "Seller ${seller.id} accepted exchange for order ${order.id}" }
         return savedOrder
     }

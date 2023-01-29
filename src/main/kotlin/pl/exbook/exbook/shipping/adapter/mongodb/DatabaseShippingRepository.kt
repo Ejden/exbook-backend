@@ -42,6 +42,7 @@ private fun PickupPointShippingDocument.toPickupPointDomain() = PickupPointShipp
     id = ShippingId(this.id!!),
     shippingMethodId = ShippingMethodId(this.shippingMethodId),
     shippingMethodName = this.shippingMethodName,
+    sellerShippingInfo = this.sellerInfo?.toDomain(),
     cost = Shipping.Cost(this.cost.finalCost.toDomain()),
     pickupPoint = this.pickupPoint.toDomain()
 )
@@ -50,6 +51,7 @@ private fun AddressShippingDocument.toAddressDomain() = AddressShipping(
     id = ShippingId(this.id!!),
     shippingMethodId = ShippingMethodId(this.shippingMethodId),
     shippingMethodName = this.shippingMethodName,
+    sellerShippingInfo = this.sellerInfo?.toDomain(),
     cost = Shipping.Cost(this.cost.finalCost.toDomain()),
     address = this.address.toDomain()
 )
@@ -58,7 +60,13 @@ private fun PersonalShippingDocument.toPersonalDomain() = PersonalShipping(
     id = ShippingId(this.id!!),
     shippingMethodId = ShippingMethodId(this.shippingMethodId),
     shippingMethodName = this.shippingMethodName,
+    sellerShippingInfo = this.sellerInfo?.toDomain(),
     cost = Shipping.Cost(this.cost.finalCost.toDomain())
+)
+
+private fun SellerShippingInfoDocument.toDomain() = Shipping.SellerShippingInfo(
+    address = this.address?.toDomain(),
+    pickupPoint = this.pickupPoint?.toDomain()
 )
 
 private fun AddressDocument.toDomain() = Shipping.ShippingAddress(
@@ -91,6 +99,7 @@ private fun PickupPointShipping.toDocument() = PickupPointShippingDocument(
     id = this.id.raw,
     shippingMethodId = this.shippingMethodId.raw,
     shippingMethodName = this.shippingMethodName,
+    sellerInfo = this.sellerShippingInfo?.toDocument(),
     cost = DeliveryCostDocument(this.cost.finalCost.toDocument()),
     pickupPoint = this.pickupPoint.toDocument()
 )
@@ -99,6 +108,7 @@ private fun AddressShipping.toDocument() = AddressShippingDocument(
     id = this.id.raw,
     shippingMethodId = this.shippingMethodId.raw,
     shippingMethodName = this.shippingMethodName,
+    sellerInfo = this.sellerShippingInfo?.toDocument(),
     cost = DeliveryCostDocument(this.cost.finalCost.toDocument()),
     address = this.address.toDocument()
 )
@@ -107,7 +117,13 @@ private fun PersonalShipping.toDocument() = PersonalShippingDocument(
     id = this.id.raw,
     shippingMethodId = this.shippingMethodId.raw,
     shippingMethodName = this.shippingMethodName,
+    sellerInfo = this.sellerShippingInfo?.toDocument(),
     cost = DeliveryCostDocument(this.cost.finalCost.toDocument()),
+)
+
+private fun Shipping.SellerShippingInfo.toDocument() = SellerShippingInfoDocument(
+    address = this.address?.toDocument(),
+    pickupPoint = this.pickupPoint?.toDocument()
 )
 
 private fun Shipping.ShippingAddress.toDocument() = AddressDocument(

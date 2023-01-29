@@ -51,8 +51,15 @@ class BasketFacade(
     fun getDetailedUserBasket(username: String): DetailedBasket {
         val user = userFacade.getUserByUsername(username)
         val basket = getUserBasket(user.id)
+        val sellers = basket.itemsGroups
+            .map { userFacade.getUserById(it.key.sellerId) }
+            .associateBy { it.id }
+        val offers = basket.itemsGroups
+            .flatMap { it.value.items }
+            .map { offerFacade.getOffer(it.offer.id) }
+            .associateBy { it.id }
 
-        return basketDetailsDecorator.decorateBasketWithDetails(basket)
+        return basketDetailsDecorator.decorateBasketWithDetails(basket, sellers, offers)
     }
 
     fun addItemToBasket(command: AddItemToBasketCommand): Basket {

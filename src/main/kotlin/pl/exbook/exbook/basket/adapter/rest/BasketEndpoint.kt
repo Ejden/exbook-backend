@@ -93,7 +93,7 @@ class BasketEndpoint(private val basketFacade: BasketFacade) {
 
     @PreAuthorize("isFullyAuthenticated()")
     @DeleteMapping("/sellers/{sellerId}/books/{bookId}", produces = [ContentType.V1])
-    fun removeExchangeBookToBasket(
+    fun removeExchangeBookFromBasket(
         @PathVariable sellerId: UserId,
         @PathVariable bookId: ExchangeBookId,
         user: UsernamePasswordAuthenticationToken

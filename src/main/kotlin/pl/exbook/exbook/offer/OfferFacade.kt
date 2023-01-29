@@ -1,6 +1,5 @@
 package pl.exbook.exbook.offer
 
-import java.math.BigDecimal
 import java.time.Instant
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
@@ -11,19 +10,19 @@ import pl.exbook.exbook.offer.domain.Offer
 import pl.exbook.exbook.offer.domain.OfferRepository
 import pl.exbook.exbook.shared.OfferId
 import pl.exbook.exbook.offer.domain.CreateOfferCommand
+import pl.exbook.exbook.offer.domain.GetOffersCommand
 import pl.exbook.exbook.offer.domain.OfferCreator
 import pl.exbook.exbook.offer.domain.OfferNotFoundException
 import pl.exbook.exbook.offer.domain.OfferVersionNotFoundException
 import pl.exbook.exbook.offer.domain.OfferVersioningRepository
 import pl.exbook.exbook.offer.domain.UpdateOfferCommand
 import pl.exbook.exbook.security.domain.UnauthorizedException
-import pl.exbook.exbook.shared.CategoryId
 import pl.exbook.exbook.shared.OfferVersionId
 import pl.exbook.exbook.shared.UserId
 import pl.exbook.exbook.user.UserFacade
 
 @Service
-class OfferFacade (
+class OfferFacade(
     private val offerRepository: OfferRepository,
     private val offerVersioningRepository: OfferVersioningRepository,
     private val offerCreator: OfferCreator,
@@ -36,18 +35,7 @@ class OfferFacade (
         return offerRepository.findAll(pageRequest)
     }
 
-    fun getOffers(
-        searchingPhrase: String,
-        bookConditions: List<Offer.Condition>?,
-        offerType: List<Offer.Type>?,
-        priceFrom: BigDecimal?,
-        priceTo: BigDecimal?,
-        location: String?,
-        categoryId: CategoryId?,
-        offersPerPage: Int?,
-        page: Int?,
-        sorting: String?
-    ): Page<Offer> {
+    fun getOffers(command: GetOffersCommand): Page<Offer> = with(command) {
         val searchingPhrasesFilter = searchingPhrase.split(" ").filterNot { it.trim().isBlank() }
         val bookConditionsFilter = bookConditions ?: Offer.Condition.values().asList()
         val offerTypeFilter = offerType ?: Offer.Type.values().asList()

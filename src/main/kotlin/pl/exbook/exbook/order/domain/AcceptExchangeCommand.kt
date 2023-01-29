@@ -2,6 +2,7 @@ package pl.exbook.exbook.order.domain
 
 import pl.exbook.exbook.shared.OrderId
 import pl.exbook.exbook.shared.PickupPointId
+import pl.exbook.exbook.shipping.domain.Shipping
 
 data class AcceptExchangeCommand(
     val orderId: OrderId,
@@ -26,9 +27,9 @@ data class AcceptExchangeCommand(
         val pickupPointId: PickupPointId
     )
 
-    fun toSellerShippingInfo() = Order.SellerShippingInfo(
+    fun toSellerShippingInfo() = Shipping.SellerShippingInfo(
         address = this.address?.let {
-            Order.SellerShippingInfoAddress(
+            Shipping.ShippingAddress(
                 firstAndLastName = it.firstAndLastName,
                 phoneNumber = it.phoneNumber,
                 email = it.email,
@@ -39,7 +40,7 @@ data class AcceptExchangeCommand(
             )
         },
         pickupPoint = this.pickupPoint?.let {
-            Order.SellerShippingInfoPickupPoint(
+            Shipping.PickupPoint(
                 firstAndLastName = it.firstAndLastName,
                 phoneNumber = it.phoneNumber,
                 email = it.email,

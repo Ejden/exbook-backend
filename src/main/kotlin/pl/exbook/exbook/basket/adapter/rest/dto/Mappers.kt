@@ -42,7 +42,8 @@ object DetailedBasketMapper : FromDomainMapper<DetailedBasket, DetailedBasketDto
         id = from.id.raw,
         buyer = DetailedBasketDto.BuyerDto(from.userId.raw),
         itemsGroups = from.itemsGroups.map { it.toDto() },
-        totalOffersCost = from.totalOffersCost.toDto()
+        totalOffersCost = from.totalOffersCost.toDto(),
+        canProceedToSummaryPage = from.canProceedToSummaryPage
     )
 
     private fun DetailedBasket.ItemGroup.toDto() = DetailedBasketDto.ItemsGroupDto(

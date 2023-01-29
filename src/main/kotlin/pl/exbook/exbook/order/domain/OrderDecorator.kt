@@ -30,7 +30,7 @@ class OrderDecorator(private val offerFacade: OfferFacade) {
             lastName = buyer.lastName
         ),
         seller = OrderSnippet.Seller(seller.id, seller.username, seller.firstName, seller.lastName),
-        sellerShippingInfo = this.shipping.sellerShippingInfo?.let {
+        sellerShippingInfo = shipping.sellerShippingInfo?.let {
            OrderSnippet.SellerShippingInfo(
                address = it.address?.let { address ->
                OrderSnippet.ShippingAddress(

@@ -6,7 +6,8 @@ data class DetailedBasketDto(
     val id: String,
     val buyer: BuyerDto,
     val itemsGroups: List<ItemsGroupDto>,
-    val totalOffersCost: MoneyDto
+    val totalOffersCost: MoneyDto,
+    val canProceedToSummaryPage: Boolean
 ) {
     data class BuyerDto(val id: String)
 

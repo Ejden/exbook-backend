@@ -39,11 +39,6 @@ data class Order(
 
     fun changeStatus(newStatus: OrderStatus) = this.copy(status = newStatus)
 
-    fun markAsAccepted(sellerShippingInfo: SellerShippingInfo) = this.copy(
-        status = OrderStatus.ACCEPTED,
-        shipping = this.shipping.copy(sellerShippingInfo = sellerShippingInfo)
-    )
-
     data class OrderItem(
         val offerId: OfferId,
         val quantity: Long,
@@ -56,7 +51,6 @@ data class Order(
 
     data class Shipping(
         val id: ShippingId,
-        val sellerShippingInfo: SellerShippingInfo?
     )
 
     data class ExchangeBook(
@@ -66,28 +60,6 @@ data class Order(
         val isbn: String?,
         val condition: Offer.Condition,
         val quantity: Int
-    )
-
-    data class SellerShippingInfo(
-        val address: SellerShippingInfoAddress?,
-        val pickupPoint: SellerShippingInfoPickupPoint?
-    )
-
-    data class SellerShippingInfoAddress(
-        val firstAndLastName: String,
-        val phoneNumber: String,
-        val email: String,
-        val address: String,
-        val postalCode: String,
-        val city: String,
-        val country: String
-    )
-
-    data class SellerShippingInfoPickupPoint(
-        val firstAndLastName: String,
-        val phoneNumber: String,
-        val email: String,
-        val pickupPointId: PickupPointId
     )
 
     enum class OrderType {
